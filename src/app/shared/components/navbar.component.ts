@@ -9,8 +9,8 @@ import { CartService } from '../../core/services/cart.service';
   template: `
     <nav class="sticky top-0 z-40 bg-tcg-surface border-b border-tcg-border">
       <div class="max-w-6xl mx-auto px-4 flex items-center justify-between h-16">
-        <a routerLink="/" class="font-display text-2xl text-tcg-gold tracking-wider hover:opacity-80 transition-opacity">
-          TCG 3D SHOP
+        <a routerLink="/" class="flex items-center hover:opacity-80 transition-opacity">
+          <img src="assets/logo/logo.png" alt="LayerVault" class="h-10 w-auto">
         </a>
 
         <div class="flex items-center gap-4">

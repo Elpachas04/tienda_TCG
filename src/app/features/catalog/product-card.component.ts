@@ -1,15 +1,13 @@
 import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { Product, ProductVariant } from '../../core/models/product.model';
+import { Product, ProductVariant, Color } from '../../core/models/product.model';
 import { CartItem } from '../../core/models/cart-item.model';
-
-const PLACEHOLDER = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect width='400' height='400' fill='%231a1a1a'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='80' fill='%232a2a2a'%3E🃏%3C/text%3E%3C/svg%3E`;
+import { PLACEHOLDER } from '../../shared/constants';
 
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink],
   template: `
     <div class="card card-hover flex flex-col group">
       <!-- imagen -->
@@ -78,14 +76,28 @@ const PLACEHOLDER = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg
           </div>
         }
 
-        <!-- color picker -->
-        @if (product.colorPickerEnabled) {
-          <input
-            type="text"
-            class="input-field text-xs py-2"
-            placeholder="Escribe el color que quieres"
-            [(ngModel)]="colorInput"
-          />
+        <!-- color swatches -->
+        @if (product.colorPickerEnabled && colors.length > 0) {
+          <div>
+            <div class="flex flex-wrap gap-1.5 mb-1">
+              @for (color of colors; track color.id) {
+                <button
+                  class="w-6 h-6 rounded-full border-2 transition-all duration-150"
+                  [style.background-color]="color.hex"
+                  [class]="selectedColor()?.id === color.id
+                    ? 'border-tcg-gold scale-110 shadow-lg'
+                    : 'border-transparent hover:border-tcg-muted'"
+                  [title]="color.name"
+                  (click)="selectColor(color)">
+                </button>
+              }
+            </div>
+            @if (selectedColor(); as c) {
+              <p class="text-xs text-tcg-muted font-body">{{ c.name }}</p>
+            } @else {
+              <p class="text-xs text-tcg-muted/50 font-body italic">Elige un color</p>
+            }
+          </div>
         }
 
         <!-- precio + botón -->
@@ -104,11 +116,12 @@ const PLACEHOLDER = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg
 })
 export class ProductCardComponent {
   @Input({ required: true }) product!: Product;
+  @Input() colors: Color[] = [];
   @Output() addedToCart = new EventEmitter<CartItem>();
 
   currentImageIndex = signal(0);
   selectedVariant = signal<ProductVariant | null>(null);
-  colorInput = '';
+  selectedColor = signal<Color | null>(null);
 
   currentImage() {
     return this.product.images[this.currentImageIndex()] || PLACEHOLDER;
@@ -126,16 +139,20 @@ export class ProductCardComponent {
     this.selectedVariant.set(variant);
   }
 
+  selectColor(color: Color) {
+    this.selectedColor.set(this.selectedColor()?.id === color.id ? null : color);
+  }
+
   addToCart() {
     this.addedToCart.emit({
       productId: this.product.id,
       productName: this.product.name,
       variant: this.selectedVariant()?.label,
-      color: this.colorInput.trim() || undefined,
+      color: this.selectedColor()?.name,
       quantity: 1,
       unitPrice: this.currentPrice()
     });
-    this.colorInput = '';
+    this.selectedColor.set(null);
   }
 
   onImageError(event: Event) {

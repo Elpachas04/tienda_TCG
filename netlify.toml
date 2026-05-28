@@ -5,14 +5,25 @@
 [functions]
   directory = "netlify/functions"
 
+# ── Security headers ────────────────────────────────────────────────────────
 [[headers]]
   for = "/*"
   [headers.values]
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=()"
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'"
 
-# Redirigir todo a index.html para Angular SPA
+# ── API → Netlify function (must come before the SPA catch-all) ─────────────
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
+  from = "/api/order"
+  to   = "/.netlify/functions/send-telegram"
+  status = 200
+
+# ── Angular SPA fallback ────────────────────────────────────────────────────
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
   status = 200
