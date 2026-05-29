@@ -1,6 +1,10 @@
 [build]
-  command = "ng build --configuration production"
+  command = "npm ci && ng build --configuration production"
   publish = "dist/tcg3d-shop/browser"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NPM_FLAGS = "--include=dev"
 
 [functions]
   directory = "netlify/functions"
