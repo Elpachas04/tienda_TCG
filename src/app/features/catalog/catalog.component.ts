@@ -10,11 +10,13 @@ import { TOAST_DURATION } from '../../shared/constants';
 
 type CategoryFilter = CategoryItem['id'];
 type CatalogData = { products: Product[]; categories: CategoryItem[]; colors: Color[] };
+type CategoryPill = CategoryItem & { count: number };
 
 @Component({
   selector: 'app-catalog',
   standalone: true,
   imports: [ProductCardComponent],
+  host: { class: 'block animate-fade-up' },
   template: `
     <!-- Hero -->
     <div class="hero">
@@ -25,7 +27,7 @@ type CatalogData = { products: Product[]; categories: CategoryItem[]; colors: Co
     <div class="max-w-6xl mx-auto px-4 py-10">
       <!-- Toast añadido -->
       @if (toastVisible()) {
-        <div class="fixed top-20 right-4 z-50 bg-tcg-surface border border-tcg-gold text-tcg-gold px-5 py-3 rounded-card shadow-2xl flex items-center gap-2 font-body text-sm">
+        <div class="animate-toast-in fixed top-20 right-4 z-50 bg-tcg-surface border border-tcg-gold text-tcg-gold px-5 py-3 rounded-card shadow-2xl flex items-center gap-2 font-body text-sm">
           ✓ Añadido a la cesta
         </div>
       }
@@ -50,7 +52,7 @@ type CatalogData = { products: Product[]; categories: CategoryItem[]; colors: Co
           <p class="text-tcg-muted/50 font-body text-sm">Comprueba tu conexión y recarga la página.</p>
         </div>
       } @else {
-        <!-- Filtros desde JSON -->
+        <!-- Filtros con conteo -->
         <div class="flex flex-wrap gap-2 mb-8">
           @for (cat of categories(); track cat.id) {
             <button
@@ -59,7 +61,9 @@ type CatalogData = { products: Product[]; categories: CategoryItem[]; colors: Co
                 ? 'bg-tcg-gold text-black border-tcg-gold font-semibold'
                 : 'bg-tcg-surface text-tcg-muted border-tcg-border hover:border-tcg-gold/50'"
               (click)="activeCategory.set(cat.id)">
-              <span>{{ cat.emoji }}</span> {{ cat.label }}
+              <span>{{ cat.emoji }}</span>
+              {{ cat.label }}
+              <span class="text-xs opacity-60">({{ cat.count }})</span>
             </button>
           }
         </div>
@@ -110,7 +114,16 @@ export class CatalogComponent {
 
   readonly isLoading = computed(() => this.catalogData() === undefined);
   readonly hasError = computed(() => this.catalogData() === null);
-  readonly categories = computed(() => this.catalogData()?.categories ?? []);
+  readonly categories = computed((): CategoryPill[] => {
+    const data = this.catalogData();
+    if (!data) return [];
+    return data.categories.map(cat => ({
+      ...cat,
+      count: cat.id === 'all'
+        ? data.products.length
+        : data.products.filter(p => p.category === cat.id).length
+    }));
+  });
   readonly colors = computed(() => this.catalogData()?.colors ?? []);
 
   readonly filteredProducts = computed((): Product[] => {

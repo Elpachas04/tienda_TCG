@@ -18,6 +18,7 @@ function isValidContact(v: string): boolean {
   selector: 'app-checkout',
   standalone: true,
   imports: [FormsModule, RouterLink],
+  host: { class: 'block animate-fade-up' },
   template: `
     <div class="max-w-2xl mx-auto px-4 py-10">
       @if (!orderConfirmed()) {

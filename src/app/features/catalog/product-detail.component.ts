@@ -1,10 +1,11 @@
 import { Component, inject, signal, DestroyRef } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { toSignal, toObservable, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { combineLatest, switchMap, map, tap, catchError, of } from 'rxjs';
 import { CatalogService } from '../../core/services/catalog.service';
 import { CartService } from '../../core/services/cart.service';
 import { Product, ProductVariant, Color } from '../../core/models/product.model';
+import { ColorPickerComponent } from '../../shared/components/color-picker.component';
 import { PLACEHOLDER, TOAST_DURATION } from '../../shared/constants';
 
 type DetailData = { product: Product | null; colors: Color[] };
@@ -12,7 +13,8 @@ type DetailData = { product: Product | null; colors: Color[] };
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, ColorPickerComponent],
+  host: { class: 'block animate-fade-up' },
   template: `
     @let data = productData();
     @if (data === undefined) {
@@ -89,28 +91,15 @@ type DetailData = { product: Product | null; colors: Color[] };
               </div>
             }
 
-            <!-- color swatches -->
+            <!-- color picker -->
             @if (data.product.colorPickerEnabled && data.colors.length > 0) {
               <div>
                 <p class="text-xs font-body text-tcg-muted uppercase tracking-widest mb-2">Color</p>
-                <div class="flex flex-wrap gap-2 mb-1.5">
-                  @for (color of data.colors; track color.id) {
-                    <button
-                      class="w-7 h-7 rounded-full border-2 transition-all duration-150"
-                      [style.background-color]="color.hex"
-                      [class]="selectedColor()?.id === color.id
-                        ? 'border-tcg-gold scale-110 shadow-lg'
-                        : 'border-transparent hover:border-tcg-muted'"
-                      [title]="color.name"
-                      (click)="selectColor(color)">
-                    </button>
-                  }
-                </div>
-                @if (selectedColor(); as c) {
-                  <p class="text-sm text-tcg-muted font-body">{{ c.name }}</p>
-                } @else {
-                  <p class="text-xs text-tcg-muted/50 font-body italic">Elige un color</p>
-                }
+                <app-color-picker
+                  [colors]="data.colors"
+                  [selected]="selectedColor()"
+                  (selectedChange)="selectedColor.set($event)">
+                </app-color-picker>
               </div>
             }
 
@@ -150,12 +139,6 @@ export class ProductDetailComponent {
   readonly addedToast = signal(false);
   private toastTimer: ReturnType<typeof setTimeout> | null = null;
 
-  constructor() {
-    this.destroyRef.onDestroy(() => {
-      if (this.toastTimer) clearTimeout(this.toastTimer);
-    });
-  }
-
   readonly productData = toSignal<DetailData>(
     this.route.params.pipe(
       tap(() => {
@@ -173,6 +156,20 @@ export class ProductDetailComponent {
     )
   );
 
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      if (this.toastTimer) clearTimeout(this.toastTimer);
+    });
+    // negro por defecto cada vez que carga un producto
+    toObservable(this.productData)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(data => {
+        if (data?.colors.length) {
+          this.selectedColor.set(data.colors.find(c => c.id === 'negro') ?? data.colors[0]);
+        }
+      });
+  }
+
   currentImage(product: Product): string {
     return product.images[this.currentImageIndex()] || PLACEHOLDER;
   }
@@ -183,10 +180,6 @@ export class ProductDetailComponent {
 
   selectVariant(variant: ProductVariant): void {
     this.selectedVariant.set(variant);
-  }
-
-  selectColor(color: Color): void {
-    this.selectedColor.set(this.selectedColor()?.id === color.id ? null : color);
   }
 
   addToCart(product: Product): void {

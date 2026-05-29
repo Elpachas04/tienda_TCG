@@ -9,6 +9,7 @@ import { NOTES_MAX } from '../../shared/constants';
   selector: 'app-cart',
   standalone: true,
   imports: [RouterLink, FormsModule],
+  host: { class: 'block animate-fade-up' },
   template: `
     <div class="max-w-3xl mx-auto px-4 py-10">
       <h1 class="font-display text-5xl text-tcg-gold tracking-wider mb-8">TU CESTA</h1>
@@ -38,10 +39,18 @@ import { NOTES_MAX } from '../../shared/constants';
                 <div class="flex flex-col items-end gap-2 flex-shrink-0">
                   <div class="flex items-center gap-1 border border-tcg-border rounded-lg overflow-hidden">
                     <button
-                      class="w-8 h-8 flex items-center justify-center text-tcg-muted hover:text-tcg-gold hover:bg-tcg-border transition-colors font-bold"
-                      aria-label="Reducir cantidad"
+                      class="w-8 h-8 flex items-center justify-center transition-colors font-bold"
+                      [class]="item.quantity === 1
+                        ? 'text-red-400 hover:text-red-300 hover:bg-red-500/10'
+                        : 'text-tcg-muted hover:text-tcg-gold hover:bg-tcg-border'"
+                      [attr.aria-label]="item.quantity === 1 ? 'Eliminar artículo' : 'Reducir cantidad'"
                       (click)="cartService.updateQuantity(item, item.quantity - 1)">
-                      −
+                      @if (item.quantity === 1) {
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                      } @else { − }
                     </button>
                     <span class="w-8 text-center font-body font-semibold text-tcg-text text-sm">{{ item.quantity }}</span>
                     <button
