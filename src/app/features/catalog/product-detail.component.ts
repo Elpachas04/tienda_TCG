@@ -1,20 +1,30 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, DestroyRef } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { AsyncPipe } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { switchMap } from 'rxjs';
+import { toSignal, toObservable, takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { combineLatest, switchMap, map, tap, catchError, of } from 'rxjs';
 import { CatalogService } from '../../core/services/catalog.service';
 import { CartService } from '../../core/services/cart.service';
-import { Product, ProductVariant } from '../../core/models/product.model';
+import { Product, ProductVariant, Color } from '../../core/models/product.model';
+import { ColorPickerComponent } from '../../shared/components/color-picker.component';
+import { PLACEHOLDER, TOAST_DURATION } from '../../shared/constants';
+
+type DetailData = { product: Product | null; colors: Color[] };
 
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [AsyncPipe, RouterLink, FormsModule],
+  imports: [RouterLink, ColorPickerComponent],
+  host: { class: 'block animate-fade-up' },
   template: `
-    @if (product$ | async; as product) {
+    @let data = productData();
+    @if (data === undefined) {
+      <div class="flex justify-center py-20">
+        <div class="w-10 h-10 border-4 border-tcg-gold border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    } @else if (data.product) {
       <div class="max-w-5xl mx-auto px-4 py-10">
-        <a routerLink="/catalog" class="flex items-center gap-1 text-gray-400 hover:text-white mb-8 transition-colors text-sm">
+        <a routerLink="/catalog"
+           class="inline-flex items-center gap-1.5 text-tcg-muted hover:text-tcg-gold mb-8 transition-colors text-sm font-body">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
           </svg>
@@ -22,23 +32,21 @@ import { Product, ProductVariant } from '../../core/models/product.model';
         </a>
 
         <div class="grid md:grid-cols-2 gap-10">
+          <!-- imagen -->
           <div class="space-y-3">
-            <div class="card overflow-hidden aspect-square bg-gray-700">
-              <img
-                [src]="currentImage()"
-                [alt]="product.name"
-                class="w-full h-full object-cover"
-                (error)="onImageError($event)"
-              />
+            <div class="card overflow-hidden aspect-square bg-tcg-border">
+              <img [src]="currentImage(data.product)" [alt]="data.product.name"
+                   class="w-full h-full object-cover"
+                   (error)="onImageError($event)"/>
             </div>
-            @if (product.images.length > 1) {
+            @if (data.product.images.length > 1) {
               <div class="flex gap-3">
-                @for (img of product.images; track $index) {
+                @for (img of data.product.images; track $index) {
                   <button
                     class="w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors"
-                    [class]="currentImageIndex() === $index ? 'border-red-500' : 'border-gray-600'"
-                    (click)="setImage($index, product)">
-                    <img [src]="img" [alt]="product.name + ' ' + $index" class="w-full h-full object-cover"
+                    [class]="currentImageIndex() === $index ? 'border-tcg-gold' : 'border-tcg-border'"
+                    (click)="currentImageIndex.set($index)">
+                    <img [src]="img" [alt]="data.product.name" class="w-full h-full object-cover"
                          (error)="onImageError($event)"/>
                   </button>
                 }
@@ -46,36 +54,35 @@ import { Product, ProductVariant } from '../../core/models/product.model';
             }
           </div>
 
+          <!-- info -->
           <div class="space-y-6">
-            @if (product.badge) {
-              <span class="inline-block bg-red-600 text-white text-sm font-bold px-3 py-1 rounded-md">
-                {{ product.badge }}
-              </span>
+            @if (data.product.badge) {
+              <span class="badge-{{ data.product.badgeStyle ?? 'gold' }}">{{ data.product.badge }}</span>
             }
-            <h1 class="text-3xl font-bold text-white">{{ product.name }}</h1>
-            <p class="text-gray-300 leading-relaxed">{{ product.description }}</p>
+
+            <h1 class="font-display text-5xl text-tcg-text tracking-wide leading-none">{{ data.product.name }}</h1>
+            <p class="text-tcg-muted font-body leading-relaxed">{{ data.product.description }}</p>
 
             <ul class="space-y-2">
-              @for (feature of product.features; track feature) {
-                <li class="flex items-start gap-2 text-gray-300 text-sm">
-                  <svg class="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                  </svg>
+              @for (feature of data.product.features; track feature) {
+                <li class="flex items-start gap-2 text-tcg-muted text-sm font-body">
+                  <span class="text-tcg-gold mt-0.5 flex-shrink-0">✓</span>
                   {{ feature }}
                 </li>
               }
             </ul>
 
-            @if (product.variants && product.variants.length > 0) {
+            <!-- variantes -->
+            @if (data.product.variants && data.product.variants.length > 0) {
               <div>
-                <p class="text-sm font-medium text-gray-400 mb-2">Variante</p>
+                <p class="text-xs font-body text-tcg-muted uppercase tracking-widest mb-2">Variante</p>
                 <div class="flex flex-wrap gap-2">
-                  @for (variant of product.variants; track variant.label) {
+                  @for (variant of data.product.variants; track variant.label) {
                     <button
-                      class="px-4 py-2 rounded-lg border transition-colors font-medium"
+                      class="px-4 py-2 rounded-lg border text-sm font-body transition-colors"
                       [class]="selectedVariant()?.label === variant.label
-                        ? 'border-red-500 bg-red-500/20 text-red-400'
-                        : 'border-gray-600 text-gray-300 hover:border-gray-400'"
+                        ? 'border-tcg-gold bg-tcg-gold/10 text-tcg-gold'
+                        : 'border-tcg-border text-tcg-muted hover:border-tcg-gold/50'"
                       (click)="selectVariant(variant)">
                       {{ variant.label }} — {{ variant.price }}€
                     </button>
@@ -84,90 +91,113 @@ import { Product, ProductVariant } from '../../core/models/product.model';
               </div>
             }
 
-            <div>
-              <p class="text-sm font-medium text-gray-400 mb-2">Color (opcional)</p>
-              <input
-                type="text"
-                placeholder="Ej: Rojo, Azul marino, Negro mate..."
-                class="input-field"
-                [(ngModel)]="colorInput"
-              />
-            </div>
+            <!-- color picker -->
+            @if (data.product.colorPickerEnabled && data.colors.length > 0) {
+              <div>
+                <p class="text-xs font-body text-tcg-muted uppercase tracking-widest mb-2">Color</p>
+                <app-color-picker
+                  [colors]="data.colors"
+                  [selected]="selectedColor()"
+                  (selectedChange)="selectedColor.set($event)">
+                </app-color-picker>
+              </div>
+            }
 
-            <div class="flex items-center justify-between pt-4 border-t border-gray-700">
-              <span class="text-4xl font-bold text-white">{{ currentPrice(product) }}€</span>
-              <button
-                class="btn-primary"
-                [disabled]="!product.available"
-                (click)="addToCart(product)">
-                @if (product.available) { Añadir a la cesta } @else { Agotado }
+            <!-- precio + botón -->
+            <div class="flex items-center justify-between pt-4 border-t border-tcg-border">
+              <span class="font-display text-5xl text-tcg-gold leading-none">{{ currentPrice(data.product) }}€</span>
+              <button class="btn-gold" [disabled]="!data.product.available" (click)="addToCart(data.product)">
+                @if (data.product.available) { Añadir a la cesta } @else { Agotado }
               </button>
             </div>
 
             @if (addedToast()) {
-              <div class="bg-green-600/20 border border-green-500 text-green-400 px-4 py-3 rounded-lg flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
-                ¡Añadido a la cesta!
+              <div class="bg-tcg-gold/10 border border-tcg-gold text-tcg-gold px-4 py-3 rounded-card flex items-center gap-2 font-body text-sm">
+                ✓ Añadido a la cesta
               </div>
             }
           </div>
         </div>
       </div>
     } @else {
-      <div class="flex justify-center py-20">
-        <div class="w-10 h-10 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+      <div class="flex flex-col items-center justify-center py-20 gap-3">
+        <p class="text-tcg-muted font-body">Producto no encontrado.</p>
+        <a routerLink="/catalog" class="btn-outline text-sm">Volver al catálogo</a>
       </div>
     }
   `
 })
-export class ProductDetailComponent implements OnInit {
+export class ProductDetailComponent {
   private route = inject(ActivatedRoute);
   private catalogService = inject(CatalogService);
   private cartService = inject(CartService);
+  private destroyRef = inject(DestroyRef);
 
-  product$ = this.route.params.pipe(
-    switchMap(params => this.catalogService.getProductById(params['id']))
+  readonly currentImageIndex = signal(0);
+  readonly selectedVariant = signal<ProductVariant | null>(null);
+  readonly selectedColor = signal<Color | null>(null);
+  readonly addedToast = signal(false);
+  private toastTimer: ReturnType<typeof setTimeout> | null = null;
+
+  readonly productData = toSignal<DetailData>(
+    this.route.params.pipe(
+      tap(() => {
+        this.currentImageIndex.set(0);
+        this.selectedVariant.set(null);
+        this.selectedColor.set(null);
+      }),
+      switchMap(params => combineLatest([
+        this.catalogService.getProductById(params['id']),
+        this.catalogService.getColors()
+      ]).pipe(
+        map(([product, colors]): DetailData => ({ product: product ?? null, colors })),
+        catchError(() => of<DetailData>({ product: null, colors: [] }))
+      ))
+    )
   );
 
-  currentImageIndex = signal(0);
-  selectedVariant = signal<ProductVariant | null>(null);
-  colorInput = '';
-  addedToast = signal(false);
-
-  ngOnInit() {}
-
-  currentImage() {
-    return `assets/products/placeholder.jpg`;
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      if (this.toastTimer) clearTimeout(this.toastTimer);
+    });
+    // negro por defecto cada vez que carga un producto
+    toObservable(this.productData)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(data => {
+        if (data?.colors.length) {
+          this.selectedColor.set(data.colors.find(c => c.id === 'negro') ?? data.colors[0]);
+        }
+      });
   }
 
-  currentPrice(product: Product) {
+  currentImage(product: Product): string {
+    return product.images[this.currentImageIndex()] || PLACEHOLDER;
+  }
+
+  currentPrice(product: Product): number {
     return this.selectedVariant()?.price ?? product.price;
   }
 
-  setImage(index: number, product: Product) {
-    this.currentImageIndex.set(index);
-  }
-
-  selectVariant(variant: ProductVariant) {
+  selectVariant(variant: ProductVariant): void {
     this.selectedVariant.set(variant);
   }
 
-  addToCart(product: Product) {
+  addToCart(product: Product): void {
     this.cartService.addItem({
       productId: product.id,
       productName: product.name,
       variant: this.selectedVariant()?.label,
-      color: this.colorInput || undefined,
+      color: this.selectedColor()?.name,
       quantity: 1,
       unitPrice: this.currentPrice(product)
     });
+    this.selectedColor.set(null);
     this.addedToast.set(true);
-    setTimeout(() => this.addedToast.set(false), 2500);
+    if (this.toastTimer) clearTimeout(this.toastTimer);
+    this.toastTimer = setTimeout(() => this.addedToast.set(false), TOAST_DURATION);
   }
 
-  onImageError(event: Event) {
-    (event.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDMwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiMyRDM3NDgiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSI2NCIgZmlsbD0iIzRBNTU2OCI+8J+OqTwvdGV4dD48L3N2Zz4=';
+  onImageError(event: Event): void {
+    (event.target as HTMLImageElement).src = PLACEHOLDER;
   }
 }

@@ -2,11 +2,14 @@ import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../../core/services/cart.service';
+import { CartItem } from '../../core/models/cart-item.model';
+import { NOTES_MAX } from '../../shared/constants';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
   imports: [RouterLink, FormsModule],
+  host: { class: 'block animate-fade-up' },
   template: `
     <div class="max-w-3xl mx-auto px-4 py-10">
       <h1 class="font-display text-5xl text-tcg-gold tracking-wider mb-8">TU CESTA</h1>
@@ -19,7 +22,7 @@ import { CartService } from '../../core/services/cart.service';
         </div>
       } @else {
         <div class="space-y-3 mb-8">
-          @for (item of cartService.cartItems(); track item.productId + item.variant) {
+          @for (item of cartService.cartItems(); track itemKey(item)) {
             <div class="card p-4">
               <div class="flex gap-4 items-start">
                 <div class="flex-1 min-w-0">
@@ -36,21 +39,32 @@ import { CartService } from '../../core/services/cart.service';
                 <div class="flex flex-col items-end gap-2 flex-shrink-0">
                   <div class="flex items-center gap-1 border border-tcg-border rounded-lg overflow-hidden">
                     <button
-                      class="w-8 h-8 flex items-center justify-center text-tcg-muted hover:text-tcg-gold hover:bg-tcg-border transition-colors font-bold"
-                      (click)="cartService.updateQuantity(item.productId, item.variant, item.quantity - 1)">
-                      −
+                      class="w-8 h-8 flex items-center justify-center transition-colors font-bold"
+                      [class]="item.quantity === 1
+                        ? 'text-red-400 hover:text-red-300 hover:bg-red-500/10'
+                        : 'text-tcg-muted hover:text-tcg-gold hover:bg-tcg-border'"
+                      [attr.aria-label]="item.quantity === 1 ? 'Eliminar artículo' : 'Reducir cantidad'"
+                      (click)="cartService.updateQuantity(item, item.quantity - 1)">
+                      @if (item.quantity === 1) {
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                      } @else { − }
                     </button>
                     <span class="w-8 text-center font-body font-semibold text-tcg-text text-sm">{{ item.quantity }}</span>
                     <button
                       class="w-8 h-8 flex items-center justify-center text-tcg-muted hover:text-tcg-gold hover:bg-tcg-border transition-colors font-bold"
-                      (click)="cartService.updateQuantity(item.productId, item.variant, item.quantity + 1)">
+                      aria-label="Aumentar cantidad"
+                      (click)="cartService.updateQuantity(item, item.quantity + 1)">
                       +
                     </button>
                   </div>
                   <span class="font-display text-xl text-tcg-text">{{ (item.unitPrice * item.quantity).toFixed(2) }}€</span>
                   <button
                     class="text-xs text-tcg-muted hover:text-red-400 font-body transition-colors"
-                    (click)="cartService.removeItem(item.productId, item.variant)">
+                    aria-label="Eliminar artículo"
+                    (click)="cartService.removeItem(item)">
                     Eliminar
                   </button>
                 </div>
@@ -60,9 +74,10 @@ import { CartService } from '../../core/services/cart.service';
                 <textarea
                   class="input-field text-sm resize-none"
                   rows="2"
-                  placeholder="Notas (ej: color específico, acabado...)"
+                  placeholder="Notas para este artículo (acabado, detalles...)"
+                  [attr.maxlength]="NOTES_MAX"
                   [ngModel]="item.notes"
-                  (ngModelChange)="cartService.updateNotes(item.productId, item.variant, $event)">
+                  (ngModelChange)="cartService.updateNotes(item, $event)">
                 </textarea>
               </div>
             </div>
@@ -70,7 +85,6 @@ import { CartService } from '../../core/services/cart.service';
         </div>
 
         <div class="card p-5 space-y-5">
-          <!-- aviso depósito -->
           <div class="border border-tcg-gold/30 bg-tcg-gold/5 rounded-card p-4 text-sm font-body">
             <p class="font-semibold text-tcg-gold mb-2">⚠️ Se requiere el 50% de depósito para confirmar</p>
             <ul class="space-y-1 text-tcg-muted text-xs">
@@ -80,10 +94,9 @@ import { CartService } from '../../core/services/cart.service';
             </ul>
           </div>
 
-          <!-- totales -->
           <div class="space-y-2 font-body">
             <div class="flex justify-between text-tcg-muted text-sm">
-              <span>{{ cartService.itemCount() }} artículos</span>
+              <span>{{ cartService.itemCount() }} {{ cartService.itemCount() === 1 ? 'artículo' : 'artículos' }}</span>
               <span>{{ cartService.total().toFixed(2) }}€</span>
             </div>
             <div class="flex justify-between text-tcg-gold font-semibold">
@@ -97,7 +110,7 @@ import { CartService } from '../../core/services/cart.service';
           </div>
 
           <div class="flex gap-3">
-            <a routerLink="/catalog" class="btn-outline flex-1 text-center text-sm">Seguir comprando</a>
+            <a routerLink="/catalog" class="btn-outline flex-1 text-center text-sm">← Seguir comprando</a>
             <a routerLink="/checkout" class="btn-gold flex-1 text-center text-sm">Hacer pedido →</a>
           </div>
         </div>
@@ -107,4 +120,9 @@ import { CartService } from '../../core/services/cart.service';
 })
 export class CartComponent {
   cartService = inject(CartService);
+  protected readonly NOTES_MAX = NOTES_MAX;
+
+  itemKey(item: CartItem): string {
+    return `${item.productId}|${item.variant ?? ''}|${item.color ?? ''}`;
+  }
 }

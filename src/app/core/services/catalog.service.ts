@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map, shareReplay } from 'rxjs';
-import { Product, ProductCatalog, CategoryItem } from '../models/product.model';
+import { Product, ProductCatalog, CategoryItem, Color, ShopSettings } from '../models/product.model';
 
 @Injectable({ providedIn: 'root' })
 export class CatalogService {
@@ -19,7 +19,11 @@ export class CatalogService {
     return this.catalog$.pipe(map(c => c.categories));
   }
 
-  getSettings() {
+  getColors(): Observable<Color[]> {
+    return this.catalog$.pipe(map(c => c.colors));
+  }
+
+  getSettings(): Observable<ShopSettings> {
     return this.catalog$.pipe(map(c => c.settings));
   }
 

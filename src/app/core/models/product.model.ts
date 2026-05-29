@@ -27,6 +27,16 @@ export interface CategoryItem {
   emoji: string;
 }
 
+export interface Color {
+  id: string;
+  name: string;
+  hex: string;
+  type: string;
+  stock: 'alto' | 'normal' | 'bajo';
+  quantity: number;
+  popular: boolean;
+}
+
 export interface ShopSettings {
   shopName: string;
   city: string;
@@ -39,5 +49,6 @@ export interface ShopSettings {
 export interface ProductCatalog {
   products: Product[];
   categories: CategoryItem[];
+  colors: Color[];
   settings: ShopSettings;
 }

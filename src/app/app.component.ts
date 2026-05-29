@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
 import { NavbarComponent } from './shared/components/navbar.component';
 import { TelegramFabComponent } from './shared/components/telegram-fab.component';
 
@@ -12,7 +13,14 @@ import { TelegramFabComponent } from './shared/components/telegram-fab.component
     <main class="min-h-screen">
       <router-outlet></router-outlet>
     </main>
-    <app-telegram-fab telegramUrl="https://t.me/TU_USUARIO"></app-telegram-fab>
+    <app-telegram-fab telegramUrl="https://t.me/Elpachas_04"></app-telegram-fab>
   `
 })
-export class AppComponent {}
+export class AppComponent {
+  constructor() {
+    const router = inject(Router);
+    router.events
+      .pipe(filter(e => e instanceof NavigationEnd))
+      .subscribe(() => window.scrollTo(0, 0));
+  }
+}

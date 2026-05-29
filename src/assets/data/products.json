@@ -2,7 +2,7 @@
   "products": [
     {
       "id": "deckbox-ventana",
-      "name": "Deckbox con ventana",
+      "name": "DeckBox",
       "category": "deckbox",
       "badge": "Más vendida",
       "badgeStyle": "gold",
@@ -37,24 +37,6 @@
       "available": true
     },
     {
-      "id": "deckbox-60card",
-      "name": "60 Card Deckbox",
-      "category": "deckbox",
-      "badge": "60 cartas",
-      "badgeStyle": "purple",
-      "description": "Mazo completo de 60 cartas. Cierre seguro sin hardware.",
-      "features": [
-        "60 cartas enfundadas",
-        "Pokémon, One Piece y más",
-        "Sin pegamento ni tornillos",
-        "Color a elegir sin coste extra"
-      ],
-      "images": [],
-      "price": 20,
-      "colorPickerEnabled": true,
-      "available": true
-    },
-    {
       "id": "caja-minisnap",
       "name": "Caja porta-minisnap",
       "category": "storage",
@@ -64,12 +46,11 @@
       "features": [
         "Hasta 28 soportes mini snap",
         "Bisagra integrada",
-        "Divisores opcionales",
-        "Color a elegir sin coste extra"
+        "Divisores opcionales"
       ],
       "images": [],
       "price": 25,
-      "colorPickerEnabled": true,
+      "colorPickerEnabled": false,
       "available": true
     },
     {
@@ -160,7 +141,7 @@
       ],
       "images": [],
       "price": 4,
-      "colorPickerEnabled": true,
+      "colorPickerEnabled": false,
       "available": true
     }
   ],
@@ -171,10 +152,76 @@
     { "id": "tools", "label": "Herramientas", "emoji": "🔨" },
     { "id": "accessories", "label": "Accesorios", "emoji": "🗝️" }
   ],
+  "colors": [
+    {
+      "id": "negro",
+      "name": "Negro",
+      "hex": "#1A1A1A",
+      "type": "PLA Basic",
+      "stock": "alto",
+      "quantity": 2,
+      "popular": true
+    },
+    {
+      "id": "blanco-jade",
+      "name": "Blanco jade",
+      "hex": "#F0EFE8",
+      "type": "PLA Basic",
+      "stock": "alto",
+      "quantity": 2,
+      "popular": true
+    },
+    {
+      "id": "rojo",
+      "name": "Rojo",
+      "hex": "#CC2200",
+      "type": "PLA Basic",
+      "stock": "normal",
+      "quantity": 1,
+      "popular": true
+    },
+    {
+      "id": "azul",
+      "name": "Azul",
+      "hex": "#1E6FD9",
+      "type": "PLA Basic",
+      "stock": "normal",
+      "quantity": 1,
+      "popular": true
+    },
+    {
+      "id": "purpura",
+      "name": "Púrpura",
+      "hex": "#6B2D8B",
+      "type": "PLA Basic",
+      "stock": "normal",
+      "quantity": 1,
+      "popular": true
+    },
+    {
+      "id": "verde-bambu",
+      "name": "Verde bambú",
+      "hex": "#4A7C59",
+      "type": "PLA Basic",
+      "stock": "alto",
+      "quantity": 2,
+      "popular": true
+    },
+    {
+      "id": "amarillo",
+      "name": "Amarillo",
+      "hex": "#F5C800",
+      "type": "PLA Basic",
+      "stock": "normal",
+      "quantity": 1,
+      "popular": true
+    }
+  ],
   "settings": {
-    "shopName": "TCG 3D Shop",
+    "shopName": "LayerVault",
     "city": "Barcelona",
-    "telegramUsername": "TU_USUARIO_TELEGRAM",
+    "telegramUsername": "Elpachas_04",
+    "telegramLink": "https://t.me/Elpachas_04",
     "depositPercent": 50,
     "paymentMethods": ["Bizum", "Transferencia bancaria"],
     "deliveryDays": "3-7 días laborables"
