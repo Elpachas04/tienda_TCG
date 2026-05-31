@@ -5,6 +5,7 @@ import { Color } from '../../core/models/product.model';
 @Component({
   selector: 'app-color-picker',
   standalone: true,
+  host: { style: 'display: contents' },
   imports: [NgTemplateOutlet],
   template: `
     <div class="relative select-none">
