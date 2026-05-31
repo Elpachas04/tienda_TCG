@@ -31,6 +31,7 @@ module.exports = {
     'hover:border-tcg-gold/50', 'hover:border-tcg-gold/40',
     'animate-dropdown-in', 'animate-fade-up', 'animate-toast-in', 'animate-badge-pop',
     'rotate-180',
+    'translate-x-full', 'translate-x-0', 'pointer-events-none', 'pointer-events-auto',
   ],
   plugins: [],
 }

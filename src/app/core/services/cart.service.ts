@@ -29,6 +29,10 @@ export class CartService {
   private items = signal<CartItem[]>(this.loadFromStorage());
 
   readonly cartItems = this.items.asReadonly();
+  readonly drawerOpen = signal(false);
+
+  openDrawer()  { this.drawerOpen.set(true);  }
+  closeDrawer() { this.drawerOpen.set(false); }
 
   readonly itemCount = computed(() =>
     this.items().reduce((sum, item) => sum + item.quantity, 0)

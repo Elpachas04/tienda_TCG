@@ -3,12 +3,13 @@ import { RouterLink } from '@angular/router';
 import { Product, ProductVariant, Color } from '../../core/models/product.model';
 import { CartItem } from '../../core/models/cart-item.model';
 import { ColorPickerComponent } from '../../shared/components/color-picker.component';
+import { VariantPickerComponent } from '../../shared/components/variant-picker.component';
 import { PLACEHOLDER } from '../../shared/constants';
 
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [RouterLink, ColorPickerComponent],
+  imports: [RouterLink, ColorPickerComponent, VariantPickerComponent],
   template: `
     <div class="card card-hover flex flex-col group">
       <!-- imagen: overflow-hidden aquí para que el dropdown de la card no quede recortado -->
@@ -63,8 +64,9 @@ import { PLACEHOLDER } from '../../shared/constants';
         <div class="mt-auto pt-3 border-t border-tcg-border">
           <div class="flex items-center justify-between gap-2">
 
-            <!-- izquierda: color → talla (solo si existen) -->
-            <div class="flex items-center gap-1 min-w-0 overflow-hidden">
+            <!-- izquierda: color → tamaño (solo si existen) -->
+            <!-- sin overflow-hidden para que los dropdowns no queden recortados -->
+            <div class="flex items-center gap-1.5 min-w-0">
               @if (product.colorPickerEnabled && colors.length > 0) {
                 <app-color-picker
                   [colors]="colors"
@@ -74,17 +76,11 @@ import { PLACEHOLDER } from '../../shared/constants';
                 </app-color-picker>
               }
               @if (product.variants && product.variants.length > 0) {
-                @for (v of product.variants; track v.label) {
-                  <button
-                    class="w-6 h-6 text-[10px] font-body rounded border transition-colors flex items-center justify-center flex-shrink-0"
-                    [class]="selectedVariant()?.label === v.label
-                      ? 'border-tcg-gold bg-tcg-gold/10 text-tcg-gold'
-                      : 'border-tcg-border text-tcg-muted hover:border-tcg-gold/50'"
-                    [title]="v.label + ' — ' + v.price + '€'"
-                    (click)="selectVariant(v)">
-                    {{ variantAbbrev(v.label) }}
-                  </button>
-                }
+                <app-variant-picker
+                  [variants]="product.variants"
+                  [selected]="selectedVariant()"
+                  (selectedChange)="selectedVariant.set($event)">
+                </app-variant-picker>
               }
             </div>
 
@@ -144,6 +140,9 @@ export class ProductCardComponent implements OnChanges {
     if (changes['colors'] && this.colors.length > 0 && !this.selectedColor()) {
       this.selectedColor.set(this.colors.find(c => c.id === 'negro') ?? this.colors[0]);
     }
+    if (changes['product'] && this.product.variants?.length && !this.selectedVariant()) {
+      this.selectedVariant.set(this.product.variants[0]);
+    }
   }
 
   currentImage() {
@@ -156,14 +155,6 @@ export class ProductCardComponent implements OnChanges {
 
   setImage(index: number) {
     this.currentImageIndex.set(index);
-  }
-
-  selectVariant(variant: ProductVariant) {
-    this.selectedVariant.set(this.selectedVariant()?.label === variant.label ? null : variant);
-  }
-
-  variantAbbrev(label: string): string {
-    return label.charAt(0).toUpperCase();
   }
 
   addToCart() {
