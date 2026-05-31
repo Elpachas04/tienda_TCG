@@ -45,10 +45,9 @@ import { PLACEHOLDER } from '../../shared/constants';
       <!-- contenido -->
       <div class="p-4 flex flex-col flex-1">
         <a [routerLink]="['/product', product.id]" class="hover:text-tcg-gold transition-colors mb-2">
-          <h3 class="font-display text-xl text-tcg-text leading-tight tracking-wide">{{ product.name }}</h3>
+          <h3 class="font-display text-xl text-tcg-text leading-tight tracking-wide line-clamp-1">{{ product.name }}</h3>
         </a>
 
-        <!-- descripción: se estira para nivelar todas las cards -->
         <p class="text-tcg-muted text-sm font-body leading-relaxed line-clamp-2 flex-1 mb-3">{{ product.description }}</p>
 
         <ul class="space-y-1 mb-4">
@@ -60,46 +59,62 @@ import { PLACEHOLDER } from '../../shared/constants';
           }
         </ul>
 
-        <!-- zona de compra -->
-        <div class="mt-auto pt-3 border-t border-tcg-border space-y-2">
+        <!-- zona de compra: una sola fila, precio+botón siempre a la derecha -->
+        <div class="mt-auto pt-3 border-t border-tcg-border">
+          <div class="flex items-center justify-between gap-2">
 
-          <!-- pills P/M/G: solo para productos con variantes -->
-          @if (product.variants && product.variants.length > 0) {
-            <div class="flex items-center gap-1.5">
-              <span class="text-[10px] text-tcg-muted/40 font-body uppercase tracking-wider flex-shrink-0">Talla</span>
-              @for (v of product.variants; track v.label) {
-                <button
-                  class="w-7 h-7 text-xs font-body rounded border transition-colors flex items-center justify-center flex-shrink-0"
-                  [class]="selectedVariant()?.label === v.label
-                    ? 'border-tcg-gold bg-tcg-gold/10 text-tcg-gold'
-                    : 'border-tcg-border text-tcg-muted hover:border-tcg-gold/50'"
-                  [title]="v.label + ' — ' + v.price + '€'"
-                  (click)="selectVariant(v)">
-                  {{ variantAbbrev(v.label) }}
-                </button>
-              }
-            </div>
-          }
-
-          <!-- fila única: color inline + precio + botón -->
-          <div class="flex items-center gap-2">
-            @if (product.colorPickerEnabled && colors.length > 0) {
-              <div class="flex-1 min-w-0">
+            <!-- izquierda: color → talla (solo si existen) -->
+            <div class="flex items-center gap-1 min-w-0 overflow-hidden">
+              @if (product.colorPickerEnabled && colors.length > 0) {
                 <app-color-picker
                   [colors]="colors"
                   [layout]="'inline'"
                   [selected]="selectedColor()"
                   (selectedChange)="selectedColor.set($event)">
                 </app-color-picker>
-              </div>
-            }
-            <span class="font-display text-2xl text-tcg-gold leading-none flex-shrink-0">{{ currentPrice() }}€</span>
-            <button
-              [class]="justAdded() ? 'btn-success text-sm py-2 px-3' : 'btn-gold text-sm py-2 px-3'"
-              [disabled]="!product.available"
-              (click)="addToCart()">
-              @if (justAdded()) { ✓ } @else { Añadir }
-            </button>
+              }
+              @if (product.variants && product.variants.length > 0) {
+                @for (v of product.variants; track v.label) {
+                  <button
+                    class="w-6 h-6 text-[10px] font-body rounded border transition-colors flex items-center justify-center flex-shrink-0"
+                    [class]="selectedVariant()?.label === v.label
+                      ? 'border-tcg-gold bg-tcg-gold/10 text-tcg-gold'
+                      : 'border-tcg-border text-tcg-muted hover:border-tcg-gold/50'"
+                    [title]="v.label + ' — ' + v.price + '€'"
+                    (click)="selectVariant(v)">
+                    {{ variantAbbrev(v.label) }}
+                  </button>
+                }
+              }
+            </div>
+
+            <!-- derecha: precio + botón (siempre visibles y alineados) -->
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <span class="font-display text-xl text-tcg-gold leading-none">{{ currentPrice() }}€</span>
+              @if (product.variants && product.variants.length > 0) {
+                <button
+                  class="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 disabled:opacity-40"
+                  [class]="justAdded() ? 'bg-green-700 text-white' : 'bg-tcg-gold hover:bg-yellow-500 text-black'"
+                  [disabled]="!product.available"
+                  (click)="addToCart()">
+                  @if (justAdded()) {
+                    <span class="text-xs font-semibold">✓</span>
+                  } @else {
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                  }
+                </button>
+              } @else {
+                <button
+                  [class]="justAdded() ? 'btn-success text-sm py-1.5 px-3' : 'btn-gold text-sm py-1.5 px-3'"
+                  [disabled]="!product.available"
+                  (click)="addToCart()">
+                  @if (justAdded()) { ✓ } @else { Añadir }
+                </button>
+              }
+            </div>
+
           </div>
         </div>
       </div>
