@@ -1,4 +1,5 @@
 import { Component, HostListener, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { CartService } from '../../core/services/cart.service';
 
 @Component({
@@ -23,14 +24,17 @@ import { CartService } from '../../core/services/cart.service';
 
         <div class="flex items-center gap-3">
           @if (cart.itemCount() > 0) {
-            <span class="w-7 h-7 rounded-full bg-lv-gold text-black font-mono text-xs font-bold flex items-center justify-center">
+            <button type="button"
+              class="w-8 h-8 rounded-full bg-lv-gold text-black font-mono text-xs font-bold flex items-center justify-center hover:brightness-110 transition-all [animation:badge-pop_0.35s_ease-out]"
+              (click)="onCartClick()">
               {{ cart.itemCount() }}
-            </span>
+            </button>
           }
-          <a href="#contacto"
-             class="liquid-glass border border-lv-gold/30 font-mono text-xs uppercase tracking-widest text-lv-gold px-5 py-2 rounded-full hover:bg-lv-gold hover:text-black transition-all duration-200">
+          <button type="button"
+            class="liquid-glass border border-lv-gold/30 font-mono text-xs uppercase tracking-widest text-lv-gold px-5 py-2 rounded-full hover:bg-lv-gold hover:text-black transition-all duration-200"
+            (click)="onOrderClick()">
             Pedir ahora
-          </a>
+          </button>
         </div>
       </nav>
     </header>
@@ -38,10 +42,23 @@ import { CartService } from '../../core/services/cart.service';
 })
 export class LvNavbarComponent {
   protected cart = inject(CartService);
+  private router = inject(Router);
   readonly scrolled = signal(false);
 
   @HostListener('window:scroll')
   onScroll(): void {
     this.scrolled.set(window.scrollY > 50);
+  }
+
+  onCartClick(): void {
+    this.cart.openDrawer();
+  }
+
+  onOrderClick(): void {
+    if (this.cart.itemCount() > 0) {
+      this.router.navigate(['/checkout']);
+    } else {
+      document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 }
