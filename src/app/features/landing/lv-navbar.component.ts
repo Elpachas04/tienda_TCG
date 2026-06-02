@@ -56,6 +56,7 @@ export class LvNavbarComponent {
 
   onOrderClick(): void {
     if (this.cart.itemCount() > 0) {
+      this.cart.closeDrawer();
       this.router.navigate(['/checkout']);
     } else {
       document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' });

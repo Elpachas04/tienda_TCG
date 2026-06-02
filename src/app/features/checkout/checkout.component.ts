@@ -35,6 +35,13 @@ function shippingZoneFor(cp: string): { zone: string; price: number } {
         @if (!orderConfirmed()) {
 
           <div class="mb-10">
+            <a routerLink="/catalog"
+               class="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-lv-cream/40 hover:text-lv-gold transition-colors duration-200 mb-8">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              </svg>
+              Volver al catálogo
+            </a>
             <p class="font-mono text-xs uppercase tracking-[0.35em] text-lv-gold/60 mb-4">— Confirmación de pedido</p>
             <h1 class="font-display uppercase leading-none">
               <span class="block text-lv-cream" style="font-size:clamp(1.8rem,5vw,3rem)">CONFIGURACIÓN INSTANTÁNEA</span>
@@ -51,6 +58,68 @@ function shippingZoneFor(cp: string): { zone: string; price: number } {
               <span>{{ errorMsg() }}</span>
             </div>
           }
+
+          <!-- Resumen desplegable -->
+          <div class="liquid-glass rounded-[20px] border border-white/[0.05] mb-4">
+            <button type="button"
+              class="w-full flex items-center justify-between px-6 py-4 hover:bg-white/[0.02] transition-colors"
+              (click)="summaryOpen.set(!summaryOpen())">
+              <div class="flex items-center gap-3">
+                <span class="font-display text-xl text-lv-cream uppercase tracking-wide">Resumen del pedido</span>
+                <span class="bg-lv-gold text-black font-mono text-xs font-bold px-2 py-0.5 rounded-full leading-none">
+                  {{ cartService.itemCount() }}
+                </span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="font-display text-xl text-lv-gold">{{ grandTotal().toFixed(2) }}€</span>
+                <svg class="w-4 h-4 text-lv-cream/40 transition-transform duration-200"
+                     [class.rotate-180]="summaryOpen()"
+                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </div>
+            </button>
+
+            @if (summaryOpen()) {
+              <div class="px-6 pb-5 border-t border-white/[0.07]">
+                <div class="pt-4 space-y-2">
+                  @for (item of cartService.cartItems(); track item.productId + (item.variant || '') + (item.color || '')) {
+                    <div class="flex justify-between items-center gap-3 py-2.5 border-b border-white/[0.05] last:border-0">
+                      <div class="flex-1 min-w-0">
+                        <p class="font-display text-base text-lv-cream leading-tight tracking-wide">
+                          <span class="text-lv-gold mr-1">{{ item.quantity }}×</span>{{ item.productName }}
+                        </p>
+                        <div class="flex gap-1.5 mt-1 flex-wrap">
+                          @if (item.variant) {
+                            <span class="font-mono text-[9px] uppercase tracking-wider text-lv-cream/50 bg-white/[0.06] rounded-full px-2 py-0.5">{{ item.variant }}</span>
+                          }
+                          @if (item.color) {
+                            <span class="font-mono text-[9px] uppercase tracking-wider text-lv-gold bg-lv-gold/[0.10] rounded-full px-2 py-0.5">{{ item.color }}</span>
+                          }
+                        </div>
+                        @if (item.notes) {
+                          <p class="font-body text-[10px] text-lv-cream/40 mt-1 italic leading-snug">{{ item.notes }}</p>
+                        }
+                      </div>
+                      <span class="font-display text-lg text-lv-gold flex-shrink-0">{{ (item.unitPrice * item.quantity).toFixed(2) }}€</span>
+                    </div>
+                  }
+                </div>
+
+                @if (form.deliveryMethod === 'shipping' && shippingInfo()) {
+                  <div class="flex justify-between items-center pt-3 border-t border-white/[0.06]">
+                    <span class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/50">Envío — {{ shippingInfo()!.zone }}</span>
+                    <span class="font-display text-base text-lv-cream/80">{{ shippingInfo()!.price.toFixed(2) }}€</span>
+                  </div>
+                }
+
+                <div class="flex justify-between items-center pt-3 mt-1 border-t border-lv-gold/20">
+                  <span class="font-mono text-[10px] uppercase tracking-widest text-lv-gold/80">Depósito 50%</span>
+                  <span class="font-display text-xl text-lv-gold">{{ deposit().toFixed(2) }}€</span>
+                </div>
+              </div>
+            }
+          </div>
 
           <div class="space-y-4">
 
@@ -147,48 +216,6 @@ function shippingZoneFor(cp: string): { zone: string; price: number } {
               </div>
             </div>
 
-            <!-- Resumen -->
-            <div class="liquid-glass rounded-[20px] p-6 border border-white/[0.05] space-y-3">
-              <h2 class="font-display text-2xl text-lv-cream tracking-wide uppercase">Resumen</h2>
-
-              @for (item of cartService.cartItems(); track item.productId + (item.variant ?? '') + (item.color ?? '')) {
-                <div class="flex justify-between items-start gap-3">
-                  <div class="flex-1 min-w-0">
-                    <p class="font-body text-sm text-lv-cream/70 leading-snug">
-                      <span class="font-mono text-lv-gold/60 text-xs mr-1">{{ item.quantity }}×</span>{{ item.productName }}
-                    </p>
-                    <div class="flex gap-1.5 mt-0.5 flex-wrap">
-                      @if (item.variant) {
-                        <span class="font-mono text-[9px] uppercase tracking-wider text-lv-cream/30 bg-white/[0.04] rounded-full px-2 py-0.5">{{ item.variant }}</span>
-                      }
-                      @if (item.color) {
-                        <span class="font-mono text-[9px] uppercase tracking-wider text-lv-gold/50 bg-lv-gold/[0.06] rounded-full px-2 py-0.5">{{ item.color }}</span>
-                      }
-                    </div>
-                  </div>
-                  <span class="font-display text-base text-lv-gold flex-shrink-0">{{ (item.unitPrice * item.quantity).toFixed(2) }}€</span>
-                </div>
-              }
-
-              @if (form.deliveryMethod === 'shipping' && shippingInfo()) {
-                <div class="flex justify-between items-center pt-2 border-t border-white/[0.04]">
-                  <span class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/40">Envío — {{ shippingInfo()!.zone }}</span>
-                  <span class="font-display text-base text-lv-cream/70">{{ shippingInfo()!.price.toFixed(2) }}€</span>
-                </div>
-              }
-
-              <div class="pt-4 border-t border-white/[0.06] space-y-1.5">
-                <div class="flex justify-between items-center">
-                  <span class="font-mono text-[10px] uppercase tracking-widest text-lv-gold/60">Depósito 50%</span>
-                  <span class="font-display text-xl text-lv-gold">{{ deposit().toFixed(2) }}€</span>
-                </div>
-                <div class="flex justify-between items-center">
-                  <span class="font-display text-2xl text-lv-cream uppercase tracking-wide">Total</span>
-                  <span class="font-display text-2xl text-lv-gold">{{ grandTotal().toFixed(2) }}€</span>
-                </div>
-              </div>
-            </div>
-
             <div class="liquid-glass rounded-[16px] p-4 border border-lv-gold/20">
               <p class="font-mono text-[10px] uppercase tracking-widest text-lv-gold mb-1.5">⚠️ Política de pago</p>
               <p class="font-body text-xs text-lv-cream/40 leading-relaxed">
@@ -266,6 +293,7 @@ export class CheckoutComponent implements OnInit {
 
   orderConfirmed   = signal(false);
   errorMsg         = signal('');
+  summaryOpen      = signal(true);
 
   shippingInfo = signal<{ zone: string; price: number } | null>(null);
 
@@ -285,7 +313,7 @@ export class CheckoutComponent implements OnInit {
 
   ngOnInit() {
     if (this.cartService.cartItems().length === 0) {
-      this.router.navigate(['/cart']);
+      this.router.navigate(['/catalog']);
     }
   }
 
