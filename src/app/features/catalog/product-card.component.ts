@@ -2,116 +2,134 @@ import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, signa
 import { RouterLink } from '@angular/router';
 import { Product, ProductVariant, Color } from '../../core/models/product.model';
 import { CartItem } from '../../core/models/cart-item.model';
-import { ColorPickerComponent } from '../../shared/components/color-picker.component';
-import { VariantPickerComponent } from '../../shared/components/variant-picker.component';
+import { CardGlowDirective } from '../../shared/directives/card-glow.directive';
+import { RevealDirective } from '../../shared/directives/reveal.directive';
 import { PLACEHOLDER } from '../../shared/constants';
 
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [RouterLink, ColorPickerComponent, VariantPickerComponent],
+  imports: [RouterLink, CardGlowDirective, RevealDirective],
   template: `
-    <div class="card card-hover flex flex-col group">
-      <!-- imagen: overflow-hidden aquí para que el dropdown de la card no quede recortado -->
-      <div class="relative overflow-hidden rounded-t-card aspect-square bg-tcg-border">
+    <div lvCardGlow lvReveal
+         [style.transition-delay]="delay"
+         class="relative card-glow liquid-glass rounded-[24px] flex flex-col group
+                before:absolute before:inset-0 before:rounded-[24px] before:opacity-0
+                before:transition-opacity before:duration-500 before:pointer-events-none
+                hover:before:opacity-100
+                before:bg-[radial-gradient(300px_circle_at_var(--mouse-x,50%)_var(--mouse-y,50%),rgba(201,168,76,0.08),transparent_80%)]"
+         style="overflow:visible">
+
+      <!-- Imagen -->
+      <a [routerLink]="['/product', product.id]"
+         class="relative m-3 aspect-square bg-lv-surface rounded-[16px] overflow-hidden block flex-shrink-0">
         <img
           [src]="currentImage()"
           [alt]="product.name"
-          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           (error)="onImageError($event)"
         />
         @if (product.badge) {
-          <span class="absolute top-3 left-3 badge-{{ product.badgeStyle ?? 'gold' }}">
+          <span class="absolute top-2 left-2 liquid-glass rounded-full px-2.5 py-1 font-mono text-[9px] uppercase tracking-wider text-lv-gold border border-lv-gold/30">
             {{ product.badge }}
           </span>
-        }
-        @if (!product.available) {
-          <div class="absolute inset-0 bg-black/70 flex items-center justify-center">
-            <span class="text-tcg-muted font-body font-bold text-lg tracking-widest uppercase">Agotado</span>
-          </div>
         }
         @if (product.images.length > 1) {
           <div class="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5">
             @for (img of product.images; track $index) {
               <button
                 class="w-1.5 h-1.5 rounded-full transition-colors"
-                [class]="currentImageIndex() === $index ? 'bg-tcg-gold' : 'bg-white/30'"
-                (click)="setImage($index); $event.stopPropagation()">
+                [class]="currentImageIndex() === $index ? 'bg-lv-gold' : 'bg-white/30'"
+                (click)="setImage($index); $event.stopPropagation(); $event.preventDefault()">
               </button>
             }
           </div>
         }
-      </div>
+        @if (!product.available) {
+          <div class="absolute inset-0 bg-black/80 flex items-center justify-center">
+            <span class="font-mono text-xs uppercase tracking-widest text-lv-cream/40">Agotado</span>
+          </div>
+        }
+        @if (product.colorPickerEnabled && selectedColor()) {
+          <div class="absolute bottom-2 right-2 w-5 h-5 rounded-full border-2 border-white/30"
+               [style.background]="selectedColor()!.hex"></div>
+        }
+      </a>
 
-      <!-- contenido -->
-      <div class="p-4 flex flex-col flex-1">
-        <a [routerLink]="['/product', product.id]" class="hover:text-tcg-gold transition-colors mb-2">
-          <h3 class="font-display text-xl text-tcg-text leading-tight tracking-wide line-clamp-1">{{ product.name }}</h3>
+      <!-- Cuerpo -->
+      <div class="px-4 pb-4 flex flex-col flex-1">
+        <a [routerLink]="['/product', product.id]" class="block hover:text-lv-gold transition-colors duration-200">
+          <p class="font-mono text-[9px] uppercase tracking-wider text-lv-gold/50 mb-0.5">{{ product.category }}</p>
+          <h3 class="font-display text-xl text-lv-cream leading-tight line-clamp-2">{{ product.name }}</h3>
         </a>
 
-        <p class="text-tcg-muted text-sm font-body leading-relaxed line-clamp-2 flex-1 mb-3">{{ product.description }}</p>
-
-        <ul class="space-y-1 mb-4">
-          @for (f of product.features.slice(0, 3); track f) {
-            <li class="flex items-start gap-1.5 text-xs text-tcg-muted font-body">
-              <span class="text-tcg-gold mt-0.5 flex-shrink-0">✓</span>
-              {{ f }}
-            </li>
-          }
-        </ul>
-
-        <!-- zona de compra: una sola fila, precio+botón siempre a la derecha -->
-        <div class="mt-auto pt-3 border-t border-tcg-border">
-          <div class="flex items-center justify-between gap-2">
-
-            <!-- izquierda: color → tamaño (solo si existen) -->
-            <!-- sin overflow-hidden para que los dropdowns no queden recortados -->
-            <div class="flex items-center gap-1.5 min-w-0">
-              @if (product.colorPickerEnabled && colors.length > 0) {
-                <app-color-picker
-                  [colors]="colors"
-                  [layout]="'inline'"
-                  [selected]="selectedColor()"
-                  (selectedChange)="selectedColor.set($event)">
-                </app-color-picker>
-              }
-              @if (product.variants && product.variants.length > 0) {
-                <app-variant-picker
-                  [variants]="product.variants"
-                  [selected]="selectedVariant()"
-                  (selectedChange)="selectedVariant.set($event)">
-                </app-variant-picker>
-              }
-            </div>
-
-            <!-- derecha: precio + botón (siempre visibles y alineados) -->
-            <div class="flex items-center gap-1.5 flex-shrink-0">
-              <span class="font-display text-xl text-tcg-gold leading-none">{{ currentPrice() }}€</span>
-              @if (product.variants && product.variants.length > 0) {
-                <button
-                  class="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 disabled:opacity-40"
-                  [class]="justAdded() ? 'bg-green-700 text-white' : 'bg-tcg-gold hover:bg-yellow-500 text-black'"
-                  [disabled]="!product.available"
-                  (click)="addToCart()">
-                  @if (justAdded()) {
-                    <span class="text-xs font-semibold">✓</span>
-                  } @else {
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
-                    </svg>
-                  }
-                </button>
-              } @else {
-                <button
-                  [class]="justAdded() ? 'btn-success text-sm py-1.5 px-3' : 'btn-gold text-sm py-1.5 px-3'"
-                  [disabled]="!product.available"
-                  (click)="addToCart()">
-                  @if (justAdded()) { ✓ } @else { Añadir }
-                </button>
-              }
-            </div>
-
+        <!-- Variantes -->
+        @if (product.variants && product.variants.length > 0) {
+          <div class="flex gap-1 flex-wrap mt-2">
+            @for (v of product.variants; track v.label) {
+              <button
+                class="rounded-full px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-wider border transition-all duration-150"
+                [class]="selectedVariant()?.label === v.label
+                  ? 'border-lv-gold bg-lv-gold/10 text-lv-gold'
+                  : 'border-white/10 text-lv-cream/40 hover:border-lv-gold/30'"
+                (click)="selectedVariant.set(v)">
+                {{ v.label }}
+              </button>
+            }
           </div>
+        }
+
+        <!-- Precio + fila inferior -->
+        <div class="mt-auto pt-3">
+          <p class="font-display text-2xl text-lv-gold leading-none mb-3">
+            {{ currentPrice() }}€
+            <span class="font-mono text-[9px] text-lv-cream/25 ml-1 uppercase">/ ud</span>
+          </p>
+
+          <div class="flex items-center justify-between gap-2">
+            <!-- Dots de color -->
+            @if (product.colorPickerEnabled && colors.length > 0) {
+              <div class="flex gap-1.5 flex-wrap items-center min-w-0">
+                @for (c of colors; track c.id) {
+                  <button
+                    type="button"
+                    class="rounded-full transition-all duration-150 flex-shrink-0 cursor-pointer"
+                    [title]="c.name"
+                    [style.width]="selectedColor()?.id === c.id ? '14px' : '10px'"
+                    [style.height]="selectedColor()?.id === c.id ? '14px' : '10px'"
+                    [style.background]="c.hex"
+                    [style.outline]="selectedColor()?.id === c.id ? '2px solid #C9A84C' : '1px solid rgba(255,255,255,0.12)'"
+                    [style.outline-offset]="'2px'"
+                    (click)="selectedColor.set(c); $event.stopPropagation()">
+                  </button>
+                }
+              </div>
+            } @else {
+              <span class="font-mono text-[9px] uppercase tracking-wider text-lv-cream/20">Color fijo</span>
+            }
+
+            <!-- Botón añadir -->
+            <button
+              type="button"
+              class="w-9 h-9 rounded-full flex items-center justify-center font-mono font-bold text-lg flex-shrink-0 transition-all duration-200 disabled:opacity-30"
+              [class]="justAdded()
+                ? 'bg-green-600 text-white scale-90'
+                : 'bg-lv-gold hover:scale-110 hover:brightness-110 text-black'"
+              [disabled]="!product.available"
+              (click)="addToCart()">
+              @if (justAdded()) {
+                <span class="text-xs font-bold">✓</span>
+              } @else {
+                +
+              }
+            </button>
+          </div>
+
+          @if (product.colorPickerEnabled && selectedColor()) {
+            <p class="font-mono text-[9px] uppercase tracking-wider text-lv-gold/50 mt-2">
+              {{ selectedColor()!.name }}
+            </p>
+          }
         </div>
       </div>
     </div>
@@ -120,15 +138,16 @@ import { PLACEHOLDER } from '../../shared/constants';
 export class ProductCardComponent implements OnChanges {
   @Input({ required: true }) product!: Product;
   @Input() colors: Color[] = [];
+  @Input() delay = '0ms';
   @Output() addedToCart = new EventEmitter<CartItem>();
 
   private destroyRef = inject(DestroyRef);
   private addTimer: ReturnType<typeof setTimeout> | null = null;
 
   currentImageIndex = signal(0);
-  selectedVariant = signal<ProductVariant | null>(null);
-  selectedColor = signal<Color | null>(null);
-  justAdded = signal(false);
+  selectedVariant   = signal<ProductVariant | null>(null);
+  selectedColor     = signal<Color | null>(null);
+  justAdded         = signal(false);
 
   constructor() {
     this.destroyRef.onDestroy(() => {
@@ -159,14 +178,13 @@ export class ProductCardComponent implements OnChanges {
 
   addToCart() {
     this.addedToCart.emit({
-      productId: this.product.id,
+      productId:   this.product.id,
       productName: this.product.name,
-      variant: this.selectedVariant()?.label,
-      color: this.selectedColor()?.name,
-      quantity: 1,
-      unitPrice: this.currentPrice()
+      variant:     this.selectedVariant()?.label,
+      color:       this.selectedColor()?.name,
+      quantity:    1,
+      unitPrice:   this.currentPrice()
     });
-    this.selectedColor.set(null);
     this.justAdded.set(true);
     if (this.addTimer) clearTimeout(this.addTimer);
     this.addTimer = setTimeout(() => this.justAdded.set(false), 1500);

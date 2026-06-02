@@ -2,15 +2,15 @@
   "products": [
     {
       "id": "deckbox-ventana",
-      "name": "DeckBox",
+      "name": "Leader Display Box",
       "category": "deckbox",
       "badge": "Más vendida",
       "badgeStyle": "gold",
-      "description": "Muestra tu carta líder. Bandeja deslizante para acceso rápido.",
+      "description": "Haz que tu Líder imponga respeto antes de empezar la partida. Ventana frontal de ajuste perfecto con barra WANTED deslizante integrada en relieve.",
       "features": [
-        "60 cartas enfundadas",
-        "Placa WANTED personalizable",
-        "Sin soportes — acabado limpio",
+        "Ventana frontal para la carta Líder",
+        "Barra WANTED deslizante en relieve",
+        "Ajuste milimétrico con doble funda",
         "Color a elegir sin coste extra"
       ],
       "images": [],
@@ -20,16 +20,16 @@
     },
     {
       "id": "deckbox-toploader",
-      "name": "Deckbox toploader",
+      "name": "Shutter Vault",
       "category": "deckbox",
       "badge": "Toploader",
       "badgeStyle": "teal",
-      "description": "Diseñada para Ultra Pro y VaultX. Mecanismo emergente opcional.",
+      "description": "Cero vuelcos. Cero tirones. Cierre técnico de persiana enrollable y eyector mecánico inferior para acceder a tus mejores cartas sin riesgo.",
       "features": [
-        "Interior ampliado para toploaders",
-        "Base emergente para agarre fácil",
-        "Tapas modulares intercambiables",
-        "Color a elegir sin coste extra"
+        "Cierre de persiana enrollable anti-polvo",
+        "Eyector mecánico inferior integrado",
+        "Ventana de exhibición frontal",
+        "Laterales estriados antideslizantes"
       ],
       "images": [],
       "price": 20,
@@ -38,15 +38,16 @@
     },
     {
       "id": "caja-minisnap",
-      "name": "Caja porta-minisnap",
+      "name": "Tactical Vault",
       "category": "storage",
       "badge": "Premium",
       "badgeStyle": "gold",
-      "description": "Hasta 28 soportes Ultra Pro Mini Snap en posición horizontal.",
+      "description": "El búnker definitivo para colecciones de élite. Maletín de alta densidad para Mini Snaps y Toploaders: cero holguras, cero movimiento.",
       "features": [
-        "Hasta 28 soportes mini snap",
-        "Bisagra integrada",
-        "Divisores opcionales"
+        "Fila completa de Mini Snaps o Toploaders",
+        "Texturizado Fuzzy Skin antideslizante",
+        "Logo integrado en la estructura (no pegatina)",
+        "Soporte de exposición trasero incluido"
       ],
       "images": [],
       "price": 25,
@@ -59,7 +60,7 @@
       "category": "storage",
       "badge": "Único",
       "badgeStyle": "teal",
-      "description": "30 toploaders + 45 semirígidas + cientos de penny. Todo a mano.",
+      "description": "30 toploaders + 45 semirígidas + cientos de penny. Todo clasificado, todo a mano.",
       "features": [
         "3 compartimentos específicos TCG",
         "30 toploaders en vertical",
@@ -77,7 +78,7 @@
       "category": "tools",
       "badge": "60 cartas",
       "badgeStyle": "purple",
-      "description": "Elimina el aire y aplana deformaciones. Para mazos estándar.",
+      "description": "Elimina el aire y aplana deformaciones. Compatible con doble enfundado. Para mazos estándar sin hardware adicional.",
       "features": [
         "Compatible con doble enfundado",
         "Marco grueso y robusto",
@@ -94,7 +95,7 @@
       "category": "tools",
       "badge": "Pro 100",
       "badgeStyle": "coral",
-      "description": "Para doble enfundado y cartas premium que necesitan más espacio.",
+      "description": "Para doble enfundado y cartas premium que necesitan más espacio. Ideal para coleccionistas exigentes.",
       "features": [
         "Capacidad 100 cartas",
         "Ideal para coleccionistas",
@@ -107,14 +108,15 @@
     },
     {
       "id": "caja-bulk",
-      "name": "Caja bulk",
+      "name": "Stack Vault",
       "category": "storage",
       "badge": null,
       "badgeStyle": null,
-      "description": "Almacenaje compacto para cartas comunes. Elige el tamaño que necesitas.",
+      "description": "Dile adiós al cartón feo. Sistema modular apilable con paredes rígidas para pool, colecciones y cubos completos. Elige el tamaño que necesitas.",
       "features": [
-        "Cierre por presión",
-        "Disponible en 3 tamaños",
+        "Diseño apilable (stackable) estable",
+        "Paredes rígidas bajo carga continua",
+        "Código de color por facción disponible",
         "Color a elegir sin coste extra"
       ],
       "images": [],
@@ -133,7 +135,7 @@
       "category": "accessories",
       "badge": "One Piece",
       "badgeStyle": "teal",
-      "description": "Diseños bicolor exclusivos. Argolla metálica incluida.",
+      "description": "Diseños bicolor exclusivos con argolla metálica incluida. Personaliza con los colores de tu facción favorita.",
       "features": [
         "Diseños personalizables",
         "Argolla metálica incluida",
@@ -146,76 +148,20 @@
     }
   ],
   "categories": [
-    { "id": "all", "label": "Todo", "emoji": "🏴‍☠️" },
-    { "id": "deckbox", "label": "Deckboxes", "emoji": "🃏" },
-    { "id": "storage", "label": "Almacenaje", "emoji": "📦" },
-    { "id": "tools", "label": "Herramientas", "emoji": "🔨" },
-    { "id": "accessories", "label": "Accesorios", "emoji": "🗝️" }
+    { "id": "all",         "label": "Todo",         "emoji": "🏴‍☠️" },
+    { "id": "deckbox",     "label": "Deckboxes",     "emoji": "🃏"   },
+    { "id": "storage",     "label": "Almacenaje",    "emoji": "📦"   },
+    { "id": "tools",       "label": "Herramientas",  "emoji": "🔨"   },
+    { "id": "accessories", "label": "Accesorios",    "emoji": "🗝️"  }
   ],
   "colors": [
-    {
-      "id": "negro",
-      "name": "Negro",
-      "hex": "#1A1A1A",
-      "type": "PLA Basic",
-      "stock": "alto",
-      "quantity": 2,
-      "popular": true
-    },
-    {
-      "id": "blanco-jade",
-      "name": "Blanco jade",
-      "hex": "#F0EFE8",
-      "type": "PLA Basic",
-      "stock": "alto",
-      "quantity": 2,
-      "popular": true
-    },
-    {
-      "id": "rojo",
-      "name": "Rojo",
-      "hex": "#CC2200",
-      "type": "PLA Basic",
-      "stock": "normal",
-      "quantity": 1,
-      "popular": true
-    },
-    {
-      "id": "azul",
-      "name": "Azul",
-      "hex": "#1E6FD9",
-      "type": "PLA Basic",
-      "stock": "normal",
-      "quantity": 1,
-      "popular": true
-    },
-    {
-      "id": "purpura",
-      "name": "Púrpura",
-      "hex": "#6B2D8B",
-      "type": "PLA Basic",
-      "stock": "normal",
-      "quantity": 1,
-      "popular": true
-    },
-    {
-      "id": "verde-bambu",
-      "name": "Verde bambú",
-      "hex": "#4A7C59",
-      "type": "PLA Basic",
-      "stock": "alto",
-      "quantity": 2,
-      "popular": true
-    },
-    {
-      "id": "amarillo",
-      "name": "Amarillo",
-      "hex": "#F5C800",
-      "type": "PLA Basic",
-      "stock": "normal",
-      "quantity": 1,
-      "popular": true
-    }
+    { "id": "negro",       "name": "Negro",       "hex": "#1A1A1A", "type": "PLA Basic", "stock": "alto",   "quantity": 2, "popular": true },
+    { "id": "blanco-jade", "name": "Blanco jade", "hex": "#F0EFE8", "type": "PLA Basic", "stock": "alto",   "quantity": 2, "popular": true },
+    { "id": "rojo",        "name": "Rojo",        "hex": "#CC2200", "type": "PLA Basic", "stock": "normal", "quantity": 1, "popular": true },
+    { "id": "azul",        "name": "Azul",        "hex": "#1E6FD9", "type": "PLA Basic", "stock": "normal", "quantity": 1, "popular": true },
+    { "id": "purpura",     "name": "Púrpura",     "hex": "#6B2D8B", "type": "PLA Basic", "stock": "normal", "quantity": 1, "popular": true },
+    { "id": "verde-bambu", "name": "Verde bambú", "hex": "#4A7C59", "type": "PLA Basic", "stock": "alto",   "quantity": 2, "popular": true },
+    { "id": "amarillo",    "name": "Amarillo",    "hex": "#F5C800", "type": "PLA Basic", "stock": "normal", "quantity": 1, "popular": true }
   ],
   "settings": {
     "shopName": "LayerVault",

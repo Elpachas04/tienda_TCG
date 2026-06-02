@@ -9,7 +9,11 @@ const cartNotEmpty = () => {
 };
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'catalog', pathMatch: 'full' },
+  {
+    path: '',
+    loadComponent: () =>
+      import('./features/landing/landing.component').then(m => m.LandingComponent),
+  },
   {
     path: 'catalog',
     loadComponent: () =>
