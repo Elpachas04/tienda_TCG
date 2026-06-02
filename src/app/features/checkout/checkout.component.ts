@@ -190,15 +190,15 @@ function isValidContact(v: string): boolean {
 
             <button
               type="submit"
-              class="w-full bg-lv-gold hover:brightness-110 text-black font-mono text-xs uppercase tracking-widest font-semibold rounded-full py-4 transition-all duration-200 disabled:opacity-40"
-              [disabled]="submitting() || !isFormValid()">
+              class="w-full bg-lv-gold hover:brightness-110 text-black font-mono text-xs uppercase tracking-widest font-semibold rounded-full py-4 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              [disabled]="submitting()">
               @if (submitting()) {
                 <span class="flex items-center justify-center gap-2">
                   <span class="w-3.5 h-3.5 border-2 border-black/30 border-t-black rounded-full animate-spin"></span>
-                  Enviando a producción...
+                  <span>Enviando a producción...</span>
                 </span>
               } @else {
-                🖨️ Enviar especificaciones a producción
+                <span>🖨️ Enviar especificaciones a producción</span>
               }
             </button>
 
