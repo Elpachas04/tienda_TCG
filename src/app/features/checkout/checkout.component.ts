@@ -210,17 +210,12 @@ function shippingZoneFor(cp: string): { zone: string; price: number } {
             <!-- Botón -->
             <button
               type="button"
-              class="w-full bg-lv-gold hover:brightness-110 text-black font-mono text-xs uppercase tracking-widest font-semibold rounded-full py-4 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="w-full bg-lv-gold hover:brightness-110 text-black font-mono text-xs uppercase tracking-widest font-semibold rounded-full py-4 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               [disabled]="submitting()"
               (click)="submitOrder()">
-              @if (submitting()) {
-                <span class="flex items-center justify-center gap-2">
-                  <span class="w-3.5 h-3.5 border-2 border-black/30 border-t-black rounded-full animate-spin"></span>
-                  <span>Enviando...</span>
-                </span>
-              } @else {
-                <span>Confirmar pedido →</span>
-              }
+              <span class="w-3.5 h-3.5 border-2 border-black/30 border-t-black rounded-full animate-spin"
+                    [class.hidden]="!submitting()"></span>
+              <span>{{ submitting() ? 'Enviando...' : 'Confirmar pedido →' }}</span>
             </button>
 
           </div>
