@@ -12,13 +12,14 @@ const INPUT = 'w-full bg-white/[0.03] border rounded-xl px-4 py-3 font-body text
 
 function isValidContact(v: string): boolean { return v.length >= 5; }
 
-function shippingZoneFor(cp: string): { zone: string; price: number } {
-  const p = cp.slice(0, 2);
-  if (p === '07')               return { zone: 'Islas Baleares', price: 7.95  };
-  if (p === '35' || p === '38') return { zone: 'Islas Canarias', price: 10.95 };
-  if (p === '51')               return { zone: 'Ceuta',          price: 8.50  };
-  if (p === '52')               return { zone: 'Melilla',        price: 8.50  };
-  return                               { zone: 'Península',      price: 4.95  };
+// Correos iPaq domicilio — caja 30×20×20 cm, hasta 2 kg
+// Precio verificado correos.es jun-2025 (Barcelona → A Coruña)
+// Solo Península — no enviamos a islas, Ceuta ni Melilla
+const NO_SHIP_PREFIXES = new Set(['07', '35', '38', '51', '52', '35', '38']);
+
+function shippingZoneFor(cp: string): { zone: string; price: number } | null {
+  if (NO_SHIP_PREFIXES.has(cp.slice(0, 2))) return null;
+  return { zone: 'Península', price: 5.92 };
 }
 
 @Component({
@@ -183,11 +184,20 @@ function shippingZoneFor(cp: string): { zone: string; price: number } {
                     (input)="onCpInput($event)"
                     (blur)="touched.cp = true" />
 
-                  @if (shippingInfo()) {
+                  @if (shippingBlocked()) {
+                    <div class="mt-3 flex items-start gap-3 px-4 py-3 rounded-xl border border-red-500/40 bg-red-500/[0.06]">
+                      <span class="text-red-400 flex-shrink-0 mt-0.5">✕</span>
+                      <div>
+                        <p class="font-mono text-[11px] uppercase tracking-wider text-red-400">Zona no disponible</p>
+                        <p class="font-mono text-[10px] text-lv-cream/30 mt-0.5 leading-relaxed">De momento solo enviamos a Península. Escríbenos por Telegram si necesitas otro destino.</p>
+                      </div>
+                    </div>
+                  } @else if (shippingInfo()) {
                     <div class="mt-3 flex items-center justify-between px-4 py-3 rounded-xl border border-lv-gold/30 bg-lv-gold/[0.07]">
                       <div>
                         <p class="font-display text-lv-gold text-2xl leading-none">{{ shippingInfo()!.price.toFixed(2) }}€</p>
                         <p class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/40 mt-0.5">Correos · {{ shippingInfo()!.zone }}</p>
+                        <p class="font-mono text-[9px] uppercase tracking-wider text-lv-cream/25 mt-0.5">iPaq domicilio · hasta 2 kg</p>
                       </div>
                       <svg class="w-6 h-6 text-lv-gold/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
@@ -283,7 +293,8 @@ export class CheckoutComponent implements OnInit {
   errorMsg         = signal('');
   summaryOpen      = signal(true);
 
-  shippingInfo = signal<{ zone: string; price: number } | null>(null);
+  shippingInfo     = signal<{ zone: string; price: number } | null>(null);
+  shippingBlocked  = signal(false);
 
   readonly grandTotal = computed(() =>
     this.cartService.total() + (this.shippingInfo()?.price ?? 0)
@@ -315,19 +326,36 @@ export class CheckoutComponent implements OnInit {
     this.form.deliveryMethod = 'pickup';
     this.form.postalCode = '';
     this.shippingInfo.set(null);
+    this.shippingBlocked.set(false);
   }
 
   onCpInput(event: Event): void {
     const digits = (event.target as HTMLInputElement).value.replace(/\D/g, '').slice(0, 5);
     (event.target as HTMLInputElement).value = digits;
     this.form.postalCode = digits;
-    this.shippingInfo.set(digits.length === 5 ? shippingZoneFor(digits) : null);
+    this.shippingInfo.set(null);
+    this.shippingBlocked.set(false);
+    if (digits.length === 5) this.fetchShipping(digits);
+  }
+
+  private async fetchShipping(cp: string): Promise<void> {
+    try {
+      const res  = await fetch(`/.netlify/functions/shipping-price?cp=${cp}`);
+      if (res.status === 422) { this.shippingBlocked.set(true); return; }
+      const data = await res.json() as { zone: string; price: number };
+      this.shippingInfo.set(data);
+    } catch {
+      const result = shippingZoneFor(cp);
+      if (result) { this.shippingInfo.set(result); } else { this.shippingBlocked.set(true); }
+    }
   }
 
   isFormValid(): boolean {
     if (!this.form.customerName.trim() || !this.isContactValid()) return false;
     if (this.cartService.cartItems().length === 0) return false;
-    if (this.form.deliveryMethod === 'shipping' && !this.isPostalCodeValid()) return false;
+    if (this.form.deliveryMethod === 'shipping') {
+      if (!this.isPostalCodeValid() || this.shippingBlocked() || !this.shippingInfo()) return false;
+    }
     return true;
   }
 
@@ -353,7 +381,7 @@ export class CheckoutComponent implements OnInit {
 
     const deliveryLine = this.form.deliveryMethod === 'pickup'
       ? 'En mano · Barcelona (sin coste)'
-      : `Envío Correos a CP ${this.form.postalCode} (${info?.zone}) — ${info?.price.toFixed(2)}€`;
+      : `Envío Correos iPaq domicilio a CP ${this.form.postalCode} (${info?.zone}) — ${info?.price.toFixed(2)}€`;
 
     const lines = [
       '🏴‍☠️ PEDIDO — LayerVault',

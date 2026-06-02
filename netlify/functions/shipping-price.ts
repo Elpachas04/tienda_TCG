@@ -1,20 +1,13 @@
 import type { Handler, HandlerEvent } from "@netlify/functions";
 
-// Correos España — tarifas aproximadas paquete pequeño (<500g)
-const ZONES: { prefixes: string[]; zone: string; price: number }[] = [
-  { prefixes: ["07"],             zone: "Islas Baleares",  price: 7.95  },
-  { prefixes: ["35", "38"],       zone: "Islas Canarias",  price: 10.95 },
-  { prefixes: ["51"],             zone: "Ceuta",           price: 8.50  },
-  { prefixes: ["52"],             zone: "Melilla",         price: 8.50  },
-];
+// Solo enviamos a Península — sin islas, Ceuta ni Melilla
+const NO_SHIP = new Set(["07", "35", "38", "51", "52"]);
 
-function lookup(cp: string): { zone: string; price: number } {
-  const prefix = cp.slice(0, 2);
-  for (const z of ZONES) {
-    if (z.prefixes.includes(prefix)) return { zone: z.zone, price: z.price };
-  }
-  return { zone: "Península", price: 4.95 };
-}
+const JSON_HEADERS: Record<string, string> = { "Content-Type": "application/json" };
+const CACHED_HEADERS: Record<string, string> = {
+  "Content-Type": "application/json",
+  "Cache-Control": "public, max-age=3600",
+};
 
 const handler: Handler = async (event: HandlerEvent) => {
   if (event.httpMethod !== "GET") {
@@ -23,18 +16,19 @@ const handler: Handler = async (event: HandlerEvent) => {
 
   const cp = (event.queryStringParameters?.["cp"] ?? "").trim();
   if (!/^\d{5}$/.test(cp)) {
-    return {
-      statusCode: 400,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ error: "Código postal inválido" }),
-    };
+    return { statusCode: 400, headers: JSON_HEADERS, body: JSON.stringify({ error: "CP inválido" }) };
   }
 
-  const result = lookup(cp);
+  if (NO_SHIP.has(cp.slice(0, 2))) {
+    return { statusCode: 422, headers: JSON_HEADERS, body: JSON.stringify({ error: "Zona no disponible" }) };
+  }
+
+  // Correos iPaq domicilio — 30×20×20 cm, hasta 2 kg
+  // Precio verificado correos.es jun-2025 (Barcelona → A Coruña)
   return {
     statusCode: 200,
-    headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=86400" },
-    body: JSON.stringify(result),
+    headers: CACHED_HEADERS,
+    body: JSON.stringify({ zone: "Península", price: 5.92 }),
   };
 };
 
