@@ -48,6 +48,9 @@ interface ValidatedOrder {
   customerName: string;
   customerContact: string;
   deliveryMethod: "pickup" | "shipping";
+  postalCode?: string;
+  shippingZone?: string;
+  shippingCost?: number;
   notes?: string;
   totalAmount: number;
   depositAmount: number;
@@ -112,10 +115,19 @@ function validateOrder(body: unknown): ValidatedOrder {
     throw new ValidationError("Depósito inválido");
   }
 
+  const postalCode  = sanitizeOptionalStr(raw["postalCode"],  10);
+  const shippingZone = sanitizeOptionalStr(raw["shippingZone"], 100);
+  const shippingCost = typeof raw["shippingCost"] === "number" && isFinite(raw["shippingCost"])
+    ? raw["shippingCost"]
+    : undefined;
+
   return {
     customerName,
     customerContact,
     deliveryMethod,
+    postalCode,
+    shippingZone,
+    shippingCost,
     notes,
     totalAmount: claimedTotal,
     depositAmount,
@@ -135,7 +147,11 @@ function buildMessage(order: ValidatedOrder): string {
     return line;
   }).join("\n");
 
-  const deliveryLabel = order.deliveryMethod === "pickup" ? "En mano (Barcelona)" : "Envío";
+  let deliveryLabel = order.deliveryMethod === "pickup" ? "En mano (Barcelona)" : "Envío";
+  if (order.deliveryMethod === "shipping" && order.postalCode) {
+    deliveryLabel += ` · CP ${escapeHtml(order.postalCode)}`;
+    if (order.shippingZone) deliveryLabel += ` (${escapeHtml(order.shippingZone)})`;
+  }
 
   return [
     `🏴‍☠️ <b>NUEVO PEDIDO — LayerVault</b>`,
@@ -144,6 +160,7 @@ function buildMessage(order: ValidatedOrder): string {
     `👤 <b>Cliente:</b> ${escapeHtml(order.customerName)}`,
     `📞 <b>Contacto:</b> ${escapeHtml(order.customerContact)}`,
     `🚚 <b>Entrega:</b> ${deliveryLabel}`,
+    order.shippingCost ? `📮 <b>Envío:</b> ${order.shippingCost.toFixed(2)}€` : "",
     ``,
     `📦 <b>Productos:</b>`,
     itemLines,
