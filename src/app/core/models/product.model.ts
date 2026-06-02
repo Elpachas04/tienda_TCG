@@ -15,6 +15,7 @@ export interface Product {
   badgeStyle?: BadgeStyle;
   description: string;
   features: string[];
+  video?: string;
   images: string[];
   price: number;
   variants?: ProductVariant[];

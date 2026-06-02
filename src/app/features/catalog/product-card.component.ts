@@ -20,15 +20,24 @@ import { PLACEHOLDER } from '../../shared/constants';
                 before:bg-[radial-gradient(300px_circle_at_var(--mouse-x,50%)_var(--mouse-y,50%),rgba(201,168,76,0.08),transparent_80%)]"
          style="overflow:visible">
 
-      <!-- Imagen -->
+      <!-- Imagen / Vídeo -->
       <a [routerLink]="['/product', product.id]"
          class="relative m-3 aspect-square bg-lv-surface rounded-[16px] overflow-hidden block flex-shrink-0">
-        <img
-          [src]="currentImage()"
-          [alt]="product.name"
-          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-          (error)="onImageError($event)"
-        />
+        @if (product.video) {
+          <video
+            class="w-full h-full object-cover"
+            [src]="product.video"
+            autoplay muted loop playsinline
+            preload="none">
+          </video>
+        } @else {
+          <img
+            [src]="currentImage()"
+            [alt]="product.name"
+            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            (error)="onImageError($event)"
+          />
+        }
         @if (product.badge) {
           <span class="absolute top-2 left-2 liquid-glass rounded-full px-2.5 py-1 font-mono text-[9px] uppercase tracking-wider text-lv-gold border border-lv-gold/30">
             {{ product.badge }}

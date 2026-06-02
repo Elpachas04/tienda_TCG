@@ -37,14 +37,23 @@ type DetailData = { product: Product | null; colors: Color[] };
 
           <div class="grid md:grid-cols-2 gap-12">
 
-            <!-- Imágenes -->
+            <!-- Media: vídeo o imágenes -->
             <div class="space-y-3">
               <div class="liquid-glass rounded-[20px] overflow-hidden aspect-square">
-                <img [src]="currentImage(data.product)" [alt]="data.product.name"
-                     class="w-full h-full object-cover"
-                     (error)="onImageError($event)"/>
+                @if (data.product.video) {
+                  <video
+                    class="w-full h-full object-cover"
+                    [src]="data.product.video"
+                    autoplay muted loop playsinline
+                    preload="metadata">
+                  </video>
+                } @else {
+                  <img [src]="currentImage(data.product)" [alt]="data.product.name"
+                       class="w-full h-full object-cover"
+                       (error)="onImageError($event)"/>
+                }
               </div>
-              @if (data.product.images.length > 1) {
+              @if (!data.product.video && data.product.images.length > 1) {
                 <div class="flex gap-3">
                   @for (img of data.product.images; track $index) {
                     <button

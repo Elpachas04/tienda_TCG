@@ -45,13 +45,14 @@
       "category": "storage",
       "badge": "Premium",
       "badgeStyle": "gold",
-      "description": "El búnker definitivo para colecciones de élite. Maletín de alta densidad para Mini Snaps y Toploaders: cero holguras, cero movimiento.",
+      "description": "Maletín de alta densidad para Mini Snaps y Toploaders: cero holguras, cero movimiento. Texturizado Fuzzy Skin antideslizante, logotipo integrado en la estructura y soporte de exposición trasero incluido.",
       "features": [
         "Fila completa de Mini Snaps o Toploaders",
         "Texturizado Fuzzy Skin antideslizante",
         "Logo integrado en la estructura (no pegatina)",
         "Soporte de exposición trasero incluido"
       ],
+      "video": "assets/videos/layerVault_video_minsnap.mp4",
       "images": [],
       "price": 25,
       "colorPickerEnabled": false,

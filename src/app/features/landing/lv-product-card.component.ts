@@ -15,19 +15,33 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
 
       <!-- Image area -->
       <div class="aspect-square bg-lv-surface rounded-[20px] m-3 relative overflow-hidden flex-shrink-0">
-        <svg viewBox="0 0 200 200" class="w-full h-full p-8" xmlns="http://www.w3.org/2000/svg">
-          <g stroke="#C9A84C" stroke-width="1.5" fill="none">
-            <polygon points="100,30 162,65 100,100 38,65"  fill="rgba(201,168,76,0.05)"/>
-            <polygon points="38,65  100,100 100,158 38,123" fill="rgba(201,168,76,0.03)"/>
-            <polygon points="100,100 162,65  162,123 100,158" fill="rgba(201,168,76,0.07)"/>
-          </g>
-          @if (selectedColor()) {
-            <polygon points="100,30 162,65 100,100 38,65"
-                     [attr.fill]="selectedColor()!.hex"
-                     opacity="0.25"/>
-          }
-        </svg>
-        @if (product.colorPickerEnabled) {
+        @if (product.video) {
+          <video
+            class="w-full h-full object-cover"
+            [src]="product.video"
+            autoplay muted loop playsinline
+            preload="none">
+          </video>
+        } @else {
+          <svg viewBox="0 0 200 200" class="w-full h-full p-8" xmlns="http://www.w3.org/2000/svg">
+            <g stroke="#C9A84C" stroke-width="1.5" fill="none">
+              <polygon points="100,30 162,65 100,100 38,65"  fill="rgba(201,168,76,0.05)"/>
+              <polygon points="38,65  100,100 100,158 38,123" fill="rgba(201,168,76,0.03)"/>
+              <polygon points="100,100 162,65  162,123 100,158" fill="rgba(201,168,76,0.07)"/>
+            </g>
+            @if (selectedColor()) {
+              <polygon points="100,30 162,65 100,100 38,65"
+                       [attr.fill]="selectedColor()!.hex"
+                       opacity="0.25"/>
+            }
+          </svg>
+        }
+        @if (product.badge) {
+          <span class="absolute top-2 left-2 liquid-glass rounded-full px-2.5 py-1 font-mono text-[9px] uppercase tracking-wider text-lv-gold border border-lv-gold/30">
+            {{ product.badge }}
+          </span>
+        }
+        @if (product.colorPickerEnabled && !product.video) {
           <span class="absolute top-2 left-2 liquid-glass rounded-full px-2 py-1 font-mono text-[9px] uppercase tracking-wider text-lv-gold">
             Color libre
           </span>
