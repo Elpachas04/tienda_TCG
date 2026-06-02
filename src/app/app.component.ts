@@ -35,5 +35,8 @@ export class AppComponent {
     { initialValue: this.router.url },
   );
 
-  readonly isLanding = computed(() => this.currentUrl() === '/');
+  readonly isLanding = computed(() => {
+    const url = this.currentUrl();
+    return url === '/' || url === '';
+  });
 }
