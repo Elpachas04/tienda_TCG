@@ -5,6 +5,9 @@ export interface Order {
   customerName: string;
   customerContact: string;
   deliveryMethod: 'pickup' | 'shipping';
+  postalCode?: string;
+  shippingZone?: string;
+  shippingCost?: number;
   notes?: string;
   totalAmount: number;
   depositAmount: number;
