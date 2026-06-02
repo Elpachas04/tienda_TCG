@@ -113,10 +113,6 @@ function shippingZoneFor(cp: string): { zone: string; price: number } {
                   </div>
                 }
 
-                <div class="flex justify-between items-center pt-3 mt-1 border-t border-lv-gold/20">
-                  <span class="font-mono text-[10px] uppercase tracking-widest text-lv-gold/80">Depósito 50%</span>
-                  <span class="font-display text-xl text-lv-gold">{{ deposit().toFixed(2) }}€</span>
-                </div>
               </div>
             }
           </div>
@@ -216,14 +212,6 @@ function shippingZoneFor(cp: string): { zone: string; price: number } {
               </div>
             </div>
 
-            <div class="liquid-glass rounded-[16px] p-4 border border-lv-gold/20">
-              <p class="font-mono text-[10px] uppercase tracking-widest text-lv-gold mb-1.5">⚠️ Política de pago</p>
-              <p class="font-body text-xs text-lv-cream/40 leading-relaxed">
-                Tras confirmar, abona <strong class="text-lv-gold/80">{{ deposit().toFixed(2) }}€</strong>
-                por Bizum o transferencia. El resto en la entrega. Plazo: 3–7 días laborables.
-              </p>
-            </div>
-
             <!-- Info Telegram -->
             <div class="liquid-glass rounded-[16px] p-4 border border-lv-gold/10 flex items-start gap-3">
               <svg class="w-5 h-5 text-lv-gold/50 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="currentColor">
@@ -300,13 +288,10 @@ export class CheckoutComponent implements OnInit {
   readonly grandTotal = computed(() =>
     this.cartService.total() + (this.shippingInfo()?.price ?? 0)
   );
-  readonly deposit = computed(() =>
-    Math.ceil(this.grandTotal() * 0.5 * 100) / 100
-  );
 
   readonly steps = [
     { n: '01', text: 'Recibirás respuesta por Telegram para confirmar detalles' },
-    { n: '02', text: 'Abonas el depósito (50%) por Bizum o transferencia' },
+    { n: '02', text: 'Abona el total por Bizum o transferencia bancaria' },
     { n: '03', text: 'Fabricamos en 3–7 días laborables' },
     { n: '04', text: 'Entrega o recogida acordada contigo' },
   ];
@@ -380,7 +365,6 @@ export class CheckoutComponent implements OnInit {
       itemLines,
       '',
       `💰 Total: ${this.grandTotal().toFixed(2)}€`,
-      `💳 Depósito (50%): ${this.deposit().toFixed(2)}€`,
       ...(this.form.notes.trim() ? [`📝 ${this.form.notes.trim()}`] : []),
     ];
 

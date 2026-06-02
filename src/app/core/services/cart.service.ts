@@ -5,7 +5,7 @@ import { NOTES_MAX } from '../../shared/constants';
 const CART_STORAGE_KEY = 'tcg3d_cart';
 const MAX_QUANTITY = 99;
 
-function itemKey(i: Pick<CartItem, 'productId' | 'variant' | 'color'>): string {
+export function cartItemKey(i: Pick<CartItem, 'productId' | 'variant' | 'color'>): string {
   return `${i.productId}|${i.variant ?? ''}|${i.color ?? ''}`;
 }
 
@@ -42,12 +42,10 @@ export class CartService {
     this.items().reduce((sum, item) => sum + item.unitPrice * item.quantity, 0)
   );
 
-  readonly deposit = computed(() => Math.ceil(this.total() * 0.5 * 100) / 100);
-
   addItem(item: CartItem): void {
-    const key = itemKey(item);
+    const key = cartItemKey(item);
     this.items.update(current => {
-      const existingIndex = current.findIndex(i => itemKey(i) === key);
+      const existingIndex = current.findIndex(i => cartItemKey(i) === key);
       let updated: CartItem[];
       if (existingIndex >= 0) {
         updated = current.map((i, idx) =>
@@ -64,14 +62,14 @@ export class CartService {
   }
 
   updateQuantity(item: CartItem, quantity: number): void {
-    const key = itemKey(item);
+    const key = cartItemKey(item);
     this.items.update(current => {
       let updated: CartItem[];
       if (quantity <= 0) {
-        updated = current.filter(i => itemKey(i) !== key);
+        updated = current.filter(i => cartItemKey(i) !== key);
       } else {
         updated = current.map(i =>
-          itemKey(i) === key ? { ...i, quantity: Math.min(quantity, MAX_QUANTITY) } : i
+          cartItemKey(i) === key ? { ...i, quantity: Math.min(quantity, MAX_QUANTITY) } : i
         );
       }
       this.saveToStorage(updated);
@@ -80,11 +78,11 @@ export class CartService {
   }
 
   updateNotes(item: CartItem, notes: string): void {
-    const key = itemKey(item);
+    const key = cartItemKey(item);
     const sanitized = notes.slice(0, NOTES_MAX);
     this.items.update(current => {
       const updated = current.map(i =>
-        itemKey(i) === key ? { ...i, notes: sanitized } : i
+        cartItemKey(i) === key ? { ...i, notes: sanitized } : i
       );
       this.saveToStorage(updated);
       return updated;

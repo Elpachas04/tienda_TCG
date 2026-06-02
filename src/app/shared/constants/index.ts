@@ -3,3 +3,5 @@ export const PLACEHOLDER = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2
 export const TOAST_DURATION = 2500;
 
 export const NOTES_MAX = 500;
+
+export const BASE_PILL = 'font-mono text-xs uppercase tracking-wider rounded-full px-5 py-2 transition-all duration-200 cursor-pointer';

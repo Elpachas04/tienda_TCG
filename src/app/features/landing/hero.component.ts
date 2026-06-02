@@ -34,7 +34,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
           <span class="text-lv-cream block">CAJA DE 2€</span>
         </h1>
 
-        <p lvReveal class="font-accent italic text-lv-gold text-2xl md:text-4xl">
+        <p lvReveal class="font-display text-lv-gold/70 text-2xl md:text-4xl tracking-wide uppercase">
           tolerancia milimétrica en cada capa
         </p>
 

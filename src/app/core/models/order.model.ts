@@ -10,6 +10,5 @@ export interface Order {
   shippingCost?: number;
   notes?: string;
   totalAmount: number;
-  depositAmount: number;
   timestamp: string;
 }

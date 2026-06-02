@@ -9,6 +9,7 @@ export type ProductCategory = 'deckbox' | 'storage' | 'tools' | 'accessories';
 export interface Product {
   id: string;
   name: string;
+  tagline: string;
   category: ProductCategory;
   badge?: string | null;
   badgeStyle?: BadgeStyle;
@@ -41,7 +42,6 @@ export interface ShopSettings {
   shopName: string;
   city: string;
   telegramUsername: string;
-  depositPercent: number;
   paymentMethods: string[];
   deliveryDays: string;
 }

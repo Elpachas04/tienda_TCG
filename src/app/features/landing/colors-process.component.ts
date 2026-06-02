@@ -1,12 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { NgClass } from '@angular/common';
-import { LANDING_COLORS } from './lv-products.data';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { catchError, of } from 'rxjs';
+import { CatalogService } from '../../core/services/catalog.service';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 
 const STEPS = [
   { n: '1', title: 'Elige tu pieza',  desc: 'Navega el catálogo, selecciona producto, variante y color.' },
   { n: '2', title: 'Manda el pedido', desc: 'Rellena nombre y contacto. Confirmación inmediata.' },
-  { n: '3', title: 'Abona el 50 %',   desc: 'Depósito por Bizum o transferencia para iniciar fabricación.' },
+  { n: '3', title: 'Abona el total',   desc: 'Pago por Bizum o transferencia para iniciar fabricación.' },
   { n: '4', title: 'Recibe tu pieza', desc: 'En 3–7 días laborables. Recogida en Barcelona o envío acordado.' },
 ];
 
@@ -30,14 +32,14 @@ const STEPS = [
           </p>
 
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-8">
-            @for (color of colors; track color.hex) {
+            @for (color of colors(); track color.id) {
               <div lvReveal class="liquid-glass rounded-[20px] p-4 flex items-center gap-3">
                 <span class="w-10 h-10 rounded-full border border-white/10 flex-shrink-0"
                       [style.background]="color.hex">
                 </span>
                 <div>
                   <p class="font-display text-lg text-lv-cream leading-tight">{{ color.name }}</p>
-                  <span class="font-mono text-[9px] uppercase tracking-wider text-lv-gold/50">PLA Basic</span>
+                  <span class="font-mono text-[9px] uppercase tracking-wider text-lv-gold/50">{{ color.type }}</span>
                 </div>
               </div>
             }
@@ -76,6 +78,12 @@ const STEPS = [
   `,
 })
 export class ColorsProcessComponent {
-  protected colors = LANDING_COLORS;
-  protected steps = STEPS;
+  private catalogService = inject(CatalogService);
+
+  protected readonly colors = toSignal(
+    this.catalogService.getColors().pipe(catchError(() => of([]))),
+    { initialValue: [] }
+  );
+
+  protected readonly steps = STEPS;
 }

@@ -2,19 +2,17 @@ import { Component, computed, inject } from '@angular/core';
 import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs';
-import { NavbarComponent } from './shared/components/navbar.component';
+import { LvNavbarComponent } from './features/landing/lv-navbar.component';
 import { TelegramFabComponent } from './shared/components/telegram-fab.component';
 import { CartDrawerComponent } from './shared/components/cart-drawer.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent, TelegramFabComponent, CartDrawerComponent],
+  imports: [RouterOutlet, LvNavbarComponent, TelegramFabComponent, CartDrawerComponent],
   template: `
-    @if (!isLanding()) {
-      <app-navbar />
-    }
-    <main [class.min-h-screen]="!isLanding()">
+    <app-lv-navbar />
+    <main [class.min-h-screen]="!isLanding()" [class.pt-16]="!isLanding()">
       <router-outlet />
     </main>
     @if (!isLanding()) {

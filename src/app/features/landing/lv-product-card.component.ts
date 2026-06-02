@@ -1,5 +1,5 @@
-import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
-import { LvProduct, LANDING_COLORS } from './lv-products.data';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, signal } from '@angular/core';
+import { Product, Color } from '../../core/models/product.model';
 import { CartItem } from '../../core/models/cart-item.model';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 
@@ -21,14 +21,13 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
             <polygon points="38,65  100,100 100,158 38,123" fill="rgba(201,168,76,0.03)"/>
             <polygon points="100,100 162,65  162,123 100,158" fill="rgba(201,168,76,0.07)"/>
           </g>
-          <!-- Color preview fill on the top face -->
           @if (selectedColor()) {
             <polygon points="100,30 162,65 100,100 38,65"
-                     [attr.fill]="selectedColor()"
+                     [attr.fill]="selectedColor()!.hex"
                      opacity="0.25"/>
           }
         </svg>
-        @if (product.customizable) {
+        @if (product.colorPickerEnabled) {
           <span class="absolute top-2 left-2 liquid-glass rounded-full px-2 py-1 font-mono text-[9px] uppercase tracking-wider text-lv-gold">
             Color libre
           </span>
@@ -41,25 +40,25 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
         <p class="font-body text-[11px] italic text-lv-cream/35 mt-0.5 mb-2 leading-snug">{{ product.tagline }}</p>
 
         <p class="font-display text-2xl text-lv-gold leading-none mb-3">
-          {{ product.price }}
+          {{ product.price }}€
           <span class="font-mono text-[10px] uppercase text-lv-cream/40 ml-1">/ unidad</span>
         </p>
 
         <!-- Color picker row -->
         <div class="flex justify-between items-center mt-auto">
-          @if (product.customizable) {
+          @if (product.colorPickerEnabled && colors.length > 0) {
             <div class="flex gap-1.5 flex-wrap items-center">
-              @for (color of colors; track color.hex) {
+              @for (color of colors; track color.id) {
                 <button
                   type="button"
                   class="rounded-full transition-all duration-150 cursor-pointer flex-shrink-0"
                   [title]="color.name"
-                  [style.width]="selectedColor() === color.hex ? '14px' : '10px'"
-                  [style.height]="selectedColor() === color.hex ? '14px' : '10px'"
+                  [style.width]="selectedColor()?.id === color.id ? '14px' : '10px'"
+                  [style.height]="selectedColor()?.id === color.id ? '14px' : '10px'"
                   [style.background]="color.hex"
-                  [style.outline]="selectedColor() === color.hex ? '2px solid #C9A84C' : '1px solid rgba(255,255,255,0.15)'"
+                  [style.outline]="selectedColor()?.id === color.id ? '2px solid #C9A84C' : '1px solid rgba(255,255,255,0.15)'"
                   [style.outline-offset]="'2px'"
-                  (click)="selectColor(color.hex, $event)">
+                  (click)="selectColor(color, $event)">
                 </button>
               }
             </div>
@@ -75,45 +74,42 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
           </button>
         </div>
 
-        <!-- Selected color label -->
-        @if (product.customizable && selectedColor()) {
+        @if (product.colorPickerEnabled && selectedColor()) {
           <p class="font-mono text-[9px] uppercase tracking-wider text-lv-gold/60 mt-2">
-            Color: {{ selectedColorName() }}
+            Color: {{ selectedColor()!.name }}
           </p>
         }
       </div>
     </div>
   `,
 })
-export class LvProductCardComponent {
-  @Input({ required: true }) product!: LvProduct;
+export class LvProductCardComponent implements OnChanges {
+  @Input({ required: true }) product!: Product;
+  @Input() colors: Color[] = [];
   @Input() delay = '0ms';
   @Output() added = new EventEmitter<CartItem>();
 
-  protected colors = LANDING_COLORS;
-  // Default to Negro so every add has a color key and doesn't create duplicate entries
-  readonly selectedColor = signal<string>(LANDING_COLORS.find(c => c.name === 'Negro')?.hex ?? LANDING_COLORS[0].hex);
+  readonly selectedColor = signal<Color | null>(null);
 
-  selectedColorName(): string {
-    return this.colors.find(c => c.hex === this.selectedColor())?.name ?? '';
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['colors'] && this.colors.length > 0 && !this.selectedColor()) {
+      this.selectedColor.set(this.colors.find(c => c.id === 'negro') ?? this.colors[0]);
+    }
   }
 
-  selectColor(hex: string, event: Event): void {
+  selectColor(color: Color, event: Event): void {
     event.stopPropagation();
-    this.selectedColor.set(hex);
+    this.selectedColor.set(color);
   }
 
   onAdd(event: Event): void {
     event.stopPropagation();
-    const colorName = this.selectedColorName() || undefined;
-    const unitPrice = parseInt(this.product.price.match(/\d+/)?.[0] ?? '0', 10);
     this.added.emit({
       productId:   this.product.id,
       productName: this.product.name,
-      variant:     undefined,
-      color:       colorName,
+      color:       this.selectedColor()?.name,
       quantity:    1,
-      unitPrice,
+      unitPrice:   this.product.price,
     });
   }
 }

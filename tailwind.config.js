@@ -6,21 +6,25 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Sistema de tokens único
+        'lv-black':   '#121212',
+        'lv-surface': '#1a1a1a',
+        'lv-border':  '#2a2a2a',
+        'lv-gold':    '#C9A84C',
+        'lv-cream':   '#F5F0E8',
+        'lv-muted':   '#888888',
+        // Aliases tcg-* para compatibilidad (mismos valores)
         'tcg-bg':      '#121212',
         'tcg-surface': '#1a1a1a',
         'tcg-border':  '#2a2a2a',
         'tcg-gold':    '#C9A84C',
-        'tcg-text':    '#f0f0f0',
+        'tcg-text':    '#F5F0E8',
         'tcg-muted':   '#888888',
-        'lv-black':    '#121212',
-        'lv-gold':     '#C9A84C',
-        'lv-cream':    '#F5F0E8',
-        'lv-surface':  '#1E1E1E',
       },
       fontFamily: {
         display: ['"Bebas Neue"', 'cursive'],
         body:    ['"Barlow"', 'system-ui', 'sans-serif'],
-        accent:  ['"Crimson Pro"', 'serif'],
+        mono:    ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
       },
       borderRadius: {
         card: '12px',

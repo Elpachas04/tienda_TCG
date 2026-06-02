@@ -25,7 +25,6 @@ describe('CartService', () => {
     expect(service.cartItems()).toEqual([]);
     expect(service.itemCount()).toBe(0);
     expect(service.total()).toBe(0);
-    expect(service.deposit()).toBe(0);
   });
 
   // ── addItem ────────────────────────────────────────────────────────────────
@@ -67,11 +66,6 @@ describe('CartService', () => {
     service.addItem(item({ unitPrice: 20, quantity: 2 }));
     service.addItem(item({ productId: 'p2', productName: 'Aplastador', unitPrice: 25, quantity: 1 }));
     expect(service.total()).toBe(65);
-  });
-
-  it('calculates deposit as 50% ceiling (2 decimals)', () => {
-    service.addItem(item({ unitPrice: 21, quantity: 1 }));
-    expect(service.deposit()).toBe(10.5);
   });
 
   it('calculates itemCount as sum of quantities', () => {

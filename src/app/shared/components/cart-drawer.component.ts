@@ -1,8 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { CartService } from '../../core/services/cart.service';
-import { CartItem } from '../../core/models/cart-item.model';
+import { CartService, cartItemKey } from '../../core/services/cart.service';
 import { NOTES_MAX } from '../constants';
 
 @Component({
@@ -68,7 +67,7 @@ import { NOTES_MAX } from '../constants';
               </button>
             </div>
           } @else {
-            @for (item of cart.cartItems(); track itemKey(item)) {
+            @for (item of cart.cartItems(); track cartItemKey(item)) {
               <div class="liquid-glass rounded-[16px] p-3.5 border border-white/[0.05]">
                 <div class="flex gap-3 items-start">
                   <div class="flex-1 min-w-0">
@@ -124,19 +123,14 @@ import { NOTES_MAX } from '../constants';
         <!-- Footer -->
         @if (cart.cartItems().length > 0) {
           <div class="flex-shrink-0 border-t border-white/[0.07] px-6 py-5 space-y-4" style="background: #0B0B0F;">
-            <div class="space-y-2">
-              <div class="flex justify-between font-mono text-xs uppercase tracking-wider">
-                <span class="text-lv-cream/40">{{ cart.itemCount() }} {{ cart.itemCount() === 1 ? 'artículo' : 'artículos' }}</span>
-                <span class="text-lv-cream/60">{{ cart.total().toFixed(2) }}€</span>
-              </div>
-              <div class="flex justify-between font-mono text-xs uppercase tracking-wider">
-                <span class="text-lv-gold/60">Depósito 50%</span>
-                <span class="text-lv-gold">{{ cart.deposit().toFixed(2) }}€</span>
-              </div>
-              <div class="flex justify-between pt-3 border-t border-white/[0.07]">
+            <div class="flex justify-between items-center">
+              <div>
                 <span class="font-display text-2xl text-lv-cream tracking-wide">TOTAL</span>
-                <span class="font-display text-2xl text-lv-gold">{{ cart.total().toFixed(2) }}€</span>
+                <span class="font-mono text-[10px] text-lv-cream/30 uppercase tracking-wider ml-2">
+                  {{ cart.itemCount() }} {{ cart.itemCount() === 1 ? 'artículo' : 'artículos' }}
+                </span>
               </div>
+              <span class="font-display text-2xl text-lv-gold">{{ cart.total().toFixed(2) }}€</span>
             </div>
 
             <button
@@ -154,10 +148,7 @@ export class CartDrawerComponent {
   cart = inject(CartService);
   private router = inject(Router);
   protected readonly NOTES_MAX = NOTES_MAX;
-
-  itemKey(item: CartItem): string {
-    return `${item.productId}|${item.variant ?? ''}|${item.color ?? ''}`;
-  }
+  protected readonly cartItemKey = cartItemKey;
 
   goToCheckout() {
     this.cart.closeDrawer();

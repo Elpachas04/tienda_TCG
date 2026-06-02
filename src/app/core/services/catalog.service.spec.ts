@@ -9,6 +9,7 @@ const mockCatalog: ProductCatalog = {
     {
       id: 'deckbox-ventana',
       name: 'DeckBox',
+      tagline: 'Haz que tu Líder imponga respeto.',
       category: 'deckbox',
       badge: 'Más vendida',
       badgeStyle: 'gold',
@@ -22,6 +23,7 @@ const mockCatalog: ProductCatalog = {
     {
       id: 'aplastador-60',
       name: 'Aplastador 60 cartas',
+      tagline: 'Elimina el aire. Aplana deformaciones.',
       category: 'tools',
       badge: null,
       badgeStyle: null,
@@ -45,7 +47,6 @@ const mockCatalog: ProductCatalog = {
     shopName: 'LayerVault',
     city: 'Barcelona',
     telegramUsername: 'test',
-    depositPercent: 50,
     paymentMethods: ['Bizum'],
     deliveryDays: '3-7 días',
   },
@@ -92,7 +93,7 @@ describe('CatalogService', () => {
   it('getSettings() returns settings', () => {
     service.getSettings().subscribe(settings => {
       expect(settings.shopName).toBe('LayerVault');
-      expect(settings.depositPercent).toBe(50);
+      expect(settings.paymentMethods).toContain('Bizum');
     });
     httpMock.expectOne('assets/data/products.json').flush(mockCatalog);
   });

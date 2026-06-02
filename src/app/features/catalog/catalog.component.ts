@@ -7,12 +7,11 @@ import { ProductCardComponent } from './product-card.component';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 import { CartItem } from '../../core/models/cart-item.model';
 import { Product, CategoryItem, Color } from '../../core/models/product.model';
+import { BASE_PILL } from '../../shared/constants';
 
 type CategoryFilter = CategoryItem['id'];
 type CatalogData = { products: Product[]; categories: CategoryItem[]; colors: Color[] };
 type CategoryPill = CategoryItem & { count: number };
-
-const BASE_PILL = 'font-mono text-xs uppercase tracking-wider rounded-full px-5 py-2 transition-all duration-200 cursor-pointer';
 
 @Component({
   selector: 'app-catalog',
