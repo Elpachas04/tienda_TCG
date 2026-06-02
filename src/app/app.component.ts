@@ -1,10 +1,11 @@
 import { Component, computed, inject } from '@angular/core';
-import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Router, NavigationStart, NavigationEnd, RouterOutlet } from '@angular/router';
+import { toSignal, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs';
 import { NavbarComponent } from './shared/components/navbar.component';
 import { TelegramFabComponent } from './shared/components/telegram-fab.component';
 import { CartDrawerComponent } from './shared/components/cart-drawer.component';
+import { CartService } from './core/services/cart.service';
 
 @Component({
   selector: 'app-root',
@@ -24,7 +25,8 @@ import { CartDrawerComponent } from './shared/components/cart-drawer.component';
   `
 })
 export class AppComponent {
-  private router = inject(Router);
+  private router  = inject(Router);
+  private cart    = inject(CartService);
 
   private currentUrl = toSignal(
     this.router.events.pipe(
@@ -39,4 +41,12 @@ export class AppComponent {
     const url = this.currentUrl();
     return url === '/' || url === '';
   });
+
+  constructor() {
+    // Close cart drawer on every route change
+    this.router.events.pipe(
+      filter(e => e instanceof NavigationStart),
+      takeUntilDestroyed(),
+    ).subscribe(() => this.cart.closeDrawer());
+  }
 }
