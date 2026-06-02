@@ -10,7 +10,8 @@ import { NOTES_MAX } from '../constants';
   standalone: true,
   imports: [FormsModule],
   template: `
-    <div class="fixed inset-0 z-50 flex justify-end"
+    <div class="fixed inset-0 flex justify-end"
+         style="z-index:70"
          [class.pointer-events-none]="!cart.drawerOpen()">
 
       <!-- Backdrop -->
