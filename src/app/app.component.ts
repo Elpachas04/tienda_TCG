@@ -20,7 +20,9 @@ import { CartDrawerComponent } from './shared/components/cart-drawer.component';
     @if (!isLanding()) {
       <app-telegram-fab telegramUrl="https://t.me/Elpachas_04" />
     }
-    <app-cart-drawer />
+    @if (!isCheckout()) {
+      <app-cart-drawer />
+    }
   `
 })
 export class AppComponent {
@@ -35,5 +37,10 @@ export class AppComponent {
     { initialValue: this.router.url },
   );
 
-  readonly isLanding = computed(() => this.currentUrl() === '/');
+  readonly isLanding = computed(() => {
+    const url = this.currentUrl();
+    return url === '/' || url === '';
+  });
+
+  readonly isCheckout = computed(() => this.currentUrl().startsWith('/checkout'));
 }

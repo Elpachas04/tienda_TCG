@@ -25,6 +25,9 @@ module.exports = {
       borderRadius: {
         card: '12px',
       },
+      zIndex: {
+        '60': '60',
+      },
     },
   },
   safelist: [

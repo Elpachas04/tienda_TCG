@@ -5,7 +5,7 @@ import { CartService } from './core/services/cart.service';
 
 const cartNotEmpty = () => {
   const hasItems = inject(CartService).cartItems().length > 0;
-  return hasItems ? true : inject(Router).createUrlTree(['/cart']);
+  return hasItems ? true : inject(Router).createUrlTree(['/catalog']);
 };
 
 export const routes: Routes = [
@@ -23,11 +23,6 @@ export const routes: Routes = [
     path: 'product/:id',
     loadComponent: () =>
       import('./features/catalog/product-detail.component').then(m => m.ProductDetailComponent),
-  },
-  {
-    path: 'cart',
-    loadComponent: () =>
-      import('./features/cart/cart.component').then(m => m.CartComponent),
   },
   {
     path: 'checkout',

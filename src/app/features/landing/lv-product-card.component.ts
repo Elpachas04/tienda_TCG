@@ -91,7 +91,8 @@ export class LvProductCardComponent {
   @Output() added = new EventEmitter<CartItem>();
 
   protected colors = LANDING_COLORS;
-  readonly selectedColor = signal<string>('');
+  // Default to Negro so every add has a color key and doesn't create duplicate entries
+  readonly selectedColor = signal<string>(LANDING_COLORS.find(c => c.name === 'Negro')?.hex ?? LANDING_COLORS[0].hex);
 
   selectedColorName(): string {
     return this.colors.find(c => c.hex === this.selectedColor())?.name ?? '';
@@ -99,7 +100,7 @@ export class LvProductCardComponent {
 
   selectColor(hex: string, event: Event): void {
     event.stopPropagation();
-    this.selectedColor.set(this.selectedColor() === hex ? '' : hex);
+    this.selectedColor.set(hex);
   }
 
   onAdd(event: Event): void {
