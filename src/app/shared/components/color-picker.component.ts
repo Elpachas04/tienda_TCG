@@ -14,8 +14,8 @@ import { Color } from '../../core/models/product.model';
         <!-- ── BLOCK: botón ancho, dropdown hacia abajo (detalle de producto) ── -->
         <button
           type="button"
-          class="w-full flex items-center gap-2.5 px-3 py-2.5 bg-tcg-bg border rounded-lg transition-colors duration-150 focus:outline-none"
-          [class]="isOpen() ? 'border-tcg-gold' : 'border-tcg-border hover:border-tcg-gold/50'"
+          class="w-full flex items-center gap-2.5 px-3 py-2.5 bg-lv-black border rounded-lg transition-colors duration-150 focus:outline-none"
+          [class]="isOpen() ? 'border-lv-gold' : 'border-lv-border hover:border-lv-gold/50'"
           (click)="toggle()">
 
           @if (selected) {
@@ -23,13 +23,13 @@ import { Color } from '../../core/models/product.model';
                   [style.background-color]="selected.hex">
             </span>
           } @else {
-            <span class="w-5 h-5 rounded-full flex-shrink-0 border-2 border-dashed border-tcg-border/70"></span>
+            <span class="w-5 h-5 rounded-full flex-shrink-0 border-2 border-dashed border-lv-border/70"></span>
           }
           <span class="flex-1 text-sm font-body text-left truncate"
-                [class]="selected ? 'text-tcg-text' : 'text-tcg-muted/60'">
+                [class]="selected ? 'text-lv-cream' : 'text-lv-muted/60'">
             {{ selected?.name ?? 'Elige un color' }}
           </span>
-          <svg class="w-4 h-4 text-tcg-muted/50 flex-shrink-0 transition-transform duration-200"
+          <svg class="w-4 h-4 text-lv-muted/50 flex-shrink-0 transition-transform duration-200"
                [class.rotate-180]="isOpen()"
                fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -37,7 +37,7 @@ import { Color } from '../../core/models/product.model';
         </button>
 
         @if (isOpen()) {
-          <div class="absolute top-full left-0 right-0 mt-1.5 bg-tcg-surface border border-tcg-border rounded-xl shadow-2xl z-50 overflow-hidden animate-dropdown-in">
+          <div class="absolute top-full left-0 right-0 mt-1.5 bg-lv-surface border border-lv-border rounded-xl shadow-2xl z-50 overflow-hidden animate-dropdown-in">
             <div class="p-2 gap-0.5"
                  [class]="columns === 1 ? 'grid grid-cols-1' : 'grid grid-cols-2'">
               @for (color of colors; track color.id) {
@@ -60,13 +60,13 @@ import { Color } from '../../core/models/product.model';
                   [style.background-color]="selected.hex">
             </span>
           } @else {
-            <span class="w-5 h-5 rounded-full flex-shrink-0 border-2 border-dashed border-tcg-border/70"></span>
+            <span class="w-5 h-5 rounded-full flex-shrink-0 border-2 border-dashed border-lv-border/70"></span>
           }
           <span class="text-xs font-body truncate max-w-[5.5rem]"
-                [class]="selected ? 'text-tcg-text' : 'text-tcg-muted/60'">
+                [class]="selected ? 'text-lv-cream' : 'text-lv-muted/60'">
             {{ selected?.name ?? 'Color' }}
           </span>
-          <svg class="w-3 h-3 text-tcg-muted/50 flex-shrink-0 transition-transform duration-200"
+          <svg class="w-3 h-3 text-lv-muted/50 flex-shrink-0 transition-transform duration-200"
                [class.rotate-180]="isOpen()"
                fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -74,7 +74,7 @@ import { Color } from '../../core/models/product.model';
         </button>
 
         @if (isOpen()) {
-          <div class="absolute bottom-full left-0 mb-2 w-48 bg-tcg-surface border border-tcg-border rounded-xl shadow-2xl z-50 overflow-hidden animate-dropdown-in">
+          <div class="absolute bottom-full left-0 mb-2 w-48 bg-lv-surface border border-lv-border rounded-xl shadow-2xl z-50 overflow-hidden animate-dropdown-in">
             <div class="p-2 grid grid-cols-1 gap-0.5">
               @for (color of colors; track color.id) {
                 <ng-container *ngTemplateOutlet="colorRow; context: { $implicit: color }"></ng-container>
@@ -92,19 +92,19 @@ import { Color } from '../../core/models/product.model';
       <button
         type="button"
         class="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left transition-colors duration-100"
-        [class]="selected?.id === color.id ? 'bg-tcg-gold/10' : 'hover:bg-tcg-border'"
+        [class]="selected?.id === color.id ? 'bg-lv-gold/10' : 'hover:bg-lv-border'"
         (click)="pick(color)">
         <span
           class="w-5 h-5 rounded-full flex-shrink-0 border-2 transition-all duration-150"
           [style.background-color]="color.hex"
-          [class]="selected?.id === color.id ? 'border-tcg-gold scale-110 shadow-md' : 'border-white/20'">
+          [class]="selected?.id === color.id ? 'border-lv-gold scale-110 shadow-md' : 'border-white/20'">
         </span>
         <span class="text-xs font-body truncate"
-              [class]="selected?.id === color.id ? 'text-tcg-gold' : 'text-tcg-muted'">
+              [class]="selected?.id === color.id ? 'text-lv-gold' : 'text-lv-muted'">
           {{ color.name }}
         </span>
         @if (selected?.id === color.id) {
-          <svg class="w-3.5 h-3.5 text-tcg-gold flex-shrink-0 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-3.5 h-3.5 text-lv-gold flex-shrink-0 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
           </svg>
         }
@@ -114,10 +114,10 @@ import { Color } from '../../core/models/product.model';
     <!-- plantilla para "quitar selección" -->
     <ng-template #clearBtn>
       @if (selected) {
-        <div class="border-t border-tcg-border px-3 py-2">
+        <div class="border-t border-lv-border px-3 py-2">
           <button
             type="button"
-            class="w-full text-xs font-body text-tcg-muted/40 hover:text-tcg-muted transition-colors text-center"
+            class="w-full text-xs font-body text-lv-muted/40 hover:text-lv-muted transition-colors text-center"
             (click)="pick(null)">
             Quitar selección
           </button>
