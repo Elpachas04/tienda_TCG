@@ -36,7 +36,7 @@ import { CONTACT_EMAIL } from '../../shared/constants';
         </div>
 
         @if (tab() === 'aviso') {
-          <div class="prose-lv space-y-8">
+          <div class="space-y-8">
             <div>
               <p class="font-mono text-xs uppercase tracking-[0.3em] text-lv-gold/60 mb-3">— Aviso Legal</p>
               <h1 class="font-display uppercase text-4xl text-lv-cream leading-none">Información legal</h1>

@@ -7,7 +7,7 @@ import { RouterLink } from '@angular/router';
   imports: [RouterLink],
   host: { class: 'block animate-fade-up' },
   template: `
-    <div class="bg-lv-black min-h-screen flex flex-col items-center justify-center text-center px-6 gap-8">
+    <div class="relative bg-lv-black min-h-screen flex flex-col items-center justify-center text-center px-6 gap-8">
 
       <div class="absolute inset-0 pointer-events-none"
            style="background: radial-gradient(ellipse at center, rgba(201,168,76,0.05) 0%, transparent 60%);">

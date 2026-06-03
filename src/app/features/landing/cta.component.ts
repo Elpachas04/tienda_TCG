@@ -28,7 +28,7 @@ import { TELEGRAM_URL, CONTACT_EMAIL } from '../../shared/constants';
       <!-- Content -->
       <div class="relative z-10 flex flex-col items-center gap-6 text-center py-32 px-6 max-w-2xl mx-auto">
 
-        <p lvReveal class="font-accent italic text-lv-gold text-2xl md:text-4xl">
+        <p lvReveal class="font-body italic text-lv-gold text-2xl md:text-4xl">
           ¿listo para jugar con estilo?
         </p>
 
@@ -43,7 +43,7 @@ import { TELEGRAM_URL, CONTACT_EMAIL } from '../../shared/constants';
         </p>
 
         <div lvReveal class="flex gap-4 flex-wrap justify-center">
-          <a [href]="telegramUrl"
+          <a [href]="telegramUrl" target="_blank" rel="noopener noreferrer"
              class="flex items-center gap-2 bg-lv-gold text-black rounded-full px-10 py-4 font-mono text-xs uppercase tracking-wider font-semibold hover:brightness-110 transition-all duration-200">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
