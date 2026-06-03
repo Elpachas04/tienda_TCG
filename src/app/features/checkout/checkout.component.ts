@@ -53,8 +53,16 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
 
           @if (errorMsg()) {
             <div class="liquid-glass border border-red-500/40 rounded-[16px] px-5 py-4 mb-5 font-body text-sm text-red-300 flex items-start gap-3">
-              <span class="text-red-400 flex-shrink-0">⚠</span>
-              <span>{{ errorMsg() }}</span>
+              <span class="text-red-400 flex-shrink-0 mt-0.5">⚠</span>
+              <div class="flex-1">
+                <span>{{ errorMsg() }}</span>
+                @if (fallbackUrl()) {
+                  <a [href]="fallbackUrl()" target="_blank" rel="noopener noreferrer"
+                     class="block mt-2 font-mono text-[10px] uppercase tracking-wider text-lv-gold hover:underline">
+                    Enviar manualmente por Telegram →
+                  </a>
+                }
+              </div>
             </div>
           }
 
@@ -262,19 +270,24 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                 <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.04 9.61c-.15.67-.54.835-1.095.52l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.914.599z"/>
               </svg>
               <p class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/30 leading-relaxed">
-                Al confirmar se abrirá Telegram con tu pedido. Envíalo y te contactamos para coordinar el pago.
+                Al confirmar, el bot nos envía tu pedido automáticamente. Te contactamos en menos de 1 hora.
               </p>
             </div>
 
             <button
               type="button"
               class="w-full font-mono text-xs uppercase tracking-widest font-semibold rounded-full py-4 transition-all duration-200 flex items-center justify-center gap-2"
-              [class]="isFormValid()
+              [class]="isFormValid() && !submitting()
                 ? 'bg-lv-gold hover:brightness-110 text-black'
                 : 'bg-white/[0.05] text-lv-cream/20 cursor-not-allowed'"
-              [disabled]="!isFormValid()"
+              [disabled]="!isFormValid() || submitting()"
               (click)="submitOrder()">
-              <span>Confirmar y enviar por Telegram →</span>
+              @if (submitting()) {
+                <span class="w-3.5 h-3.5 border-2 border-black/40 border-t-black rounded-full animate-spin"></span>
+                <span>Enviando...</span>
+              } @else {
+                <span>Confirmar pedido →</span>
+              }
             </button>
 
           </div>
@@ -331,6 +344,8 @@ export class CheckoutComponent implements OnInit {
 
   orderConfirmed   = signal(false);
   errorMsg         = signal('');
+  submitting       = signal(false);
+  fallbackUrl      = signal('');
   summaryOpen      = signal(true);
 
   shippingInfo     = signal<{ zone: string; price: number } | null>(null);
@@ -423,7 +438,7 @@ export class CheckoutComponent implements OnInit {
     this.router.navigate(['/catalog']);
   }
 
-  submitOrder(): void {
+  async submitOrder(): Promise<void> {
     this.touched = { name: true, contact: true, cp: true };
     if (!this.isFormValid()) {
       this.errorMsg.set('Rellena todos los campos obligatorios antes de continuar.');
@@ -431,8 +446,66 @@ export class CheckoutComponent implements OnInit {
       return;
     }
 
-    const items = this.cartService.cartItems();
-    const info  = this.shippingInfo();
+    this.submitting.set(true);
+    this.errorMsg.set('');
+    this.fallbackUrl.set('');
+
+    const items   = this.cartService.cartItems();
+    const info    = this.shippingInfo();
+    const oficina = this.selectedOficina();
+
+    const payload = {
+      customerName:    this.form.customerName,
+      customerContact: this.form.customerContact,
+      deliveryMethod:  this.form.deliveryMethod,
+      postalCode:      this.form.deliveryMethod === 'shipping' ? this.form.postalCode : undefined,
+      shippingZone:    info?.zone,
+      shippingCost:    info?.price,
+      oficina:         oficina ? {
+        nombre:       oficina.nombre,
+        direccion:    oficina.direccion,
+        codigoPostal: oficina.codigoPostal,
+        localidad:    oficina.localidad,
+        telefono:     oficina.telefono,
+      } : undefined,
+      notes:       this.form.notes.trim() || undefined,
+      totalAmount: this.grandTotal(),
+      items: items.map(i => ({
+        productName: i.productName,
+        variant:     i.variant,
+        color:       i.color,
+        quantity:    i.quantity,
+        unitPrice:   i.unitPrice,
+        notes:       i.notes,
+      })),
+    };
+
+    try {
+      const res = await fetch('/api/order', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(data.error ?? `Error ${res.status}`);
+      }
+
+      this.orderConfirmed.set(true);
+    } catch {
+      this.fallbackUrl.set(this.buildTelegramFallbackUrl());
+      this.errorMsg.set('No se pudo enviar el pedido. Inténtalo de nuevo o usa el enlace de abajo.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } finally {
+      this.submitting.set(false);
+    }
+  }
+
+  private buildTelegramFallbackUrl(): string {
+    const items   = this.cartService.cartItems();
+    const info    = this.shippingInfo();
+    const oficina = this.selectedOficina();
 
     const itemLines = items.map(i => {
       let line = `• ${i.quantity}× ${i.productName}`;
@@ -443,7 +516,6 @@ export class CheckoutComponent implements OnInit {
       return line;
     }).join('\n');
 
-    const oficina = this.selectedOficina();
     const deliveryLine = this.form.deliveryMethod === 'pickup'
       ? 'En mano (sin coste)'
       : `Envío Correos a CP ${this.form.postalCode} (${info?.zone}) — ${info?.price.toFixed(2)}€`;
@@ -468,8 +540,6 @@ export class CheckoutComponent implements OnInit {
       ...(this.form.notes.trim() ? [`📝 ${this.form.notes.trim()}`] : []),
     ];
 
-    const url = `https://t.me/${TELEGRAM_USERNAME}?text=${encodeURIComponent(lines.join('\n'))}`;
-    window.open(url, '_blank');
-    this.orderConfirmed.set(true);
+    return `https://t.me/${TELEGRAM_USERNAME}?text=${encodeURIComponent(lines.join('\n'))}`;
   }
 }

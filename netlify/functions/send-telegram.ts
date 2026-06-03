@@ -12,7 +12,6 @@ function escapeHtml(s: string): string {
 
 function sanitizeStr(value: unknown, maxLen: number, fieldName: string): string {
   if (typeof value !== "string") throw new ValidationError(`${fieldName} debe ser texto`);
-  // Strip null bytes and ASCII control chars (except \n \t)
   const cleaned = value.replace(/\0/g, "").replace(/[\x01-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "").trim();
   if (cleaned.length === 0) throw new ValidationError(`${fieldName} no puede estar vacío`);
   if (cleaned.length > maxLen) throw new ValidationError(`${fieldName} demasiado largo (máx ${maxLen})`);
@@ -33,29 +32,39 @@ class ValidationError extends Error {
   }
 }
 
-// ── Validation ─────────────────────────────────────────────────────────────
+// ── Types ──────────────────────────────────────────────────────────────────
 
 interface ValidatedItem {
   productName: string;
-  quantity: number;
-  unitPrice: number;
-  variant?: string;
-  color?: string;
-  notes?: string;
+  quantity:    number;
+  unitPrice:   number;
+  variant?:    string;
+  color?:      string;
+  notes?:      string;
+}
+
+interface ValidatedOficina {
+  nombre:       string;
+  direccion:    string;
+  codigoPostal: string;
+  localidad:    string;
+  telefono:     string;
 }
 
 interface ValidatedOrder {
-  customerName: string;
+  customerName:    string;
   customerContact: string;
-  deliveryMethod: "pickup" | "shipping";
-  postalCode?: string;
-  shippingZone?: string;
-  shippingCost?: number;
-  notes?: string;
-  totalAmount: number;
-  depositAmount: number;
-  items: ValidatedItem[];
+  deliveryMethod:  "pickup" | "shipping";
+  postalCode?:     string;
+  shippingZone?:   string;
+  shippingCost?:   number;
+  oficina?:        ValidatedOficina;
+  notes?:          string;
+  totalAmount:     number;
+  items:           ValidatedItem[];
 }
+
+// ── Validation ─────────────────────────────────────────────────────────────
 
 function validateOrder(body: unknown): ValidatedOrder {
   if (!body || typeof body !== "object" || Array.isArray(body)) {
@@ -103,23 +112,36 @@ function validateOrder(body: unknown): ValidatedOrder {
     };
   });
 
-  // Cross-check totals (allow ±1€ for floating point drift)
-  const expectedTotal = items.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
+  const shippingCost = typeof raw["shippingCost"] === "number" && isFinite(raw["shippingCost"])
+    ? raw["shippingCost"]
+    : undefined;
+
+  // Cross-check total: items subtotal + shipping must match claimed total (±1€ float drift)
+  const itemsSubtotal = items.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
+  const expectedTotal = itemsSubtotal + (shippingCost ?? 0);
   const claimedTotal  = raw["totalAmount"];
   if (typeof claimedTotal !== "number" || !isFinite(claimedTotal) || Math.abs(claimedTotal - expectedTotal) > 1) {
     throw new ValidationError("Total del pedido no coincide con los artículos");
   }
 
-  const depositAmount = raw["depositAmount"];
-  if (typeof depositAmount !== "number" || !isFinite(depositAmount) || depositAmount <= 0) {
-    throw new ValidationError("Depósito inválido");
-  }
-
-  const postalCode  = sanitizeOptionalStr(raw["postalCode"],  10);
+  const postalCode   = sanitizeOptionalStr(raw["postalCode"],   10);
   const shippingZone = sanitizeOptionalStr(raw["shippingZone"], 100);
-  const shippingCost = typeof raw["shippingCost"] === "number" && isFinite(raw["shippingCost"])
-    ? raw["shippingCost"]
-    : undefined;
+
+  let oficina: ValidatedOficina | undefined;
+  if (raw["oficina"] && typeof raw["oficina"] === "object" && !Array.isArray(raw["oficina"])) {
+    const o = raw["oficina"] as Record<string, unknown>;
+    try {
+      oficina = {
+        nombre:       sanitizeStr(o["nombre"],       200, "Oficina nombre"),
+        direccion:    sanitizeStr(o["direccion"],     300, "Oficina dirección"),
+        codigoPostal: sanitizeStr(o["codigoPostal"],  10, "Oficina CP"),
+        localidad:    sanitizeStr(o["localidad"],     200, "Oficina localidad"),
+        telefono:     sanitizeStr(o["telefono"],       50, "Oficina teléfono"),
+      };
+    } catch {
+      // Oficina is optional — skip if malformed
+    }
+  }
 
   return {
     customerName,
@@ -128,9 +150,9 @@ function validateOrder(body: unknown): ValidatedOrder {
     postalCode,
     shippingZone,
     shippingCost,
+    oficina,
     notes,
     totalAmount: claimedTotal,
-    depositAmount,
     items,
   };
 }
@@ -139,7 +161,7 @@ function validateOrder(body: unknown): ValidatedOrder {
 
 function buildMessage(order: ValidatedOrder): string {
   const itemLines = order.items.map(item => {
-    let line = `• ${item.quantity}x <b>${escapeHtml(item.productName)}</b>`;
+    let line = `• ${item.quantity}× <b>${escapeHtml(item.productName)}</b>`;
     if (item.variant) line += ` (${escapeHtml(item.variant)})`;
     if (item.color)   line += ` — Color: ${escapeHtml(item.color)}`;
     line += ` — ${(item.quantity * item.unitPrice).toFixed(2)}€`;
@@ -147,30 +169,45 @@ function buildMessage(order: ValidatedOrder): string {
     return line;
   }).join("\n");
 
-  let deliveryLabel = order.deliveryMethod === "pickup" ? "En mano (Barcelona)" : "Envío";
+  let deliveryLabel = order.deliveryMethod === "pickup" ? "En mano" : "Envío";
   if (order.deliveryMethod === "shipping" && order.postalCode) {
     deliveryLabel += ` · CP ${escapeHtml(order.postalCode)}`;
     if (order.shippingZone) deliveryLabel += ` (${escapeHtml(order.shippingZone)})`;
   }
 
-  return [
+  const lines: string[] = [
     `🏴‍☠️ <b>NUEVO PEDIDO — LayerVault</b>`,
     `━━━━━━━━━━━━━━━━━━━━`,
     ``,
     `👤 <b>Cliente:</b> ${escapeHtml(order.customerName)}`,
     `📞 <b>Contacto:</b> ${escapeHtml(order.customerContact)}`,
     `🚚 <b>Entrega:</b> ${deliveryLabel}`,
-    order.shippingCost ? `📮 <b>Envío:</b> ${order.shippingCost.toFixed(2)}€` : "",
-    ``,
-    `📦 <b>Productos:</b>`,
-    itemLines,
-    ``,
-    `━━━━━━━━━━━━━━━━━━━━`,
-    `💰 <b>Total:</b> ${order.totalAmount.toFixed(2)}€`,
-    `💳 <b>Depósito 50%:</b> ${order.depositAmount.toFixed(2)}€`,
-    order.notes ? `📝 <b>Notas:</b> ${escapeHtml(order.notes)}` : "",
-    `🕐 ${new Date().toLocaleString("es-ES")}`,
-  ].filter(line => line !== "").join("\n");
+  ];
+
+  if (order.shippingCost) {
+    lines.push(`📮 <b>Envío:</b> ${order.shippingCost.toFixed(2)}€`);
+  }
+
+  if (order.oficina) {
+    lines.push(`🏣 <b>Oficina:</b> ${escapeHtml(order.oficina.nombre)}`);
+    lines.push(`   📍 ${escapeHtml(order.oficina.direccion)}, ${escapeHtml(order.oficina.codigoPostal)} ${escapeHtml(order.oficina.localidad)}`);
+    lines.push(`   📞 ${escapeHtml(order.oficina.telefono)}`);
+  }
+
+  lines.push(``);
+  lines.push(`📦 <b>Productos:</b>`);
+  lines.push(itemLines);
+  lines.push(``);
+  lines.push(`━━━━━━━━━━━━━━━━━━━━`);
+  lines.push(`💰 <b>Total:</b> ${order.totalAmount.toFixed(2)}€`);
+
+  if (order.notes) {
+    lines.push(`📝 <b>Notas:</b> ${escapeHtml(order.notes)}`);
+  }
+
+  lines.push(`🕐 ${new Date().toLocaleString("es-ES")}`);
+
+  return lines.join("\n");
 }
 
 // ── Handler ────────────────────────────────────────────────────────────────
@@ -180,7 +217,6 @@ const handler: Handler = async (event: HandlerEvent) => {
     return { statusCode: 405, body: "Method Not Allowed" };
   }
 
-  // Reject suspiciously large bodies (>16 KB)
   if (event.body && event.body.length > 16_384) {
     return { statusCode: 413, body: "Payload Too Large" };
   }
@@ -199,10 +235,7 @@ const handler: Handler = async (event: HandlerEvent) => {
     order = validateOrder(raw);
   } catch (err) {
     if (err instanceof ValidationError) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: err.message }),
-      };
+      return { statusCode: 400, body: JSON.stringify({ error: err.message }) };
     }
     return { statusCode: 400, body: JSON.stringify({ error: "Petición malformada" }) };
   }
@@ -215,7 +248,7 @@ const handler: Handler = async (event: HandlerEvent) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           chat_id: chatId,
-          text: buildMessage(order),
+          text:    buildMessage(order),
           parse_mode: "HTML",
         }),
       }
