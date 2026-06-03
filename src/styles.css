@@ -5,7 +5,7 @@
 @layer base {
   html { scroll-behavior: smooth; }
   body {
-    @apply bg-tcg-bg text-tcg-text font-body;
+    @apply bg-lv-black text-lv-cream font-body;
   }
   img, video {
     -webkit-user-drag: none;

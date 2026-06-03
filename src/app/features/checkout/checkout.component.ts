@@ -315,7 +315,7 @@ export class CheckoutComponent implements OnInit {
   protected readonly CONTACT_MAX = CONTACT_MAX;
   protected readonly NOTES_MAX   = NOTES_MAX;
 
-  cartService = inject(CartService);
+  protected readonly cartService = inject(CartService);
   private router = inject(Router);
   private oficinaService = inject(OficinaService);
 
