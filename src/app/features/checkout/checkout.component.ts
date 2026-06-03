@@ -4,9 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CartService } from '../../core/services/cart.service';
 import { OficinaService } from '../../core/services/oficina.service';
 import { OficinaCorreos } from '../../core/models/oficina.model';
-import { NOTES_MAX } from '../../shared/constants';
-
-const TELEGRAM_USERNAME = 'Elpachas_04';
+import { NOTES_MAX, TELEGRAM_USERNAME } from '../../shared/constants';
 
 const NAME_MAX    = 100;
 const CONTACT_MAX = 200;
@@ -300,10 +298,11 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                 </div>
               }
             </div>
-            <a routerLink="/catalog"
-               class="inline-block bg-lv-gold hover:brightness-110 text-black font-mono text-xs uppercase tracking-widest font-semibold rounded-full px-8 py-4 transition-all duration-200">
+            <button type="button"
+               class="inline-block bg-lv-gold hover:brightness-110 text-black font-mono text-xs uppercase tracking-widest font-semibold rounded-full px-8 py-4 transition-all duration-200"
+               (click)="finishOrder()">
               Seguir explorando
-            </a>
+            </button>
           </div>
         }
 
@@ -419,6 +418,11 @@ export class CheckoutComponent implements OnInit {
     return true;
   }
 
+  finishOrder(): void {
+    this.cartService.clearCart();
+    this.router.navigate(['/catalog']);
+  }
+
   submitOrder(): void {
     this.touched = { name: true, contact: true, cp: true };
     if (!this.isFormValid()) {
@@ -466,8 +470,6 @@ export class CheckoutComponent implements OnInit {
 
     const url = `https://t.me/${TELEGRAM_USERNAME}?text=${encodeURIComponent(lines.join('\n'))}`;
     window.open(url, '_blank');
-
-    this.cartService.clearCart();
     this.orderConfirmed.set(true);
   }
 }

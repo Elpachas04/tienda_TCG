@@ -30,5 +30,20 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/checkout/checkout.component').then(m => m.CheckoutComponent),
   },
-  { path: '**', redirectTo: 'catalog' },
+  {
+    path: 'legal',
+    loadComponent: () =>
+      import('./features/legal/legal.component').then(m => m.LegalComponent),
+  },
+  {
+    path: 'privacidad',
+    loadComponent: () =>
+      import('./features/legal/legal.component').then(m => m.LegalComponent),
+  },
+  {
+    path: '404',
+    loadComponent: () =>
+      import('./features/not-found/not-found.component').then(m => m.NotFoundComponent),
+  },
+  { path: '**', redirectTo: '404' },
 ];
