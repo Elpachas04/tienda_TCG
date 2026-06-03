@@ -37,7 +37,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
         </h2>
 
         <p lvReveal class="font-mono text-xs uppercase tracking-wide text-lv-cream/40 max-w-md leading-relaxed">
-          Hecho en Barcelona. Enviado a toda España.<br>
+          Enviado a toda España.<br>
           Cada pieza impresa cuando la pides, como la quieres.
         </p>
 

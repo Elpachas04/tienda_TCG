@@ -7,6 +7,11 @@
   body {
     @apply bg-tcg-bg text-tcg-text font-body;
   }
+  img, video {
+    -webkit-user-drag: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
 }
 
 /* ── LayerVault landing: liquid glass ── */

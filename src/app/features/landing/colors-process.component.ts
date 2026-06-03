@@ -9,7 +9,7 @@ const STEPS = [
   { n: '1', title: 'Elige tu pieza',  desc: 'Navega el catálogo, selecciona producto, variante y color.' },
   { n: '2', title: 'Manda el pedido', desc: 'Rellena nombre y contacto. Confirmación inmediata.' },
   { n: '3', title: 'Abona el total',   desc: 'Pago por Bizum o transferencia para iniciar fabricación.' },
-  { n: '4', title: 'Recibe tu pieza', desc: 'En 3–7 días laborables. Recogida en Barcelona o envío acordado.' },
+  { n: '4', title: 'Recibe tu pieza', desc: 'En 3–7 días laborables. Recogida en persona o envío acordado.' },
 ];
 
 @Component({

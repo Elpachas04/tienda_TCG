@@ -10,7 +10,7 @@ import { Component } from '@angular/core';
 
         <div class="flex items-center">
           <span class="font-display text-lv-gold text-lg">LayerVault</span>
-          <span class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/30 ml-3">Barcelona · 2024</span>
+          <span class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/30 ml-3">2026</span>
         </div>
 
         <p class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/20 text-center">

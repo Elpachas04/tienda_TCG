@@ -174,7 +174,7 @@
   ],
   "settings": {
     "shopName": "LayerVault",
-    "city": "Barcelona",
+    "city": "",
     "telegramUsername": "Elpachas_04",
     "telegramLink": "https://t.me/Elpachas_04",
     "paymentMethods": ["Bizum", "Transferencia bancaria"],

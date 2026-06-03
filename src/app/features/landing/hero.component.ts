@@ -24,7 +24,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
       <div class="relative z-10 flex flex-col items-center gap-6 max-w-3xl mx-auto">
 
         <p lvReveal class="font-mono text-xs uppercase tracking-[0.3em] text-lv-gold">
-          Barcelona · Ingeniería 3D · Alta precisión
+          Ingeniería 3D · Alta precisión
         </p>
 
         <h1 lvReveal

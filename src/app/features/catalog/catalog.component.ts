@@ -3,7 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { combineLatest, map, catchError, of } from 'rxjs';
 import { CatalogService } from '../../core/services/catalog.service';
 import { CartService } from '../../core/services/cart.service';
-import { ProductCardComponent } from './product-card.component';
+import { LvProductCardComponent } from '../landing/lv-product-card.component';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 import { CartItem } from '../../core/models/cart-item.model';
 import { Product, CategoryItem, Color } from '../../core/models/product.model';
@@ -16,7 +16,7 @@ type CategoryPill = CategoryItem & { count: number };
 @Component({
   selector: 'app-catalog',
   standalone: true,
-  imports: [ProductCardComponent, RevealDirective],
+  imports: [LvProductCardComponent, RevealDirective],
   host: { class: 'block' },
   template: `
     <div class="bg-grid-premium min-h-screen relative">
@@ -35,7 +35,7 @@ type CategoryPill = CategoryItem & { count: number };
             <span class="block text-lv-gold" style="font-size: clamp(3rem, 8vw, 7rem)">FABRICAMOS</span>
           </h1>
           <p class="font-mono text-xs uppercase tracking-wide text-lv-cream/30 mt-6 max-w-sm leading-relaxed">
-            Accesorios para TCG impresos en Barcelona.<br>Cada pieza, por encargo. Cada color, el tuyo.
+            Accesorios para TCG impresos en 3D.<br>Cada pieza, por encargo. Cada color, el tuyo.
           </p>
         </div>
 
@@ -78,12 +78,12 @@ type CategoryPill = CategoryItem & { count: number };
           } @else {
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               @for (product of filteredProducts(); track product.id; let i = $index) {
-                <app-product-card
+                <app-lv-product-card
                   [product]="product"
                   [colors]="colors()"
                   [delay]="(i * 50) + 'ms'"
-                  (addedToCart)="onAddToCart($event)">
-                </app-product-card>
+                  (added)="onAddToCart($event)">
+                </app-lv-product-card>
               }
             </div>
           }

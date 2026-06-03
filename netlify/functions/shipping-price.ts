@@ -23,8 +23,6 @@ const handler: Handler = async (event: HandlerEvent) => {
     return { statusCode: 422, headers: JSON_HEADERS, body: JSON.stringify({ error: "Zona no disponible" }) };
   }
 
-  // Correos iPaq domicilio — 30×20×20 cm, hasta 2 kg
-  // Precio verificado correos.es jun-2025 (Barcelona → A Coruña)
   return {
     statusCode: 200,
     headers: CACHED_HEADERS,

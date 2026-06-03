@@ -1,20 +1,29 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, signal } from '@angular/core';
-import { Product, Color } from '../../core/models/product.model';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, signal, inject, DestroyRef } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { Product, ProductVariant, Color } from '../../core/models/product.model';
 import { CartItem } from '../../core/models/cart-item.model';
+import { CardGlowDirective } from '../../shared/directives/card-glow.directive';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
+import { PLACEHOLDER } from '../../shared/constants';
 
 @Component({
   selector: 'app-lv-product-card',
   standalone: true,
-  imports: [RevealDirective],
+  imports: [RouterLink, CardGlowDirective, RevealDirective],
+  host: { class: 'block h-full' },
   template: `
-    <div lvReveal
-         class="card-glow liquid-glass rounded-[28px] cursor-pointer flex flex-col"
-         style="overflow:visible;"
-         [style.transition-delay]="delay">
+    <div lvCardGlow lvReveal
+         [style.transition-delay]="delay"
+         class="relative h-full card-glow liquid-glass rounded-[28px] flex flex-col group
+                before:absolute before:inset-0 before:rounded-[28px] before:opacity-0
+                before:transition-opacity before:duration-500 before:pointer-events-none
+                hover:before:opacity-100
+                before:bg-[radial-gradient(300px_circle_at_var(--mouse-x,50%)_var(--mouse-y,50%),rgba(201,168,76,0.08),transparent_80%)]"
+         style="overflow:visible;">
 
       <!-- Image area -->
-      <div class="aspect-square bg-lv-surface rounded-[20px] m-3 relative overflow-hidden flex-shrink-0">
+      <a [routerLink]="['/product', product.id]"
+         class="relative m-3 aspect-square bg-lv-surface rounded-[20px] overflow-hidden block flex-shrink-0">
         @if (product.video) {
           <video
             class="w-full h-full object-cover"
@@ -23,42 +32,69 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
             preload="none">
           </video>
         } @else {
-          <svg viewBox="0 0 200 200" class="w-full h-full p-8" xmlns="http://www.w3.org/2000/svg">
-            <g stroke="#C9A84C" stroke-width="1.5" fill="none">
-              <polygon points="100,30 162,65 100,100 38,65"  fill="rgba(201,168,76,0.05)"/>
-              <polygon points="38,65  100,100 100,158 38,123" fill="rgba(201,168,76,0.03)"/>
-              <polygon points="100,100 162,65  162,123 100,158" fill="rgba(201,168,76,0.07)"/>
-            </g>
-            @if (selectedColor()) {
-              <polygon points="100,30 162,65 100,100 38,65"
-                       [attr.fill]="selectedColor()!.hex"
-                       opacity="0.25"/>
-            }
-          </svg>
+          <img
+            [src]="currentImage()"
+            [alt]="product.name"
+            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            (error)="onImageError($event)"
+          />
         }
         @if (product.badge) {
           <span class="absolute top-2 left-2 liquid-glass rounded-full px-2.5 py-1 font-mono text-[9px] uppercase tracking-wider text-lv-gold border border-lv-gold/30">
             {{ product.badge }}
           </span>
         }
-        @if (product.colorPickerEnabled && !product.video) {
-          <span class="absolute top-2 left-2 liquid-glass rounded-full px-2 py-1 font-mono text-[9px] uppercase tracking-wider text-lv-gold">
-            Color libre
-          </span>
+        @if (product.images.length > 1) {
+          <div class="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5">
+            @for (img of product.images; track $index) {
+              <button
+                class="w-1.5 h-1.5 rounded-full transition-colors"
+                [class]="currentImageIndex() === $index ? 'bg-lv-gold' : 'bg-white/30'"
+                (click)="setImage($index); $event.stopPropagation(); $event.preventDefault()">
+              </button>
+            }
+          </div>
         }
-      </div>
+        @if (!product.available) {
+          <div class="absolute inset-0 bg-black/80 flex items-center justify-center">
+            <span class="font-mono text-xs uppercase tracking-widest text-lv-cream/40">Agotado</span>
+          </div>
+        }
+        @if (product.colorPickerEnabled && selectedColor()) {
+          <div class="absolute bottom-2 right-2 w-5 h-5 rounded-full border-2 border-white/30"
+               [style.background]="selectedColor()!.hex"></div>
+        }
+      </a>
 
       <!-- Body -->
-      <div class="p-4 pt-2 flex flex-col flex-1">
-        <h3 class="font-display text-xl text-lv-cream leading-tight">{{ product.name }}</h3>
-        <p class="font-body text-[11px] italic text-lv-cream/35 mt-0.5 mb-2 leading-snug">{{ product.tagline }}</p>
+      <div class="px-4 pb-4 flex flex-col flex-1">
+        <a [routerLink]="['/product', product.id]" class="block hover:text-lv-gold transition-colors duration-200">
+          <h3 class="font-display text-xl text-lv-cream leading-tight">{{ product.name }}</h3>
+          <p class="font-body text-[11px] italic text-lv-cream/35 mt-0.5 mb-2 leading-snug">{{ product.tagline }}</p>
+        </a>
+
+        <!-- Variantes -->
+        @if (product.variants && product.variants.length > 0) {
+          <div class="flex gap-1 flex-wrap mb-2">
+            @for (v of product.variants; track v.label) {
+              <button
+                class="rounded-full px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-wider border transition-all duration-150"
+                [class]="selectedVariant()?.label === v.label
+                  ? 'border-lv-gold bg-lv-gold/10 text-lv-gold'
+                  : 'border-white/10 text-lv-cream/40 hover:border-lv-gold/30'"
+                (click)="selectedVariant.set(v)">
+                {{ v.label }}
+              </button>
+            }
+          </div>
+        }
 
         <p class="font-display text-2xl text-lv-gold leading-none mb-3">
-          {{ product.price }}€
+          {{ currentPrice() }}€
           <span class="font-mono text-[10px] uppercase text-lv-cream/40 ml-1">/ unidad</span>
         </p>
 
-        <!-- Color picker row -->
+        <!-- Color dots + add button -->
         <div class="flex justify-between items-center mt-auto">
           @if (product.colorPickerEnabled && colors.length > 0) {
             <div class="flex gap-1.5 flex-wrap items-center">
@@ -82,9 +118,17 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
 
           <button
             type="button"
-            class="w-7 h-7 rounded-full bg-lv-gold text-black font-mono font-bold text-base flex items-center justify-center hover:scale-110 transition-transform flex-shrink-0 ml-2"
+            class="w-8 h-8 rounded-full flex items-center justify-center font-mono font-bold text-lg flex-shrink-0 ml-2 transition-all duration-200 disabled:opacity-30"
+            [class]="justAdded()
+              ? 'bg-green-600 text-white scale-90'
+              : 'bg-lv-gold hover:scale-110 hover:brightness-110 text-black'"
+            [disabled]="!product.available"
             (click)="onAdd($event)">
-            +
+            @if (justAdded()) {
+              <span class="text-xs font-bold">✓</span>
+            } @else {
+              +
+            }
           </button>
         </div>
 
@@ -103,12 +147,39 @@ export class LvProductCardComponent implements OnChanges {
   @Input() delay = '0ms';
   @Output() added = new EventEmitter<CartItem>();
 
-  readonly selectedColor = signal<Color | null>(null);
+  private destroyRef = inject(DestroyRef);
+  private addTimer: ReturnType<typeof setTimeout> | null = null;
+
+  readonly currentImageIndex = signal(0);
+  readonly selectedVariant   = signal<ProductVariant | null>(null);
+  readonly selectedColor     = signal<Color | null>(null);
+  readonly justAdded         = signal(false);
+
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      if (this.addTimer) clearTimeout(this.addTimer);
+    });
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['colors'] && this.colors.length > 0 && !this.selectedColor()) {
       this.selectedColor.set(this.colors.find(c => c.id === 'negro') ?? this.colors[0]);
     }
+    if (changes['product'] && this.product.variants?.length && !this.selectedVariant()) {
+      this.selectedVariant.set(this.product.variants[0]);
+    }
+  }
+
+  currentImage() {
+    return this.product.images[this.currentImageIndex()] || PLACEHOLDER;
+  }
+
+  currentPrice() {
+    return this.selectedVariant()?.price ?? this.product.price;
+  }
+
+  setImage(index: number) {
+    this.currentImageIndex.set(index);
   }
 
   selectColor(color: Color, event: Event): void {
@@ -121,9 +192,17 @@ export class LvProductCardComponent implements OnChanges {
     this.added.emit({
       productId:   this.product.id,
       productName: this.product.name,
+      variant:     this.selectedVariant()?.label,
       color:       this.selectedColor()?.name,
       quantity:    1,
-      unitPrice:   this.product.price,
+      unitPrice:   this.currentPrice()
     });
+    this.justAdded.set(true);
+    if (this.addTimer) clearTimeout(this.addTimer);
+    this.addTimer = setTimeout(() => this.justAdded.set(false), 1500);
+  }
+
+  onImageError(event: Event) {
+    (event.target as HTMLImageElement).src = PLACEHOLDER;
   }
 }

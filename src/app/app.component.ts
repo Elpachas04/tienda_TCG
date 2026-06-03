@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, HostListener } from '@angular/core';
 import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs';
@@ -41,4 +41,15 @@ export class AppComponent {
   });
 
   readonly isCheckout = computed(() => this.currentUrl().startsWith('/checkout'));
+
+  @HostListener('document:contextmenu', ['$event'])
+  onContextMenu(e: MouseEvent): void {
+    const tag = (e.target as HTMLElement).tagName;
+    if (tag === 'IMG' || tag === 'VIDEO') e.preventDefault();
+  }
+
+  @HostListener('document:dragstart', ['$event'])
+  onDragStart(e: DragEvent): void {
+    if ((e.target as HTMLElement).tagName === 'IMG') e.preventDefault();
+  }
 }

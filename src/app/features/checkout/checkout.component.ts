@@ -2,6 +2,8 @@ import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../../core/services/cart.service';
+import { OficinaService } from '../../core/services/oficina.service';
+import { OficinaCorreos } from '../../core/models/oficina.model';
 import { NOTES_MAX } from '../../shared/constants';
 
 const TELEGRAM_USERNAME = 'Elpachas_04';
@@ -12,8 +14,6 @@ const INPUT = 'w-full bg-white/[0.03] border rounded-xl px-4 py-3 font-body text
 
 function isValidContact(v: string): boolean { return v.length >= 5; }
 
-// Correos iPaq domicilio — caja 30×20×20 cm, hasta 2 kg
-// Precio verificado correos.es jun-2025 (Barcelona → A Coruña)
 // Solo Península — no enviamos a islas, Ceuta ni Melilla
 const NO_SHIP_PREFIXES = new Set(['07', '35', '38', '51', '52', '35', '38']);
 
@@ -160,7 +160,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                     (click)="selectPickup()">
                     <div class="text-2xl mb-2">🤝</div>
                     <div class="font-display text-base text-lv-cream tracking-wide">EN MANO</div>
-                    <div class="font-mono text-[10px] text-lv-cream/30 uppercase tracking-wider mt-0.5">Sin coste · Barcelona</div>
+                    <div class="font-mono text-[10px] text-lv-cream/30 uppercase tracking-wider mt-0.5">Sin coste</div>
                   </button>
                   <button type="button"
                     class="p-4 rounded-[16px] border-2 transition-all duration-200 text-left"
@@ -168,12 +168,18 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                     (click)="form.deliveryMethod = 'shipping'">
                     <div class="text-2xl mb-2">📦</div>
                     <div class="font-display text-base text-lv-cream tracking-wide">ENVÍO</div>
-                    <div class="font-mono text-[10px] text-lv-cream/30 uppercase tracking-wider mt-0.5">Correos · España</div>
+                    <div class="font-mono text-[10px] text-lv-cream/30 uppercase tracking-wider mt-0.5">Correos · Península</div>
                   </button>
                 </div>
               </div>
 
               @if (form.deliveryMethod === 'shipping') {
+                <div>
+                  <label class="block font-mono text-[10px] uppercase tracking-widest text-lv-cream/40 mb-2">País</label>
+                  <input type="text" readonly
+                    class="w-full bg-white/[0.02] border border-white/[0.05] rounded-xl px-4 py-3 font-body text-sm text-lv-cream/40 cursor-not-allowed select-none"
+                    value="España" />
+                </div>
                 <div>
                   <label class="block font-mono text-[10px] uppercase tracking-widest text-lv-cream/40 mb-2">Código postal *</label>
                   <input type="text" inputmode="numeric"
@@ -197,11 +203,41 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                       <div>
                         <p class="font-display text-lv-gold text-2xl leading-none">{{ shippingInfo()!.price.toFixed(2) }}€</p>
                         <p class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/40 mt-0.5">Correos · {{ shippingInfo()!.zone }}</p>
-                        <p class="font-mono text-[9px] uppercase tracking-wider text-lv-cream/25 mt-0.5">iPaq domicilio · hasta 2 kg</p>
                       </div>
                       <svg class="w-6 h-6 text-lv-gold/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                       </svg>
+                    </div>
+                  }
+
+                  @if (oficinas().length > 0) {
+                    <div class="mt-4">
+                      <label class="block font-mono text-[10px] uppercase tracking-widest text-lv-cream/40 mb-2">
+                        Oficina de Correos
+                        @if (!oficinasExactas()) {
+                          <span class="normal-case opacity-50 ml-1">— zona aproximada</span>
+                        }
+                      </label>
+                      <div class="space-y-2 max-h-56 overflow-y-auto pr-0.5">
+                        @for (o of oficinas(); track o.codigo) {
+                          <button type="button"
+                            class="w-full px-4 py-3 rounded-[14px] border-2 transition-all duration-200 text-left"
+                            [class]="selectedOficina()?.codigo === o.codigo
+                              ? 'border-lv-gold bg-lv-gold/[0.08]'
+                              : 'border-white/[0.06] hover:border-lv-gold/30 bg-white/[0.02]'"
+                            (click)="selectedOficina.set(selectedOficina()?.codigo === o.codigo ? null : o)">
+                            <p class="font-display text-sm text-lv-cream tracking-wide leading-tight">{{ o.nombre }}</p>
+                            <p class="font-mono text-[10px] text-lv-cream/40 mt-0.5 leading-snug">{{ o.direccion }} · {{ o.telefono }}</p>
+                          </button>
+                        }
+                      </div>
+                      @if (selectedOficina()) {
+                        <button type="button"
+                          class="mt-2 font-mono text-[9px] uppercase tracking-wider text-lv-cream/30 hover:text-lv-cream/60 transition-colors"
+                          (click)="selectedOficina.set(null)">
+                          × Quitar selección
+                        </button>
+                      }
                     </div>
                   }
                 </div>
@@ -278,6 +314,7 @@ export class CheckoutComponent implements OnInit {
 
   cartService = inject(CartService);
   private router = inject(Router);
+  private oficinaService = inject(OficinaService);
 
   form = {
     customerName:    '',
@@ -295,6 +332,9 @@ export class CheckoutComponent implements OnInit {
 
   shippingInfo     = signal<{ zone: string; price: number } | null>(null);
   shippingBlocked  = signal(false);
+  oficinas         = signal<OficinaCorreos[]>([]);
+  oficinasExactas  = signal(true);
+  selectedOficina  = signal<OficinaCorreos | null>(null);
 
   readonly grandTotal = computed(() =>
     this.cartService.total() + (this.shippingInfo()?.price ?? 0)
@@ -327,6 +367,9 @@ export class CheckoutComponent implements OnInit {
     this.form.postalCode = '';
     this.shippingInfo.set(null);
     this.shippingBlocked.set(false);
+    this.oficinas.set([]);
+    this.oficinasExactas.set(true);
+    this.selectedOficina.set(null);
   }
 
   onCpInput(event: Event): void {
@@ -335,7 +378,20 @@ export class CheckoutComponent implements OnInit {
     this.form.postalCode = digits;
     this.shippingInfo.set(null);
     this.shippingBlocked.set(false);
-    if (digits.length === 5) this.fetchShipping(digits);
+    this.oficinas.set([]);
+    this.oficinasExactas.set(true);
+    this.selectedOficina.set(null);
+    if (digits.length === 5) {
+      this.fetchShipping(digits);
+      this.oficinaService.buscarOficinas(digits).subscribe(list => {
+        if (list.length > 0) {
+          this.oficinas.set(list);
+        } else {
+          this.oficinasExactas.set(false);
+          this.oficinaService.buscarOficinas(digits.slice(0, 4)).subscribe(nearby => this.oficinas.set(nearby));
+        }
+      });
+    }
   }
 
   private async fetchShipping(cp: string): Promise<void> {
@@ -379,9 +435,16 @@ export class CheckoutComponent implements OnInit {
       return line;
     }).join('\n');
 
+    const oficina = this.selectedOficina();
     const deliveryLine = this.form.deliveryMethod === 'pickup'
-      ? 'En mano · Barcelona (sin coste)'
-      : `Envío Correos iPaq domicilio a CP ${this.form.postalCode} (${info?.zone}) — ${info?.price.toFixed(2)}€`;
+      ? 'En mano (sin coste)'
+      : `Envío Correos a CP ${this.form.postalCode} (${info?.zone}) — ${info?.price.toFixed(2)}€`;
+
+    const oficinaLines = oficina ? [
+      `🏣 Oficina: ${oficina.nombre}`,
+      `   📍 ${oficina.direccion}, ${oficina.codigoPostal} ${oficina.localidad}`,
+      `   📞 ${oficina.telefono}`,
+    ] : [];
 
     const lines = [
       '🏴‍☠️ PEDIDO — LayerVault',
@@ -389,6 +452,7 @@ export class CheckoutComponent implements OnInit {
       `👤 ${this.form.customerName}`,
       `📞 ${this.form.customerContact}`,
       `🚚 ${deliveryLine}`,
+      ...oficinaLines,
       '',
       itemLines,
       '',
