@@ -209,7 +209,8 @@ export class ProductDetailComponent {
       quantity:    1,
       unitPrice:   this.currentPrice(product)
     });
-    this.selectedColor.set(null);
+    const colors = this.productData()?.colors ?? [];
+    this.selectedColor.set(colors.find(c => c.id === 'negro') ?? colors[0] ?? null);
     this.cartService.openDrawer();
   }
 

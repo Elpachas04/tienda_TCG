@@ -20,10 +20,9 @@ import { CartService } from '../../core/services/cart.service';
 
         <div class="hidden lg:flex items-center gap-8">
           @if (isLanding()) {
-            <a href="#catalogo" class="font-mono text-xs uppercase tracking-widest text-lv-cream/70 hover:text-lv-gold transition-colors">Productos</a>
-            <a href="#colores"  class="font-mono text-xs uppercase tracking-widest text-lv-cream/70 hover:text-lv-gold transition-colors">Colores</a>
-            <a href="#colores"  class="font-mono text-xs uppercase tracking-widest text-lv-cream/70 hover:text-lv-gold transition-colors">Pedidos</a>
-            <a href="#contacto" class="font-mono text-xs uppercase tracking-widest text-lv-cream/70 hover:text-lv-gold transition-colors">Contacto</a>
+            <a routerLink="/catalog" class="font-mono text-xs uppercase tracking-widest text-lv-cream/70 hover:text-lv-gold transition-colors">Productos</a>
+            <a href="#colores"       class="font-mono text-xs uppercase tracking-widest text-lv-cream/70 hover:text-lv-gold transition-colors">Colores</a>
+            <a href="#contacto"      class="font-mono text-xs uppercase tracking-widest text-lv-cream/70 hover:text-lv-gold transition-colors">Contacto</a>
           } @else {
             <a routerLink="/catalog" class="font-mono text-xs uppercase tracking-widest text-lv-cream/70 hover:text-lv-gold transition-colors">Catálogo</a>
           }
@@ -79,8 +78,6 @@ export class LvNavbarComponent {
     if (this.cart.itemCount() > 0) {
       this.cart.closeDrawer();
       this.router.navigate(['/checkout']);
-    } else if (this.isLanding()) {
-      document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' });
     } else {
       this.router.navigate(['/catalog']);
     }

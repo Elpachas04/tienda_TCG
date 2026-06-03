@@ -15,7 +15,7 @@ const INPUT = 'w-full bg-white/[0.03] border rounded-xl px-4 py-3 font-body text
 function isValidContact(v: string): boolean { return v.length >= 5; }
 
 // Solo Península — no enviamos a islas, Ceuta ni Melilla
-const NO_SHIP_PREFIXES = new Set(['07', '35', '38', '51', '52', '35', '38']);
+const NO_SHIP_PREFIXES = new Set(['07', '35', '38', '51', '52']);
 
 function shippingZoneFor(cp: string): { zone: string; price: number } | null {
   if (NO_SHIP_PREFIXES.has(cp.slice(0, 2))) return null;
@@ -270,7 +270,11 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
 
             <button
               type="button"
-              class="w-full bg-lv-gold hover:brightness-110 text-black font-mono text-xs uppercase tracking-widest font-semibold rounded-full py-4 transition-all duration-200 flex items-center justify-center gap-2"
+              class="w-full font-mono text-xs uppercase tracking-widest font-semibold rounded-full py-4 transition-all duration-200 flex items-center justify-center gap-2"
+              [class]="isFormValid()
+                ? 'bg-lv-gold hover:brightness-110 text-black'
+                : 'bg-white/[0.05] text-lv-cream/20 cursor-not-allowed'"
+              [disabled]="!isFormValid()"
               (click)="submitOrder()">
               <span>Confirmar y enviar por Telegram →</span>
             </button>
