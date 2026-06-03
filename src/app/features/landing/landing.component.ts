@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { HeroComponent } from './hero.component';
-import { LvCatalogComponent } from './lv-catalog.component';
 import { ColorsProcessComponent } from './colors-process.component';
 import { CtaComponent } from './cta.component';
 import { LvFooterComponent } from './lv-footer.component';
@@ -10,7 +9,6 @@ import { LvFooterComponent } from './lv-footer.component';
   standalone: true,
   imports: [
     HeroComponent,
-    LvCatalogComponent,
     ColorsProcessComponent,
     CtaComponent,
     LvFooterComponent,
@@ -18,7 +16,6 @@ import { LvFooterComponent } from './lv-footer.component';
   host: { class: 'block bg-lv-black text-lv-cream min-h-screen' },
   template: `
     <app-lv-hero />
-    <app-lv-catalog />
     <app-lv-colors-process />
     <app-lv-cta />
     <app-lv-footer />
