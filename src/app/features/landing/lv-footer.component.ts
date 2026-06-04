@@ -8,19 +8,18 @@ import { TELEGRAM_URL, CONTACT_EMAIL } from '../../shared/constants';
   imports: [RouterLink],
   host: { class: 'block' },
   template: `
-    <footer class="border-t border-lv-gold/10 py-8 px-6">
-      <div class="max-w-[1600px] mx-auto flex items-center justify-between flex-wrap gap-4">
+    <footer class="border-t border-lv-gold/10 py-6 sm:py-8 px-4 sm:px-6">
+      <div class="max-w-[1600px] mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 
         <div class="flex items-center">
           <span class="font-display text-lv-gold text-lg">LayerVault</span>
           <span class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/30 ml-3">2026</span>
         </div>
 
-        <div class="flex items-center gap-4">
-          <p class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/20">
+        <div class="flex flex-wrap items-center gap-3 sm:gap-4">
+          <p class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/20 hidden sm:block">
             Impresión 3D artesanal · PLA Basic · Por encargo
           </p>
-          <span class="text-lv-cream/10">·</span>
           <a routerLink="/legal" class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/20 hover:text-lv-gold transition-colors">Legal</a>
           <a routerLink="/privacidad" class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/20 hover:text-lv-gold transition-colors">Privacidad</a>
         </div>

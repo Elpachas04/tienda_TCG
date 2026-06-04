@@ -43,8 +43,8 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
             </a>
             <p class="font-mono text-xs uppercase tracking-[0.35em] text-lv-gold/60 mb-4">— Confirmación de pedido</p>
             <h1 class="font-display uppercase leading-none">
-              <span class="block text-lv-cream" style="font-size:clamp(1.8rem,5vw,3rem)">CONFIGURACIÓN INSTANTÁNEA</span>
-              <span class="block text-lv-gold"  style="font-size:clamp(1.8rem,5vw,3rem)">LÍNEA DIRECTA CON EL TALLER</span>
+              <span class="block text-lv-cream" style="font-size:clamp(1.4rem,5vw,3rem)">CONFIGURACIÓN INSTANTÁNEA</span>
+              <span class="block text-lv-gold"  style="font-size:clamp(1.4rem,5vw,3rem)">LÍNEA DIRECTA CON EL TALLER</span>
             </h1>
             <p class="font-mono text-xs text-lv-cream/30 mt-4 leading-relaxed max-w-lg">
               Rellena los datos y pulsa confirmar. Se abrirá Telegram con tu pedido listo para enviar.
@@ -124,7 +124,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
             }
           </div>
 
-          <div class="space-y-4">
+          <div class="space-y-3 sm:space-y-4">
 
             <div class="liquid-glass rounded-[20px] p-4 sm:p-6 border border-white/[0.05] space-y-4 sm:space-y-5">
               <h2 class="font-display text-xl sm:text-2xl text-lv-cream tracking-wide uppercase">Tus datos</h2>
@@ -224,7 +224,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                           <span class="normal-case opacity-50 ml-1">— zona aproximada</span>
                         }
                       </label>
-                      <div id="oficinas-list" class="space-y-2 max-h-56 overflow-y-auto pr-0.5">
+                      <div id="oficinas-list" class="space-y-2 max-h-40 sm:max-h-56 overflow-y-auto pr-0.5">
                         @for (o of oficinas(); track o.codigo) {
                           <button type="button"
                             class="w-full px-4 py-3 rounded-[14px] border-2 transition-all duration-200 text-left"
@@ -258,7 +258,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                 </label>
                 <textarea
                   [class]="inputClass(false) + ' resize-none'"
-                  rows="3"
+                  rows="2"
                   [attr.maxlength]="NOTES_MAX"
                   placeholder="Colores, detalles especiales, preferencias..."
                   [(ngModel)]="form.notes">
@@ -365,7 +365,7 @@ export class CheckoutComponent implements OnInit {
   errorMsg         = signal('');
   submitting       = signal(false);
   fallbackUrl      = signal('');
-  summaryOpen      = signal(true);
+  summaryOpen      = signal(false);
 
   shippingInfo     = signal<{ zone: string; price: number } | null>(null);
   shippingBlocked  = signal(false);

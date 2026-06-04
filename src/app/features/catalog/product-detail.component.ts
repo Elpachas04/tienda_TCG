@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, DestroyRef } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal, toObservable, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { combineLatest, switchMap, map, tap, catchError, of } from 'rxjs';
@@ -128,12 +128,16 @@ type DetailData = { product: Product | null; colors: Color[] };
                 <span class="font-display text-4xl sm:text-5xl text-lv-gold leading-none">{{ currentPrice(data.product) }}€</span>
                 <button
                   class="rounded-full px-4 sm:px-7 py-3 sm:py-3.5 font-mono text-xs uppercase tracking-wider font-semibold transition-all duration-200 disabled:opacity-40 flex-shrink-0"
-                  [class]="data.product.available
-                    ? 'bg-lv-gold hover:brightness-110 text-black'
-                    : 'bg-white/5 text-lv-cream/30 cursor-not-allowed'"
+                  [class]="!data.product.available
+                    ? 'bg-white/5 text-lv-cream/30 cursor-not-allowed'
+                    : justAdded()
+                      ? 'bg-green-600 text-white scale-95'
+                      : 'bg-lv-gold hover:brightness-110 text-black'"
                   [disabled]="!data.product.available"
                   (click)="addToCart(data.product)">
-                  @if (data.product.available) { Añadir a la cesta } @else { Agotado }
+                  @if (!data.product.available) { Agotado }
+                  @else if (justAdded()) { ✓ Añadido }
+                  @else { Añadir a la cesta }
                 </button>
               </div>
 
@@ -156,10 +160,14 @@ export class ProductDetailComponent {
   private route          = inject(ActivatedRoute);
   private catalogService = inject(CatalogService);
   private cartService    = inject(CartService);
+  private destroyRef     = inject(DestroyRef);
 
   readonly currentImageIndex = signal(0);
   readonly selectedVariant   = signal<ProductVariant | null>(null);
   readonly selectedColor     = signal<Color | null>(null);
+  readonly justAdded         = signal(false);
+
+  private addTimer: ReturnType<typeof setTimeout> | null = null;
 
   readonly productData = toSignal<DetailData>(
     this.route.params.pipe(
@@ -186,6 +194,9 @@ export class ProductDetailComponent {
           this.selectedColor.set(data.colors.find(c => c.id === 'negro') ?? data.colors[0]);
         }
       });
+    this.destroyRef.onDestroy(() => {
+      if (this.addTimer) clearTimeout(this.addTimer);
+    });
   }
 
   currentImage(product: Product): string {
@@ -212,7 +223,9 @@ export class ProductDetailComponent {
     });
     const colors = this.productData()?.colors ?? [];
     this.selectedColor.set(colors.find(c => c.id === 'negro') ?? colors[0] ?? null);
-    this.cartService.openDrawer();
+    this.justAdded.set(true);
+    if (this.addTimer) clearTimeout(this.addTimer);
+    this.addTimer = setTimeout(() => this.justAdded.set(false), 1500);
   }
 
   onImageError(event: Event): void {

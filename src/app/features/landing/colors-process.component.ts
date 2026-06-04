@@ -18,13 +18,13 @@ const STEPS = [
   imports: [RevealDirective, NgClass],
   host: { class: 'block' },
   template: `
-    <section id="colores" class="bg-[#0e0e0e] py-24 px-6">
-      <div class="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-16">
+    <section id="colores" class="bg-[#0e0e0e] py-14 sm:py-20 lg:py-24 px-4 sm:px-6">
+      <div class="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-10 sm:gap-14 lg:gap-16">
 
         <!-- LEFT: Paleta -->
         <div>
           <p lvReveal class="font-mono text-xs uppercase tracking-wider text-lv-gold/70 mb-3">— Colores disponibles</p>
-          <h2 lvReveal class="font-display uppercase text-5xl md:text-7xl text-lv-cream leading-none mb-4">
+          <h2 lvReveal class="font-display uppercase text-4xl sm:text-5xl md:text-7xl text-lv-cream leading-none mb-4">
             TU COLOR,<br>TU PIEZA
           </h2>
           <p lvReveal class="font-mono text-xs uppercase tracking-wide text-lv-cream/50 mt-4 max-w-sm leading-relaxed">
@@ -49,13 +49,13 @@ const STEPS = [
         <!-- RIGHT: Proceso -->
         <div>
           <p lvReveal class="font-mono text-xs uppercase tracking-wider text-lv-gold/70 mb-3">— Proceso de pedido</p>
-          <h2 lvReveal class="font-display uppercase text-5xl md:text-7xl text-lv-cream leading-none mb-8">
+          <h2 lvReveal class="font-display uppercase text-4xl sm:text-5xl md:text-7xl text-lv-cream leading-none mb-6 sm:mb-8">
             EN 4<br>PASOS
           </h2>
 
           @for (step of steps; track step.n; let last = $last) {
             <div lvReveal
-                 class="flex items-start gap-4 py-5"
+                 class="flex items-start gap-4 py-4 sm:py-5"
                  [ngClass]="{'border-b border-lv-gold/10': !last}">
               <span class="font-display text-5xl text-lv-gold/20 leading-none w-12 flex-shrink-0">{{ step.n }}</span>
               <div>
