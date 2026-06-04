@@ -108,7 +108,7 @@ import { NOTES_MAX } from '../constants';
                 </div>
 
                 <textarea
-                  class="w-full mt-3 bg-white/[0.03] border border-white/[0.06] rounded-xl px-3 py-2 text-xs font-body text-lv-cream/60 placeholder-lv-cream/20 resize-none focus:outline-none focus:border-lv-gold/30 transition-colors"
+                  class="w-full mt-3 bg-white/[0.03] border border-white/[0.06] rounded-xl px-3 py-2 text-sm font-body text-lv-cream/60 placeholder-lv-cream/20 resize-none focus:outline-none focus:border-lv-gold/30 transition-colors"
                   rows="1"
                   placeholder="Notas (acabado, detalles...)"
                   [attr.maxlength]="NOTES_MAX"
