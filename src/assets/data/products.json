@@ -2,6 +2,7 @@
   "products": [
     {
       "id": "deckbox-ventana",
+      "sku": "LDB",
       "name": "Leader Display Box",
       "tagline": "Haz que tu Líder imponga respeto.",
       "category": "deckbox",
@@ -21,6 +22,7 @@
     },
     {
       "id": "deckbox-toploader",
+      "sku": "SHV",
       "name": "Shutter Vault",
       "tagline": "Cero vuelcos. Cero tirones. Desliza y juega.",
       "category": "deckbox",
@@ -40,6 +42,7 @@
     },
     {
       "id": "caja-minisnap",
+      "sku": "TCV",
       "name": "Tactical Vault",
       "tagline": "El búnker definitivo para colecciones de élite.",
       "category": "storage",
@@ -60,6 +63,7 @@
     },
     {
       "id": "organizador-fundas",
+      "sku": "ORF",
       "name": "Organizador de fundas",
       "tagline": "30 toploaders + 45 semirígidas + cientos de penny.",
       "category": "storage",
@@ -79,6 +83,7 @@
     },
     {
       "id": "aplastador-60",
+      "sku": "A60",
       "name": "Aplastador 60 cartas",
       "tagline": "Elimina el aire. Aplana deformaciones.",
       "category": "tools",
@@ -97,6 +102,7 @@
     },
     {
       "id": "aplastador-100",
+      "sku": "A100",
       "name": "Aplastador 100 cartas",
       "tagline": "Para doble enfundado y cartas premium.",
       "category": "tools",
@@ -115,6 +121,7 @@
     },
     {
       "id": "caja-bulk",
+      "sku": "SKV",
       "name": "Stack Vault",
       "tagline": "Organiza por colores. Apila sin límites.",
       "category": "storage",
@@ -139,6 +146,7 @@
     },
     {
       "id": "llaveros",
+      "sku": "LLV",
       "name": "Llaveros",
       "tagline": "Diseños bicolor exclusivos One Piece.",
       "category": "accessories",

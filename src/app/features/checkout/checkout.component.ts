@@ -305,6 +305,21 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
               </h1>
               <p class="font-mono text-xs uppercase tracking-wider text-lv-cream/30">Te respondemos en menos de 1 hora</p>
             </div>
+
+            @if (orderId()) {
+              <div class="liquid-glass rounded-[20px] p-6 border border-lv-gold/20 max-w-sm mx-auto">
+                <p class="font-mono text-[10px] uppercase tracking-widest text-lv-gold/60 mb-2">Tu número de pedido</p>
+                <p class="font-display text-3xl text-lv-gold tracking-widest">{{ orderId() }}</p>
+                <p class="font-mono text-[10px] text-lv-cream/30 mt-2 leading-relaxed">
+                  Guárdalo para consultar el estado en cualquier momento.
+                </p>
+                <a routerLink="/seguimiento" [queryParams]="{id: orderId()}"
+                   class="inline-flex items-center gap-1.5 mt-3 font-mono text-[10px] uppercase tracking-wider text-lv-gold hover:underline">
+                  Ver estado del pedido →
+                </a>
+              </div>
+            }
+
             <div class="liquid-glass rounded-[20px] p-6 border border-white/[0.05] text-left max-w-sm mx-auto space-y-3">
               <p class="font-mono text-[10px] uppercase tracking-widest text-lv-gold mb-3">Próximos pasos</p>
               @for (step of steps; track step.n) {
@@ -346,6 +361,7 @@ export class CheckoutComponent implements OnInit {
   touched = { name: false, contact: false, cp: false, oficina: false };
 
   orderConfirmed   = signal(false);
+  orderId          = signal('');
   errorMsg         = signal('');
   submitting       = signal(false);
   fallbackUrl      = signal('');
@@ -482,6 +498,8 @@ export class CheckoutComponent implements OnInit {
       notes:       this.form.notes.trim() || undefined,
       totalAmount: this.grandTotal(),
       items: items.map(i => ({
+        productId:   i.productId,
+        productSku:  i.productSku,
         productName: i.productName,
         variant:     i.variant,
         color:       i.color,
@@ -503,6 +521,8 @@ export class CheckoutComponent implements OnInit {
         throw new Error(data.error ?? `Error ${res.status}`);
       }
 
+      const data = await res.json() as { success: boolean; orderId?: string };
+      this.orderId.set(data.orderId ?? '');
       this.orderConfirmed.set(true);
     } catch {
       this.fallbackUrl.set(this.buildTelegramFallbackUrl());
