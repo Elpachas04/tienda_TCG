@@ -25,6 +25,7 @@ interface OrderStatusResponse {
   }>;
   trackingNumber?: string;
   sellerNote?:     string;
+  statusDates?:    Partial<Record<OrderStatus, string>>;
 }
 
 interface StatusStep {
@@ -172,10 +173,15 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
                     </div>
                     <!-- Label -->
                     <div class="pb-5 pt-1 flex-1">
-                      <p class="font-mono text-xs uppercase tracking-wider transition-colors duration-300"
-                        [class]="isCurrent(step.key) ? 'text-lv-gold' : isCompleted(step.key) ? 'text-lv-cream/70' : 'text-lv-cream/20'">
-                        {{ step.icon }} {{ step.label }}
-                      </p>
+                      <div class="flex items-baseline justify-between gap-2 flex-wrap">
+                        <p class="font-mono text-xs uppercase tracking-wider transition-colors duration-300"
+                          [class]="isCurrent(step.key) ? 'text-lv-gold' : isCompleted(step.key) ? 'text-lv-cream/70' : 'text-lv-cream/20'">
+                          {{ step.icon }} {{ step.label }}
+                        </p>
+                        @if (stepDate(step.key)) {
+                          <span class="font-mono text-[9px] text-lv-cream/30 flex-shrink-0">{{ stepDate(step.key) }}</span>
+                        }
+                      </div>
                       @if (isCurrent(step.key) && step.key === 'shipped' && order()!.trackingNumber) {
                         <p class="font-mono text-[10px] text-lv-gold/60 mt-1">
                           Tracking: {{ order()!.trackingNumber }}
@@ -312,6 +318,16 @@ export class TrackingComponent implements OnInit {
     if (this.isCurrent(key))   return 'border-lv-gold bg-lv-gold/10 text-lv-gold';
     if (this.isCompleted(key)) return 'border-lv-gold/50 bg-lv-gold/[0.06] text-lv-gold/70';
     return 'border-white/[0.08] bg-white/[0.02] text-lv-cream/20';
+  }
+
+  stepDate(key: OrderStatus): string {
+    const iso = this.order()?.statusDates?.[key];
+    if (!iso) return '';
+    try {
+      return new Date(iso).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+    } catch {
+      return '';
+    }
   }
 
   formatDate(iso: string): string {

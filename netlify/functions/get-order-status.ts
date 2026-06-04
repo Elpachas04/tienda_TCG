@@ -25,6 +25,7 @@ export interface OrderStatusResponse {
   items:           OrderStatusItem[];
   trackingNumber?: string;
   sellerNote?:     string;
+  statusDates:     Partial<Record<OrderStatus, string>>;
 }
 
 const STATUS_MAP: Record<string, OrderStatus> = {
@@ -42,6 +43,11 @@ const ORDER_ID_RE = /^LV-\d{6}-[A-Z2-9]{4}$/;
 function richText(prop: unknown): string {
   const p = prop as { rich_text?: Array<{ plain_text?: string }> } | undefined;
   return p?.rich_text?.[0]?.plain_text ?? "";
+}
+
+function dateField(prop: unknown): string | undefined {
+  const p = prop as { date?: { start?: string } } | undefined;
+  return p?.date?.start ?? undefined;
 }
 
 const handler: Handler = async (event) => {
@@ -112,6 +118,19 @@ const handler: Handler = async (event) => {
     const trackingNumber = richText(props["Tracking"]) || undefined;
     const sellerNote     = richText(props["Nota pública"]) || undefined;
 
+    const statusDates: Partial<Record<OrderStatus, string>> = {};
+    if (created)                                    statusDates["pending_payment"]    = created;
+    const fechaPago      = dateField(props["Fecha pago recibido"]);
+    const fechaProd      = dateField(props["Fecha producción"]);
+    const fechaPrep      = dateField(props["Fecha preparando"]);
+    const fechaEnviado   = dateField(props["Fecha enviado"]);
+    const fechaEntregado = dateField(props["Fecha entregado"]);
+    if (fechaPago)      statusDates["payment_received"]   = fechaPago;
+    if (fechaProd)      statusDates["in_production"]      = fechaProd;
+    if (fechaPrep)      statusDates["preparing_shipment"] = fechaPrep;
+    if (fechaEnviado)   statusDates["shipped"]            = fechaEnviado;
+    if (fechaEntregado) statusDates["delivered"]          = fechaEntregado;
+
     const order: OrderStatusResponse = {
       orderId:      id,
       status,
@@ -120,6 +139,7 @@ const handler: Handler = async (event) => {
       items,
       trackingNumber,
       sellerNote,
+      statusDates,
     };
 
     return { statusCode: 200, headers, body: JSON.stringify(order) };
