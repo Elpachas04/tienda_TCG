@@ -1,0 +1,49 @@
+import { Injectable } from '@angular/core';
+
+const CLOUD = 'dew1whfdu';
+const BASE  = `https://res.cloudinary.com/${CLOUD}/image/upload`;
+
+// f_auto → sirve WebP/AVIF a navegadores compatibles, JPEG como fallback
+// q_auto → Cloudinary elige la calidad óptima según el contenido
+// c_fill → recorta para rellenar exactamente las dimensiones sin distorsión
+
+@Injectable({ providedIn: 'root' })
+export class CloudinaryService {
+
+  /** Tarjeta del catálogo — cuadrado 600 px (retina-safe en móvil) */
+  card(publicId: string): string {
+    return this.build(publicId, 'f_auto,q_auto,c_fill,w_600,h_600');
+  }
+
+  /** Imagen principal del detalle de producto — cuadrado 900 px */
+  detail(publicId: string): string {
+    return this.build(publicId, 'f_auto,q_auto,c_fill,w_900,h_900');
+  }
+
+  /** Miniatura de galería en el detalle — cuadrado 160 px */
+  thumb(publicId: string): string {
+    return this.build(publicId, 'f_auto,q_auto,c_fill,w_160,h_160');
+  }
+
+  private build(publicId: string, transforms: string): string {
+    if (!publicId) return '';
+    return `${BASE}/${transforms}/${publicId}`;
+  }
+}
+
+/*
+  CONVENCIÓN DE PUBLIC IDs:
+  Al subir fotos a Cloudinary, usa esta estructura de carpetas:
+
+    layervault/{product-id}/{n}
+
+  Ejemplos:
+    layervault/deckbox-ventana/01
+    layervault/deckbox-ventana/02
+    layervault/deckbox-toploader/01
+    layervault/caja-minisnap/01
+    ...
+
+  En products.json, el campo "images" almacena solo el public ID (sin URL base):
+    "images": ["layervault/deckbox-ventana/01", "layervault/deckbox-ventana/02"]
+*/
