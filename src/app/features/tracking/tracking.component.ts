@@ -52,13 +52,13 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
   host: { class: 'block animate-fade-up' },
   template: `
     <div class="bg-grid-premium min-h-screen relative">
-      <div class="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#C9A84C]/[0.04] rounded-full blur-[120px] pointer-events-none"></div>
+      <div class="absolute -top-20 -right-20 sm:-top-40 sm:-right-40 w-[250px] h-[250px] sm:w-[500px] sm:h-[500px] bg-[#C9A84C]/[0.04] rounded-full blur-[80px] sm:blur-[120px] pointer-events-none"></div>
 
-      <div class="max-w-2xl mx-auto px-6 py-16 relative" style="z-index:1">
+      <div class="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12 lg:py-16 relative" style="z-index:1">
 
-        <div class="mb-10">
+        <div class="mb-8 sm:mb-10">
           <a routerLink="/catalog"
-             class="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-lv-cream/40 hover:text-lv-gold transition-colors duration-200 mb-8">
+             class="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-lv-cream/40 hover:text-lv-gold transition-colors duration-200 mb-6 sm:mb-8">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
             </svg>
@@ -72,21 +72,21 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
         </div>
 
         <!-- Search form -->
-        <div class="liquid-glass rounded-[20px] p-6 border border-white/[0.05] mb-6">
+        <div class="liquid-glass rounded-[20px] p-4 sm:p-6 border border-white/[0.05] mb-6">
           <label class="block font-mono text-[10px] uppercase tracking-widest text-lv-cream/40 mb-2">
             Número de pedido
           </label>
-          <div class="flex gap-3">
+          <div class="flex gap-2 sm:gap-3">
             <input
               type="text"
-              class="flex-1 bg-white/[0.03] border border-white/[0.07] rounded-xl px-4 py-3 font-mono text-sm text-lv-cream placeholder-lv-cream/20 focus:outline-none focus:border-lv-gold/40 transition-colors uppercase tracking-widest"
+              class="flex-1 min-w-0 bg-white/[0.03] border border-white/[0.07] rounded-xl px-3 sm:px-4 py-3 font-mono text-sm text-lv-cream placeholder-lv-cream/20 focus:outline-none focus:border-lv-gold/40 transition-colors uppercase tracking-widest"
               placeholder="LV-240604-A3K7"
               maxlength="14"
               [(ngModel)]="inputId"
               (keydown.enter)="search()"
               (input)="onInput()" />
             <button type="button"
-              class="px-6 py-3 rounded-xl font-mono text-xs uppercase tracking-wider font-semibold transition-all duration-200 flex-shrink-0"
+              class="px-4 sm:px-6 py-3 rounded-xl font-mono text-xs uppercase tracking-wider font-semibold transition-all duration-200 flex-shrink-0"
               [class]="canSearch()
                 ? 'bg-lv-gold hover:brightness-110 text-black'
                 : 'bg-white/[0.04] text-lv-cream/20 cursor-not-allowed'"
@@ -132,7 +132,7 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
           <div class="space-y-4">
 
             <!-- Header -->
-            <div class="liquid-glass rounded-[20px] p-6 border border-lv-gold/20">
+            <div class="liquid-glass rounded-[20px] p-4 sm:p-6 border border-lv-gold/20">
               <div class="flex items-start justify-between gap-4 flex-wrap">
                 <div>
                   <p class="font-mono text-[10px] uppercase tracking-widest text-lv-gold/60 mb-1">Pedido</p>
@@ -146,7 +146,7 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
             </div>
 
             <!-- Status timeline -->
-            <div class="liquid-glass rounded-[20px] p-6 border border-white/[0.05]">
+            <div class="liquid-glass rounded-[20px] p-4 sm:p-6 border border-white/[0.05]">
               <p class="font-mono text-[10px] uppercase tracking-widest text-lv-cream/40 mb-5">Estado</p>
               <div class="space-y-0">
                 @for (step of steps; track step.key; let last = $last) {
@@ -194,7 +194,7 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
             </div>
 
             <!-- Items -->
-            <div class="liquid-glass rounded-[20px] p-6 border border-white/[0.05]">
+            <div class="liquid-glass rounded-[20px] p-4 sm:p-6 border border-white/[0.05]">
               <p class="font-mono text-[10px] uppercase tracking-widest text-lv-cream/40 mb-4">Productos</p>
               <div class="space-y-3">
                 @for (item of order()!.items; track item.productId + (item.variant ?? '') + (item.color ?? '')) {

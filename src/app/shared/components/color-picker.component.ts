@@ -37,7 +37,7 @@ import { Color } from '../../core/models/product.model';
         </button>
 
         @if (isOpen()) {
-          <div class="absolute top-full left-0 right-0 mt-1.5 bg-lv-surface border border-lv-border rounded-xl shadow-2xl z-50 overflow-hidden animate-dropdown-in">
+          <div class="absolute top-full left-0 right-0 mt-1.5 bg-lv-surface border border-lv-border rounded-xl shadow-2xl z-50 overflow-hidden animate-dropdown-in max-h-[50vh] overflow-y-auto">
             <div class="p-2 gap-0.5"
                  [class]="columns === 1 ? 'grid grid-cols-1' : 'grid grid-cols-2'">
               @for (color of colors; track color.id) {
@@ -74,7 +74,7 @@ import { Color } from '../../core/models/product.model';
         </button>
 
         @if (isOpen()) {
-          <div class="absolute bottom-full left-0 mb-2 w-48 bg-lv-surface border border-lv-border rounded-xl shadow-2xl z-50 overflow-hidden animate-dropdown-in">
+          <div class="absolute bottom-full left-0 mb-2 w-40 sm:w-48 max-w-[90vw] bg-lv-surface border border-lv-border rounded-xl shadow-2xl z-50 overflow-hidden animate-dropdown-in">
             <div class="p-2 grid grid-cols-1 gap-0.5">
               @for (color of colors; track color.id) {
                 <ng-container *ngTemplateOutlet="colorRow; context: { $implicit: color }"></ng-container>

@@ -28,9 +28,9 @@ import { NOTES_MAX } from '../constants';
            [class.translate-x-0]="cart.drawerOpen()">
 
         <!-- Header -->
-        <div class="flex items-center justify-between px-6 py-5 border-b border-white/[0.07] flex-shrink-0">
+        <div class="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-white/[0.07] flex-shrink-0">
           <div class="flex items-center gap-3">
-            <h2 class="font-display text-3xl text-lv-gold tracking-wider leading-none">CESTA</h2>
+            <h2 class="font-display text-2xl sm:text-3xl text-lv-gold tracking-wider leading-none">CESTA</h2>
             @if (cart.itemCount() > 0) {
               <span class="bg-lv-gold text-black font-mono text-xs font-bold px-2 py-0.5 rounded-full leading-none [animation:badge-pop_0.35s_ease-out]">
                 {{ cart.itemCount() }}
@@ -47,7 +47,7 @@ import { NOTES_MAX } from '../constants';
         </div>
 
         <!-- Items -->
-        <div class="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+        <div class="flex-1 overflow-y-auto px-3 sm:px-4 py-3 sm:py-4 space-y-2.5 sm:space-y-3">
           @if (cart.cartItems().length === 0) {
             <div class="flex flex-col items-center justify-center h-full gap-5 text-center py-16">
               <div class="w-16 h-16 rounded-full liquid-glass flex items-center justify-center">
@@ -68,7 +68,7 @@ import { NOTES_MAX } from '../constants';
             </div>
           } @else {
             @for (item of cart.cartItems(); track cartItemKey(item)) {
-              <div class="liquid-glass rounded-[16px] p-3.5 border border-white/[0.05]">
+              <div class="liquid-glass rounded-[16px] p-3 sm:p-3.5 border border-white/[0.05]">
                 <div class="flex gap-3 items-start">
                   <div class="flex-1 min-w-0">
                     <h3 class="font-display text-base text-lv-cream leading-tight line-clamp-1 tracking-wide">{{ item.productName }}</h3>
@@ -122,19 +122,19 @@ import { NOTES_MAX } from '../constants';
 
         <!-- Footer -->
         @if (cart.cartItems().length > 0) {
-          <div class="flex-shrink-0 border-t border-white/[0.07] px-6 py-5 space-y-4" style="background: #0B0B0F;">
+          <div class="flex-shrink-0 border-t border-white/[0.07] px-4 sm:px-6 py-4 sm:py-5 space-y-3 sm:space-y-4" style="background: #0B0B0F;">
             <div class="flex justify-between items-center">
               <div>
-                <span class="font-display text-2xl text-lv-cream tracking-wide">TOTAL</span>
+                <span class="font-display text-xl sm:text-2xl text-lv-cream tracking-wide">TOTAL</span>
                 <span class="font-mono text-[10px] text-lv-cream/30 uppercase tracking-wider ml-2">
                   {{ cart.itemCount() }} {{ cart.itemCount() === 1 ? 'artículo' : 'artículos' }}
                 </span>
               </div>
-              <span class="font-display text-2xl text-lv-gold">{{ cart.total().toFixed(2) }}€</span>
+              <span class="font-display text-xl sm:text-2xl text-lv-gold">{{ cart.total().toFixed(2) }}€</span>
             </div>
 
             <button
-              class="w-full bg-lv-gold hover:brightness-110 text-black font-mono text-xs uppercase tracking-widest font-semibold rounded-full py-4 transition-all duration-200"
+              class="w-full bg-lv-gold hover:brightness-110 text-black font-mono text-xs uppercase tracking-widest font-semibold rounded-full py-3.5 sm:py-4 transition-all duration-200"
               (click)="goToCheckout()">
               Hacer pedido →
             </button>

@@ -23,19 +23,19 @@ type DetailData = { product: Product | null; colors: Color[] };
       </div>
     } @else if (data.product) {
       <div class="bg-grid-premium min-h-screen relative overflow-x-hidden">
-        <div class="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#C9A84C]/[0.05] rounded-full blur-[120px] animate-aurora pointer-events-none"></div>
+        <div class="absolute -top-20 -right-20 sm:-top-40 sm:-right-40 w-[250px] h-[250px] sm:w-[500px] sm:h-[500px] bg-[#C9A84C]/[0.05] rounded-full blur-[80px] sm:blur-[120px] animate-aurora pointer-events-none"></div>
 
-        <div class="max-w-5xl mx-auto px-6 py-16">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 lg:py-16">
 
           <a routerLink="/catalog"
-             class="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-lv-cream/40 hover:text-lv-gold transition-colors duration-200 mb-12">
+             class="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-lv-cream/40 hover:text-lv-gold transition-colors duration-200 mb-6 sm:mb-10 lg:mb-12">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
             </svg>
             Volver al catálogo
           </a>
 
-          <div class="grid md:grid-cols-2 gap-12">
+          <div class="grid md:grid-cols-2 gap-6 md:gap-10 lg:gap-12">
 
             <!-- Media: vídeo o imágenes -->
             <div class="space-y-3">
@@ -57,7 +57,7 @@ type DetailData = { product: Product | null; colors: Color[] };
                 <div class="flex gap-3">
                   @for (img of data.product.images; track $index) {
                     <button
-                      class="w-20 h-20 rounded-xl overflow-hidden border-2 transition-colors duration-200"
+                      class="w-14 h-14 sm:w-20 sm:h-20 rounded-xl overflow-hidden border-2 transition-colors duration-200"
                       [class]="currentImageIndex() === $index ? 'border-lv-gold' : 'border-white/10 hover:border-lv-gold/40'"
                       (click)="currentImageIndex.set($index)">
                       <img [src]="img" [alt]="data.product.name" class="w-full h-full object-cover"
@@ -78,7 +78,7 @@ type DetailData = { product: Product | null; colors: Color[] };
 
               <div>
                 <p class="font-mono text-xs uppercase tracking-[0.3em] text-lv-gold/60 mb-2">{{ data.product.category }}</p>
-                <h1 class="font-display text-5xl md:text-6xl text-lv-cream leading-none uppercase">{{ data.product.name }}</h1>
+                <h1 class="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-lv-cream leading-none uppercase">{{ data.product.name }}</h1>
               </div>
 
               <p class="text-lv-cream/50 font-body leading-relaxed text-sm">{{ data.product.description }}</p>
@@ -124,10 +124,10 @@ type DetailData = { product: Product | null; colors: Color[] };
               }
 
               <!-- Precio + botón -->
-              <div class="flex items-center justify-between pt-5 border-t border-white/[0.06] mt-auto">
-                <span class="font-display text-5xl text-lv-gold leading-none">{{ currentPrice(data.product) }}€</span>
+              <div class="flex items-center justify-between pt-4 sm:pt-5 border-t border-white/[0.06] mt-auto gap-3">
+                <span class="font-display text-4xl sm:text-5xl text-lv-gold leading-none">{{ currentPrice(data.product) }}€</span>
                 <button
-                  class="rounded-full px-7 py-3.5 font-mono text-xs uppercase tracking-wider font-semibold transition-all duration-200 disabled:opacity-40"
+                  class="rounded-full px-4 sm:px-7 py-3 sm:py-3.5 font-mono text-xs uppercase tracking-wider font-semibold transition-all duration-200 disabled:opacity-40 flex-shrink-0"
                   [class]="data.product.available
                     ? 'bg-lv-gold hover:brightness-110 text-black'
                     : 'bg-white/5 text-lv-cream/30 cursor-not-allowed'"

@@ -22,19 +22,19 @@ type CategoryPill = CategoryItem & { count: number };
     <div class="bg-grid-premium min-h-screen relative">
 
       <!-- Blobs de luz -->
-      <div class="fixed -top-40 -right-40 w-[600px] h-[600px] bg-[#C9A84C]/[0.05] rounded-full blur-[140px] animate-aurora pointer-events-none" style="z-index:0"></div>
-      <div class="fixed bottom-0 -left-60 w-80 h-80 bg-[#C9A84C]/[0.03] rounded-full blur-[100px] animate-aurora pointer-events-none" style="z-index:0;animation-delay:-9s"></div>
+      <div class="fixed -top-20 -right-20 sm:-top-40 sm:-right-40 w-[250px] h-[250px] sm:w-[450px] sm:h-[450px] lg:w-[600px] lg:h-[600px] bg-[#C9A84C]/[0.05] rounded-full blur-[80px] sm:blur-[140px] animate-aurora pointer-events-none" style="z-index:0"></div>
+      <div class="fixed bottom-0 -left-10 sm:-left-60 w-40 h-40 sm:w-80 sm:h-80 bg-[#C9A84C]/[0.03] rounded-full blur-[60px] sm:blur-[100px] animate-aurora pointer-events-none" style="z-index:0;animation-delay:-9s"></div>
 
-      <div class="relative max-w-[1600px] mx-auto px-6 py-20" style="z-index:1">
+      <div class="relative max-w-[1600px] mx-auto px-4 sm:px-6 py-10 sm:py-16 lg:py-20" style="z-index:1">
 
         <!-- Header -->
-        <div lvReveal class="mb-16">
-          <p class="font-mono text-xs uppercase tracking-[0.35em] text-lv-gold/60 mb-5">— Colección completa</p>
+        <div lvReveal class="mb-8 sm:mb-12 lg:mb-16">
+          <p class="font-mono text-xs uppercase tracking-[0.35em] text-lv-gold/60 mb-4 sm:mb-5">— Colección completa</p>
           <h1 class="font-display uppercase leading-[0.9]">
-            <span class="block text-lv-cream" style="font-size: clamp(3rem, 8vw, 7rem)">LO QUE</span>
-            <span class="block text-lv-gold" style="font-size: clamp(3rem, 8vw, 7rem)">FABRICAMOS</span>
+            <span class="block text-lv-cream" style="font-size: clamp(2rem, 8vw, 7rem)">LO QUE</span>
+            <span class="block text-lv-gold" style="font-size: clamp(2rem, 8vw, 7rem)">FABRICAMOS</span>
           </h1>
-          <p class="font-mono text-xs uppercase tracking-wide text-lv-cream/30 mt-6 max-w-sm leading-relaxed">
+          <p class="font-mono text-xs uppercase tracking-wide text-lv-cream/30 mt-4 sm:mt-6 max-w-sm leading-relaxed">
             Accesorios para TCG impresos en 3D.<br>Cada pieza, por encargo. Cada color, el tuyo.
           </p>
         </div>
@@ -61,7 +61,7 @@ type CategoryPill = CategoryItem & { count: number };
         } @else {
 
           <!-- Pills de filtro -->
-          <div lvReveal class="flex flex-wrap gap-2 mb-12">
+          <div lvReveal class="flex flex-wrap gap-2 mb-8 sm:mb-12">
             @for (cat of categories(); track cat.id) {
               <button [class]="pillClass(cat.id)" (click)="activeCategory.set(cat.id)">
                 {{ cat.emoji }} {{ cat.label }}
