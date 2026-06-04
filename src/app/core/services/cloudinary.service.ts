@@ -10,19 +10,19 @@ const BASE  = `https://res.cloudinary.com/${CLOUD}/image/upload`;
 @Injectable({ providedIn: 'root' })
 export class CloudinaryService {
 
-  /** Tarjeta del catálogo — cuadrado 600 px */
+  /** Tarjeta del catálogo — cuadrado 600 px, producto completo sin recorte */
   card(publicId: string): string {
-    return this.build(publicId, 'f_auto,q_auto,c_fill,w_600,h_600');
+    return this.build(publicId, 'f_auto,q_auto,c_pad,b_rgb:111111,w_600,h_600');
   }
 
-  /** Imagen principal del detalle de producto — cuadrado 900 px */
+  /** Imagen principal del detalle de producto — cuadrado 900 px, producto completo sin recorte */
   detail(publicId: string): string {
-    return this.build(publicId, 'f_auto,q_auto,c_fill,w_900,h_900');
+    return this.build(publicId, 'f_auto,q_auto,c_pad,b_rgb:111111,w_900,h_900');
   }
 
-  /** Miniatura de galería — cuadrado 160 px */
+  /** Miniatura de galería — cuadrado 160 px, producto completo sin recorte */
   thumb(publicId: string): string {
-    return this.build(publicId, 'f_auto,q_auto,c_fill,w_160,h_160');
+    return this.build(publicId, 'f_auto,q_auto,c_pad,b_rgb:111111,w_160,h_160');
   }
 
   private build(publicId: string, transforms: string): string {
