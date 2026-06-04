@@ -1,7 +1,31 @@
 import { Component, signal, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import type { OrderStatus, OrderStatusResponse } from '../../../../netlify/functions/get-order-status';
+
+type OrderStatus =
+  | 'pending_payment'
+  | 'payment_received'
+  | 'in_production'
+  | 'preparing_shipment'
+  | 'shipped'
+  | 'delivered';
+
+interface OrderStatusResponse {
+  orderId:         string;
+  status:          OrderStatus;
+  createdAt:       string;
+  customerName:    string;
+  items: Array<{
+    productId:   string;
+    productSku?: string;
+    productName: string;
+    quantity:    number;
+    variant?:    string;
+    color?:      string;
+  }>;
+  trackingNumber?: string;
+  sellerNote?:     string;
+}
 
 interface StatusStep {
   key:   OrderStatus;
