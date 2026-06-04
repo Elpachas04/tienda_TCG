@@ -20,15 +20,21 @@ import { CartService } from '../../core/services/cart.service';
 
         <div class="hidden lg:flex items-center gap-8">
           @if (isLanding()) {
-            <a routerLink="/catalog" class="font-mono text-xs uppercase tracking-widest text-lv-cream/70 hover:text-lv-gold transition-colors">Productos</a>
+            <a routerLink="/catalog"    class="font-mono text-xs uppercase tracking-widest text-lv-cream/70 hover:text-lv-gold transition-colors">Productos</a>
             <a routerLink="/" fragment="colores"  class="font-mono text-xs uppercase tracking-widest text-lv-cream/70 hover:text-lv-gold transition-colors">Colores</a>
             <a routerLink="/" fragment="contacto" class="font-mono text-xs uppercase tracking-widest text-lv-cream/70 hover:text-lv-gold transition-colors">Contacto</a>
           } @else {
-            <a routerLink="/catalog" class="font-mono text-xs uppercase tracking-widest text-lv-cream/70 hover:text-lv-gold transition-colors">Catálogo</a>
+            <a routerLink="/catalog"    class="font-mono text-xs uppercase tracking-widest text-lv-cream/70 hover:text-lv-gold transition-colors">Catálogo</a>
           }
+          <a routerLink="/seguimiento" class="font-mono text-xs uppercase tracking-widest text-lv-cream/70 hover:text-lv-gold transition-colors">Mis pedidos</a>
         </div>
 
         <div class="flex items-center gap-3">
+          <a routerLink="/seguimiento"
+             class="lg:hidden font-mono text-xs uppercase tracking-widest text-lv-cream/50 hover:text-lv-gold transition-colors"
+             title="Mis pedidos">
+            📦
+          </a>
           @if (!isCheckout() && cart.itemCount() > 0) {
             <button type="button"
               class="w-8 h-8 rounded-full bg-lv-gold text-black font-mono text-xs font-bold flex items-center justify-center hover:brightness-110 transition-all [animation:badge-pop_0.35s_ease-out]"
