@@ -26,17 +26,16 @@ import { CloudinaryService } from '../../core/services/cloudinary.service';
       <a [routerLink]="['/product', product.id]"
          class="relative m-3 aspect-square bg-lv-surface rounded-[20px] overflow-hidden block flex-shrink-0">
         @if (product.video) {
-          <video
-            class="w-full h-full object-cover"
-            [src]="product.video"
-            autoplay muted loop playsinline
-            preload="none">
+          <video class="w-full h-full object-cover"
+                 autoplay muted loop playsinline preload="metadata">
+            <source [src]="product.video">
           </video>
         } @else {
           <img
             [src]="currentImage()"
             [alt]="product.name"
             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            loading="lazy"
             draggable="false"
             (contextmenu)="$event.preventDefault()"
             (error)="onImageError()"
@@ -46,17 +45,6 @@ import { CloudinaryService } from '../../core/services/cloudinary.service';
           <span class="absolute top-2 left-2 liquid-glass rounded-full px-2.5 py-1 font-mono text-[9px] uppercase tracking-wider text-lv-gold border border-lv-gold/30">
             {{ product.badge }}
           </span>
-        }
-        @if (validImages().length > 1) {
-          <div class="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5">
-            @for (_ of validImages(); track $index) {
-              <button
-                class="w-1.5 h-1.5 rounded-full transition-colors"
-                [class]="currentImageIndex() === $index ? 'bg-lv-gold' : 'bg-white/30'"
-                (click)="setImage($index); $event.stopPropagation(); $event.preventDefault()">
-              </button>
-            }
-          </div>
         }
         @if (!product.available) {
           <div class="absolute inset-0 bg-black/80 flex items-center justify-center">
@@ -192,10 +180,6 @@ export class LvProductCardComponent implements OnChanges {
 
   currentPrice() {
     return this.selectedVariant()?.price ?? this.product.price;
-  }
-
-  setImage(index: number) {
-    this.currentImageIndex.set(index);
   }
 
   selectColor(color: Color, event: Event): void {
