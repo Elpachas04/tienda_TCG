@@ -13,7 +13,7 @@ import { TELEGRAM_URL } from './shared/constants';
   imports: [RouterOutlet, LvNavbarComponent, TelegramFabComponent, CartDrawerComponent],
   template: `
     <app-lv-navbar />
-    <main [class.min-h-screen]="!isLanding()" [class.pt-16]="!isLanding()">
+    <main [class.min-h-screen]="!isLanding()" [class.pt-20]="!isLanding()">
       <router-outlet />
     </main>
     @if (!isLanding()) {

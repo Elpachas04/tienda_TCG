@@ -9,7 +9,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
   host: { class: 'block' },
   template: `
     <section id="hero"
-      class="relative min-h-screen flex flex-col justify-center items-center text-center px-6 pt-28 pb-24 rounded-b-[40px] bg-lv-black">
+      class="relative min-h-screen flex flex-col justify-center items-center text-center px-4 sm:px-6 pt-24 sm:pt-28 pb-16 sm:pb-24 rounded-b-[40px] bg-lv-black">
 
       <!-- Radial glow -->
       <div class="absolute inset-0 pointer-events-none rounded-b-[40px] overflow-hidden" aria-hidden="true"
@@ -29,13 +29,13 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
         </p>
 
         <h1 lvReveal
-            class="font-display leading-[0.95] uppercase text-[56px] md:text-[84px] lg:text-[112px] xl:text-[140px]">
+            class="font-display leading-[0.95] uppercase text-[36px] sm:text-[56px] md:text-[84px] lg:text-[112px] xl:text-[140px]">
           <span class="text-lv-cream block">TU MAZO VALE</span>
           <span class="text-lv-gold block">MÁS QUE UNA</span>
           <span class="text-lv-cream block">CAJA DE 2€</span>
         </h1>
 
-        <p lvReveal class="font-display text-lv-gold/70 text-2xl md:text-4xl tracking-wide uppercase">
+        <p lvReveal class="font-display text-lv-gold/70 text-xl sm:text-2xl md:text-4xl tracking-wide uppercase">
           tolerancia milimétrica en cada capa
         </p>
 
@@ -46,19 +46,19 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
 
         <div lvReveal class="flex gap-4 flex-wrap justify-center">
           <a routerLink="/catalog"
-             class="bg-lv-gold text-black rounded-full px-8 py-4 font-mono text-xs uppercase tracking-wider font-semibold hover:brightness-110 transition-all duration-200">
+             class="bg-lv-gold text-black rounded-full px-6 sm:px-8 py-3 sm:py-4 font-mono text-xs uppercase tracking-wider font-semibold hover:brightness-110 transition-all duration-200">
             Asegurar mi mazo
           </a>
           <a href="#colores"
-             class="liquid-glass border border-lv-gold/30 text-lv-cream rounded-full px-8 py-4 font-mono text-xs uppercase tracking-wider hover:border-lv-gold transition-all duration-200">
+             class="liquid-glass border border-lv-gold/30 text-lv-cream rounded-full px-6 sm:px-8 py-3 sm:py-4 font-mono text-xs uppercase tracking-wider hover:border-lv-gold transition-all duration-200">
             Ingeniería Vault →
           </a>
         </div>
 
         <div lvReveal class="flex gap-3 flex-wrap justify-center">
-          <span class="liquid-glass rounded-full px-6 py-3 font-mono text-xs uppercase tracking-wider text-lv-cream/70">Diseño paramétrico</span>
-          <span class="liquid-glass rounded-full px-6 py-3 font-mono text-xs uppercase tracking-wider text-lv-cream/70">Colores de facción</span>
-          <span class="liquid-glass rounded-full px-6 py-3 font-mono text-xs uppercase tracking-wider text-lv-cream/70">Cero stock masivo</span>
+          <span class="liquid-glass rounded-full px-4 sm:px-6 py-2 sm:py-3 font-mono text-[10px] sm:text-xs uppercase tracking-wider text-lv-cream/70">Diseño paramétrico</span>
+          <span class="liquid-glass rounded-full px-4 sm:px-6 py-2 sm:py-3 font-mono text-[10px] sm:text-xs uppercase tracking-wider text-lv-cream/70">Colores de facción</span>
+          <span class="liquid-glass rounded-full px-4 sm:px-6 py-2 sm:py-3 font-mono text-[10px] sm:text-xs uppercase tracking-wider text-lv-cream/70">Cero stock masivo</span>
         </div>
 
       </div>

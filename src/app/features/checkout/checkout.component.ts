@@ -27,15 +27,15 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
   host: { class: 'block animate-fade-up' },
   template: `
     <div class="bg-grid-premium min-h-screen relative">
-      <div class="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#C9A84C]/[0.04] rounded-full blur-[120px] animate-aurora pointer-events-none"></div>
+      <div class="absolute -top-20 -right-20 sm:-top-40 sm:-right-40 w-[250px] h-[250px] sm:w-[500px] sm:h-[500px] bg-[#C9A84C]/[0.04] rounded-full blur-[80px] sm:blur-[120px] animate-aurora pointer-events-none"></div>
 
-      <div class="max-w-2xl mx-auto px-6 py-16 relative" style="z-index:1">
+      <div class="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12 lg:py-16 relative" style="z-index:1">
 
         @if (!orderConfirmed()) {
 
-          <div class="mb-10">
+          <div class="mb-8 sm:mb-10">
             <a routerLink="/catalog"
-               class="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-lv-cream/40 hover:text-lv-gold transition-colors duration-200 mb-8">
+               class="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-lv-cream/40 hover:text-lv-gold transition-colors duration-200 mb-6 sm:mb-8">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
               </svg>
@@ -69,16 +69,16 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
           <!-- Resumen desplegable -->
           <div class="liquid-glass rounded-[20px] border border-white/[0.05] mb-4">
             <button type="button"
-              class="w-full flex items-center justify-between px-6 py-4 hover:bg-white/[0.02] transition-colors"
+              class="w-full flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-white/[0.02] transition-colors"
               (click)="summaryOpen.set(!summaryOpen())">
-              <div class="flex items-center gap-3">
-                <span class="font-display text-xl text-lv-cream uppercase tracking-wide">Resumen del pedido</span>
+              <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+                <span class="font-display text-base sm:text-xl text-lv-cream uppercase tracking-wide truncate">Resumen del pedido</span>
                 <span class="bg-lv-gold text-black font-mono text-xs font-bold px-2 py-0.5 rounded-full leading-none">
                   {{ cartService.itemCount() }}
                 </span>
               </div>
-              <div class="flex items-center gap-3">
-                <span class="font-display text-xl text-lv-gold">{{ grandTotal().toFixed(2) }}€</span>
+              <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                <span class="font-display text-base sm:text-xl text-lv-gold whitespace-nowrap">{{ grandTotal().toFixed(2) }}€</span>
                 <svg class="w-4 h-4 text-lv-cream/40 transition-transform duration-200"
                      [class.rotate-180]="summaryOpen()"
                      fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -88,7 +88,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
             </button>
 
             @if (summaryOpen()) {
-              <div class="px-6 pb-5 border-t border-white/[0.07]">
+              <div class="px-4 sm:px-6 pb-4 sm:pb-5 border-t border-white/[0.07]">
                 <div class="pt-4 space-y-2">
                   @for (item of cartService.cartItems(); track item.productId + (item.variant || '') + (item.color || '')) {
                     <div class="flex justify-between items-center gap-3 py-2.5 border-b border-white/[0.05] last:border-0">
@@ -126,8 +126,8 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
 
           <div class="space-y-4">
 
-            <div class="liquid-glass rounded-[20px] p-6 border border-white/[0.05] space-y-5">
-              <h2 class="font-display text-2xl text-lv-cream tracking-wide uppercase">Tus datos</h2>
+            <div class="liquid-glass rounded-[20px] p-4 sm:p-6 border border-white/[0.05] space-y-4 sm:space-y-5">
+              <h2 class="font-display text-xl sm:text-2xl text-lv-cream tracking-wide uppercase">Tus datos</h2>
 
               <div>
                 <label class="block font-mono text-[10px] uppercase tracking-widest text-lv-cream/40 mb-2">Nombre *</label>
@@ -159,22 +159,22 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
 
               <div>
                 <label class="block font-mono text-[10px] uppercase tracking-widest text-lv-cream/40 mb-3">Método de entrega *</label>
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-2 gap-2 sm:gap-3">
                   <button type="button"
-                    class="p-4 rounded-[16px] border-2 transition-all duration-200 text-left"
+                    class="p-3 sm:p-4 rounded-[16px] border-2 transition-all duration-200 text-left"
                     [class]="form.deliveryMethod === 'pickup' ? 'border-lv-gold bg-lv-gold/[0.08]' : 'border-white/[0.06] hover:border-lv-gold/30 bg-white/[0.02]'"
                     (click)="selectPickup()">
-                    <div class="text-2xl mb-2">🤝</div>
-                    <div class="font-display text-base text-lv-cream tracking-wide">EN MANO</div>
-                    <div class="font-mono text-[10px] text-lv-cream/30 uppercase tracking-wider mt-0.5">Sin coste</div>
+                    <div class="text-xl sm:text-2xl mb-1.5 sm:mb-2">🤝</div>
+                    <div class="font-display text-sm sm:text-base text-lv-cream tracking-wide">EN MANO</div>
+                    <div class="font-mono text-[9px] sm:text-[10px] text-lv-cream/30 uppercase tracking-wider mt-0.5">Sin coste</div>
                   </button>
                   <button type="button"
-                    class="p-4 rounded-[16px] border-2 transition-all duration-200 text-left"
+                    class="p-3 sm:p-4 rounded-[16px] border-2 transition-all duration-200 text-left"
                     [class]="form.deliveryMethod === 'shipping' ? 'border-lv-gold bg-lv-gold/[0.08]' : 'border-white/[0.06] hover:border-lv-gold/30 bg-white/[0.02]'"
                     (click)="form.deliveryMethod = 'shipping'">
-                    <div class="text-2xl mb-2">📦</div>
-                    <div class="font-display text-base text-lv-cream tracking-wide">ENVÍO</div>
-                    <div class="font-mono text-[10px] text-lv-cream/30 uppercase tracking-wider mt-0.5">Correos · Península</div>
+                    <div class="text-xl sm:text-2xl mb-1.5 sm:mb-2">📦</div>
+                    <div class="font-display text-sm sm:text-base text-lv-cream tracking-wide">ENVÍO</div>
+                    <div class="font-mono text-[9px] sm:text-[10px] text-lv-cream/30 uppercase tracking-wider mt-0.5">Correos · Península</div>
                   </button>
                 </div>
               </div>
@@ -205,9 +205,9 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                       </div>
                     </div>
                   } @else if (shippingInfo()) {
-                    <div class="mt-3 flex items-center justify-between px-4 py-3 rounded-xl border border-lv-gold/30 bg-lv-gold/[0.07]">
+                    <div class="mt-3 flex items-center justify-between px-3 sm:px-4 py-3 rounded-xl border border-lv-gold/30 bg-lv-gold/[0.07]">
                       <div>
-                        <p class="font-display text-lv-gold text-2xl leading-none">{{ shippingInfo()!.price.toFixed(2) }}€</p>
+                        <p class="font-display text-lv-gold text-xl sm:text-2xl leading-none">{{ shippingInfo()!.price.toFixed(2) }}€</p>
                         <p class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/40 mt-0.5">Correos · {{ shippingInfo()!.zone }}</p>
                       </div>
                       <svg class="w-6 h-6 text-lv-gold/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -279,7 +279,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
 
             <button
               type="button"
-              class="w-full font-mono text-xs uppercase tracking-widest font-semibold rounded-full py-4 transition-all duration-200 flex items-center justify-center gap-2"
+              class="w-full font-mono text-xs uppercase tracking-widest font-semibold rounded-full py-3.5 sm:py-4 transition-all duration-200 flex items-center justify-center gap-2"
               [class]="isFormValid() && !submitting()
                 ? 'bg-lv-gold hover:brightness-110 text-black'
                 : submitting() ? 'bg-white/[0.05] text-lv-cream/20 cursor-not-allowed' : 'bg-white/[0.05] text-lv-cream/40 hover:bg-white/[0.08] cursor-pointer'"
@@ -296,10 +296,10 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
           </div>
 
         } @else {
-          <div class="text-center py-20 space-y-8">
+          <div class="text-center py-12 sm:py-20 space-y-6 sm:space-y-8">
             <div class="text-6xl">🏴‍☠️</div>
             <div>
-              <h1 class="font-display uppercase leading-none mb-3" style="font-size:clamp(2.5rem,7vw,5rem)">
+              <h1 class="font-display uppercase leading-none mb-3" style="font-size:clamp(2rem,7vw,5rem)">
                 <span class="block text-lv-cream">PEDIDO</span>
                 <span class="block text-lv-gold">ENVIADO</span>
               </h1>
