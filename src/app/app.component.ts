@@ -16,7 +16,7 @@ import { TELEGRAM_URL } from './shared/constants';
     <main [class.min-h-screen]="!isLanding()" [class.pt-20]="!isLanding()">
       <router-outlet />
     </main>
-    @if (!isLanding()) {
+    @if (!isLanding() && !isCheckout()) {
       <app-telegram-fab [telegramUrl]="telegramUrl" />
     }
     @if (!isCheckout()) {

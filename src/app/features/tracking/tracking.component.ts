@@ -66,8 +66,8 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
           </a>
           <p class="font-mono text-xs uppercase tracking-[0.35em] text-lv-gold/60 mb-4">— Estado del pedido</p>
           <h1 class="font-display uppercase leading-none">
-            <span class="block text-lv-cream" style="font-size:clamp(1.4rem,5vw,3rem)">CONSULTA TU</span>
-            <span class="block text-lv-gold"  style="font-size:clamp(1.4rem,5vw,3rem)">PEDIDO</span>
+            <span class="block text-lv-cream" style="font-size:clamp(1rem,4.5vw,3rem)">CONSULTA TU</span>
+            <span class="block text-lv-gold"  style="font-size:clamp(1rem,4.5vw,3rem)">PEDIDO</span>
           </h1>
         </div>
 

@@ -43,8 +43,8 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
             </a>
             <p class="font-mono text-xs uppercase tracking-[0.35em] text-lv-gold/60 mb-4">— Confirmación de pedido</p>
             <h1 class="font-display uppercase leading-none">
-              <span class="block text-lv-cream" style="font-size:clamp(1.4rem,5vw,3rem)">CONFIGURACIÓN INSTANTÁNEA</span>
-              <span class="block text-lv-gold"  style="font-size:clamp(1.4rem,5vw,3rem)">LÍNEA DIRECTA CON EL TALLER</span>
+              <span class="block text-lv-cream" style="font-size:clamp(1rem,4.5vw,3rem)">CONFIGURACIÓN INSTANTÁNEA</span>
+              <span class="block text-lv-gold"  style="font-size:clamp(1rem,4.5vw,3rem)">LÍNEA DIRECTA CON EL TALLER</span>
             </h1>
             <p class="font-mono text-xs text-lv-cream/30 mt-4 leading-relaxed max-w-lg">
               Rellena los datos y pulsa confirmar. Se abrirá Telegram con tu pedido listo para enviar.
