@@ -73,6 +73,12 @@ async function main() {
   if (!existing["Total"])   toAdd["Total"]   = { number: { format: "euro" } };
   if (!existing["Fecha"])   toAdd["Fecha"]   = { date: {} };
 
+  // Historial de fechas por estado
+  const fechasEstado = ["Fecha pago recibido", "Fecha producción", "Fecha preparando", "Fecha enviado", "Fecha entregado"];
+  for (const name of fechasEstado) {
+    if (!existing[name]) toAdd[name] = { date: {} };
+  }
+
   if (!existing["Entrega"]) {
     toAdd["Entrega"] = {
       select: {
