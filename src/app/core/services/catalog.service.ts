@@ -1,35 +1,29 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, map, shareReplay } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
 import { Product, ProductCatalog, CategoryItem, Color, ShopSettings } from '../models/product.model';
+import productsData from '../../../assets/data/products.json';
 
 @Injectable({ providedIn: 'root' })
 export class CatalogService {
-  private http = inject(HttpClient);
-
-  private catalog$ = this.http
-    .get<ProductCatalog>('assets/data/products.json')
-    .pipe(shareReplay(1));
+  private readonly catalog = productsData as unknown as ProductCatalog;
 
   getProducts(): Observable<Product[]> {
-    return this.catalog$.pipe(map(c => c.products));
+    return of(this.catalog.products);
   }
 
   getCategories(): Observable<CategoryItem[]> {
-    return this.catalog$.pipe(map(c => c.categories));
+    return of(this.catalog.categories);
   }
 
   getColors(): Observable<Color[]> {
-    return this.catalog$.pipe(map(c => c.colors));
+    return of(this.catalog.colors);
   }
 
   getSettings(): Observable<ShopSettings> {
-    return this.catalog$.pipe(map(c => c.settings));
+    return of(this.catalog.settings);
   }
 
   getProductById(id: string): Observable<Product | undefined> {
-    return this.getProducts().pipe(
-      map(products => products.find(p => p.id === id))
-    );
+    return of(this.catalog.products.find(p => p.id === id));
   }
 }

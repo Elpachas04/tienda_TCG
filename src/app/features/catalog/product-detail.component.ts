@@ -1,4 +1,4 @@
-import { Component, inject, signal, DestroyRef, HostListener } from '@angular/core';
+import { Component, inject, signal, DestroyRef } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal, toObservable, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { combineLatest, switchMap, map, tap, catchError, of } from 'rxjs';
@@ -40,26 +40,27 @@ type DetailData = { product: Product | null; colors: Color[] };
 
             <!-- Media: vídeo + imágenes -->
             <div class="space-y-3">
-              <div class="liquid-glass rounded-[20px] overflow-hidden aspect-square"
-                   [class.cursor-zoom-in]="!showVideo()"
-                   (click)="!showVideo() && openLightbox(data.product)">
+              <div class="liquid-glass rounded-[20px] overflow-hidden aspect-square relative bg-lv-surface">
+                @if (!showVideo() && !mainImageLoaded()) {
+                  <div class="absolute inset-0 animate-pulse bg-white/[0.04] rounded-[20px]"></div>
+                }
                 @if (data.product.video && showVideo()) {
-                  <video
-                    class="w-full h-full object-cover"
-                    [src]="data.product.video"
-                    autoplay muted loop playsinline
-                    preload="metadata">
+                  <video class="w-full h-full object-cover"
+                         autoplay muted loop playsinline preload="metadata">
+                    <source [src]="data.product.video">
                   </video>
                 } @else {
                   <img [src]="currentImage(data.product)" [alt]="data.product.name"
-                       class="w-full h-full object-contain"
+                       class="w-full h-full object-contain transition-transform duration-500 hover:scale-125"
+                       loading="eager"
                        draggable="false"
+                       (load)="mainImageLoaded.set(true)"
                        (contextmenu)="$event.preventDefault()"
                        (error)="onImageError(data.product)"/>
                 }
               </div>
 
-              @if (data.product.video || validImages(data.product).length > 1) {
+              @if (data.product.video || readyThumbs().length > 1) {
                 <div class="flex gap-3 flex-wrap">
                   @if (data.product.video) {
                     <button
@@ -71,15 +72,14 @@ type DetailData = { product: Product | null; colors: Color[] };
                       </svg>
                     </button>
                   }
-                  @for (img of validImages(data.product); track img) {
+                  @for (img of readyThumbs(); track img) {
                     <button
                       class="w-14 h-14 sm:w-20 sm:h-20 rounded-xl overflow-hidden border-2 transition-colors duration-200 flex-shrink-0"
-                      [class]="!showVideo() && currentImageIndex() === $index ? 'border-lv-gold' : 'border-white/10 hover:border-lv-gold/40'"
-                      (click)="showVideo.set(false); currentImageIndex.set($index)">
+                      [class]="!showVideo() && currentImageIndex() === thumbIndex(img, data.product) ? 'border-lv-gold' : 'border-white/10 hover:border-lv-gold/40'"
+                      (click)="showVideo.set(false); currentImageIndex.set(thumbIndex(img, data.product))">
                       <img [src]="cloudinary.thumb(img)" [alt]="data.product.name" class="w-full h-full object-cover"
                            draggable="false"
-                           (contextmenu)="$event.preventDefault()"
-                           (error)="onThumbError(img)"/>
+                           (contextmenu)="$event.preventDefault()"/>
                     </button>
                   }
                 </div>
@@ -163,26 +163,6 @@ type DetailData = { product: Product | null; colors: Color[] };
           </div>
         </div>
       </div>
-      @if (lightboxOpen()) {
-        <div class="fixed inset-0 flex items-center justify-center"
-             style="z-index:200; background:rgba(0,0,0,0.96);"
-             (click)="closeLightbox()">
-          <button class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
-                  (click)="closeLightbox()">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-          </button>
-          <img [src]="lightboxImg()"
-               class="max-w-[95vw] max-h-[95vh] object-contain select-none transition-transform duration-300"
-               [style.transform]="lightboxZoomed() ? 'scale(2.2)' : 'scale(1)'"
-               [style.cursor]="lightboxZoomed() ? 'zoom-out' : 'zoom-in'"
-               draggable="false"
-               (contextmenu)="$event.preventDefault()"
-               (click)="toggleZoom($event)" />
-        </div>
-      }
-
     } @else {
       <div class="flex flex-col items-center justify-center min-h-screen gap-4 text-center">
         <p class="font-display text-4xl text-lv-cream/30 uppercase tracking-wide">Producto no encontrado</p>
@@ -206,12 +186,12 @@ export class ProductDetailComponent {
   readonly selectedVariant   = signal<ProductVariant | null>(null);
   readonly selectedColor     = signal<Color | null>(null);
   readonly justAdded         = signal(false);
-  readonly lightboxOpen      = signal(false);
-  readonly lightboxZoomed    = signal(false);
-  readonly lightboxImg       = signal('');
   readonly showVideo         = signal(true);
+  readonly mainImageLoaded   = signal(false);
+  readonly readyThumbs       = signal<string[]>([]);
 
   private addTimer: ReturnType<typeof setTimeout> | null = null;
+  private thumbProbes: HTMLImageElement[] = [];
 
   readonly productData = toSignal<DetailData>(
     this.route.params.pipe(
@@ -221,6 +201,9 @@ export class ProductDetailComponent {
         this.selectedVariant.set(null);
         this.selectedColor.set(null);
         this.showVideo.set(true);
+        this.mainImageLoaded.set(false);
+        this.readyThumbs.set([]);
+        this.abortThumbProbes();
       }),
       switchMap(params => combineLatest([
         this.catalogService.getProductById(params['id']),
@@ -239,10 +222,33 @@ export class ProductDetailComponent {
         if (data?.colors.length) {
           this.selectedColor.set(data.colors.find(c => c.id === 'negro') ?? data.colors[0]);
         }
+        if (data?.product) {
+          this.preloadThumbs(data.product.images);
+        }
       });
     this.destroyRef.onDestroy(() => {
       if (this.addTimer) clearTimeout(this.addTimer);
+      this.abortThumbProbes();
     });
+  }
+
+  private preloadThumbs(images: string[]): void {
+    this.abortThumbProbes();
+    this.thumbProbes = images.map(id => {
+      const probe = new Image();
+      probe.onload = () => this.readyThumbs.update(arr => [...arr, id]);
+      probe.src = this.cloudinary.thumb(id);
+      return probe;
+    });
+  }
+
+  private abortThumbProbes(): void {
+    this.thumbProbes.forEach(p => { p.onload = null; p.src = ''; });
+    this.thumbProbes = [];
+  }
+
+  thumbIndex(img: string, product: Product): number {
+    return this.validImages(product).indexOf(img);
   }
 
   validImages(product: Product): string[] {
@@ -288,32 +294,5 @@ export class ProductDetailComponent {
     this.failedIds.update(s => new Set([...s, failedId]));
     const remaining = this.validImages(product);
     this.currentImageIndex.set(Math.max(0, Math.min(this.currentImageIndex(), remaining.length - 1)));
-  }
-
-  onThumbError(publicId: string): void {
-    this.failedIds.update(s => new Set([...s, publicId]));
-  }
-
-  openLightbox(product: Product): void {
-    const id = this.validImages(product)[this.currentImageIndex()];
-    if (!id) return;
-    this.lightboxImg.set(this.cloudinary.full(id));
-    this.lightboxZoomed.set(false);
-    this.lightboxOpen.set(true);
-  }
-
-  closeLightbox(): void {
-    this.lightboxOpen.set(false);
-    this.lightboxZoomed.set(false);
-  }
-
-  toggleZoom(event: Event): void {
-    event.stopPropagation();
-    this.lightboxZoomed.update(z => !z);
-  }
-
-  @HostListener('document:keydown.escape')
-  onEsc(): void {
-    if (this.lightboxOpen()) this.closeLightbox();
   }
 }
