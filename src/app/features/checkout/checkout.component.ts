@@ -224,7 +224,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                           <span class="normal-case opacity-50 ml-1">— zona aproximada</span>
                         }
                       </label>
-                      <div class="space-y-2 max-h-56 overflow-y-auto pr-0.5">
+                      <div id="oficinas-list" class="space-y-2 max-h-56 overflow-y-auto pr-0.5">
                         @for (o of oficinas(); track o.codigo) {
                           <button type="button"
                             class="w-full px-4 py-3 rounded-[14px] border-2 transition-all duration-200 text-left"
@@ -282,8 +282,8 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
               class="w-full font-mono text-xs uppercase tracking-widest font-semibold rounded-full py-4 transition-all duration-200 flex items-center justify-center gap-2"
               [class]="isFormValid() && !submitting()
                 ? 'bg-lv-gold hover:brightness-110 text-black'
-                : 'bg-white/[0.05] text-lv-cream/20 cursor-not-allowed'"
-              [disabled]="!isFormValid() || submitting()"
+                : submitting() ? 'bg-white/[0.05] text-lv-cream/20 cursor-not-allowed' : 'bg-white/[0.05] text-lv-cream/40 hover:bg-white/[0.08] cursor-pointer'"
+              [disabled]="submitting()"
               (click)="submitOrder()">
               @if (submitting()) {
                 <span class="w-3.5 h-3.5 border-2 border-black/40 border-t-black rounded-full animate-spin"></span>
@@ -449,8 +449,11 @@ export class CheckoutComponent implements OnInit {
   async submitOrder(): Promise<void> {
     this.touched = { name: true, contact: true, cp: true, oficina: true };
     if (!this.isFormValid()) {
-      this.errorMsg.set('Rellena todos los campos obligatorios antes de continuar.');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (this.form.deliveryMethod === 'shipping' && this.oficinas().length > 1 && !this.selectedOficina()) {
+        document.getElementById('oficinas-list')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
       return;
     }
 
