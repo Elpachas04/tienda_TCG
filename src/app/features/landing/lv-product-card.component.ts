@@ -39,7 +39,7 @@ import { CloudinaryService } from '../../core/services/cloudinary.service';
             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             draggable="false"
             (contextmenu)="$event.preventDefault()"
-            (error)="onImageError($event)"
+            (error)="onImageError()"
           />
         }
         @if (product.badge) {
@@ -47,9 +47,9 @@ import { CloudinaryService } from '../../core/services/cloudinary.service';
             {{ product.badge }}
           </span>
         }
-        @if (product.images.length > 1) {
+        @if (validImages().length > 1) {
           <div class="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5">
-            @for (img of product.images; track $index) {
+            @for (_ of validImages(); track $index) {
               <button
                 class="w-1.5 h-1.5 rounded-full transition-colors"
                 [class]="currentImageIndex() === $index ? 'bg-lv-gold' : 'bg-white/30'"
@@ -155,6 +155,7 @@ export class LvProductCardComponent implements OnChanges {
   private addTimer: ReturnType<typeof setTimeout> | null = null;
 
   readonly currentImageIndex = signal(0);
+  readonly failedIds         = signal<Set<string>>(new Set());
   readonly selectedVariant   = signal<ProductVariant | null>(null);
   readonly selectedColor     = signal<Color | null>(null);
   readonly justAdded         = signal(false);
@@ -169,13 +170,23 @@ export class LvProductCardComponent implements OnChanges {
     if (changes['colors'] && this.colors.length > 0 && !this.selectedColor()) {
       this.selectedColor.set(this.colors.find(c => c.id === 'negro') ?? this.colors[0]);
     }
-    if (changes['product'] && this.product.variants?.length && !this.selectedVariant()) {
-      this.selectedVariant.set(this.product.variants[0]);
+    if (changes['product']) {
+      this.failedIds.set(new Set());
+      this.currentImageIndex.set(0);
+      if (this.product.variants?.length && !this.selectedVariant()) {
+        this.selectedVariant.set(this.product.variants[0]);
+      }
     }
   }
 
-  currentImage() {
-    const id = this.product.images[this.currentImageIndex()];
+  validImages(): string[] {
+    const failed = this.failedIds();
+    return this.product.images.filter(id => !failed.has(id));
+  }
+
+  currentImage(): string {
+    const valid = this.validImages();
+    const id = valid[this.currentImageIndex()];
     return id ? this.cloudinary.card(id) : PLACEHOLDER;
   }
 
@@ -208,7 +219,12 @@ export class LvProductCardComponent implements OnChanges {
     this.addTimer = setTimeout(() => this.justAdded.set(false), 1500);
   }
 
-  onImageError(event: Event) {
-    (event.target as HTMLImageElement).src = PLACEHOLDER;
+  onImageError(): void {
+    const valid = this.validImages();
+    const failedId = valid[this.currentImageIndex()];
+    if (!failedId) return;
+    this.failedIds.update(s => new Set([...s, failedId]));
+    const remaining = this.validImages();
+    this.currentImageIndex.set(Math.max(0, Math.min(this.currentImageIndex(), remaining.length - 1)));
   }
 }

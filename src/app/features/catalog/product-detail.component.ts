@@ -53,12 +53,12 @@ type DetailData = { product: Product | null; colors: Color[] };
                        class="w-full h-full object-cover"
                        draggable="false"
                        (contextmenu)="$event.preventDefault()"
-                       (error)="onImageError($event)"/>
+                       (error)="onImageError(data.product)"/>
                 }
               </div>
-              @if (!data.product.video && data.product.images.length > 1) {
+              @if (!data.product.video && validImages(data.product).length > 1) {
                 <div class="flex gap-3">
-                  @for (img of data.product.images; track $index) {
+                  @for (img of validImages(data.product); track img) {
                     <button
                       class="w-14 h-14 sm:w-20 sm:h-20 rounded-xl overflow-hidden border-2 transition-colors duration-200"
                       [class]="currentImageIndex() === $index ? 'border-lv-gold' : 'border-white/10 hover:border-lv-gold/40'"
@@ -66,7 +66,7 @@ type DetailData = { product: Product | null; colors: Color[] };
                       <img [src]="cloudinary.thumb(img)" [alt]="data.product.name" class="w-full h-full object-cover"
                            draggable="false"
                            (contextmenu)="$event.preventDefault()"
-                           (error)="onImageError($event)"/>
+                           (error)="onThumbError(img)"/>
                     </button>
                   }
                 </div>
@@ -169,6 +169,7 @@ export class ProductDetailComponent {
   protected readonly cloudinary = inject(CloudinaryService);
 
   readonly currentImageIndex = signal(0);
+  readonly failedIds         = signal<Set<string>>(new Set());
   readonly selectedVariant   = signal<ProductVariant | null>(null);
   readonly selectedColor     = signal<Color | null>(null);
   readonly justAdded         = signal(false);
@@ -179,6 +180,7 @@ export class ProductDetailComponent {
     this.route.params.pipe(
       tap(() => {
         this.currentImageIndex.set(0);
+        this.failedIds.set(new Set());
         this.selectedVariant.set(null);
         this.selectedColor.set(null);
       }),
@@ -205,8 +207,14 @@ export class ProductDetailComponent {
     });
   }
 
+  validImages(product: Product): string[] {
+    const failed = this.failedIds();
+    return product.images.filter(id => !failed.has(id));
+  }
+
   currentImage(product: Product): string {
-    const id = product.images[this.currentImageIndex()];
+    const valid = this.validImages(product);
+    const id = valid[this.currentImageIndex()];
     return id ? this.cloudinary.detail(id) : PLACEHOLDER;
   }
 
@@ -235,7 +243,16 @@ export class ProductDetailComponent {
     this.addTimer = setTimeout(() => this.justAdded.set(false), 1500);
   }
 
-  onImageError(event: Event): void {
-    (event.target as HTMLImageElement).src = PLACEHOLDER;
+  onImageError(product: Product): void {
+    const valid = this.validImages(product);
+    const failedId = valid[this.currentImageIndex()];
+    if (!failedId) return;
+    this.failedIds.update(s => new Set([...s, failedId]));
+    const remaining = this.validImages(product);
+    this.currentImageIndex.set(Math.max(0, Math.min(this.currentImageIndex(), remaining.length - 1)));
+  }
+
+  onThumbError(publicId: string): void {
+    this.failedIds.update(s => new Set([...s, publicId]));
   }
 }
