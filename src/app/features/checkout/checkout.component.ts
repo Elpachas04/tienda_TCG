@@ -26,7 +26,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
   imports: [FormsModule, RouterLink],
   host: { class: 'block animate-fade-up' },
   template: `
-    <div class="bg-grid-premium min-h-screen relative overflow-x-hidden">
+    <div class="bg-lv-black bg-grid-premium min-h-screen relative overflow-x-hidden">
       <div class="absolute -top-20 -right-20 sm:-top-40 sm:-right-40 w-[250px] h-[250px] sm:w-[500px] sm:h-[500px] bg-[#C9A84C]/[0.04] rounded-full blur-[80px] sm:blur-[120px] animate-aurora pointer-events-none" style="z-index:0"></div>
 
       <div class="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12 lg:py-16 relative" style="z-index:1">
