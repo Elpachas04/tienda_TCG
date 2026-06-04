@@ -38,12 +38,12 @@ type DetailData = { product: Product | null; colors: Color[] };
 
           <div class="grid md:grid-cols-2 gap-6 md:gap-10 lg:gap-12">
 
-            <!-- Media: vídeo o imágenes -->
+            <!-- Media: vídeo + imágenes -->
             <div class="space-y-3">
               <div class="liquid-glass rounded-[20px] overflow-hidden aspect-square"
-                   [class.cursor-zoom-in]="!data.product.video"
-                   (click)="!data.product.video && openLightbox(data.product)">
-                @if (data.product.video) {
+                   [class.cursor-zoom-in]="!showVideo()"
+                   (click)="!showVideo() && openLightbox(data.product)">
+                @if (data.product.video && showVideo()) {
                   <video
                     class="w-full h-full object-cover"
                     [src]="data.product.video"
@@ -58,13 +58,24 @@ type DetailData = { product: Product | null; colors: Color[] };
                        (error)="onImageError(data.product)"/>
                 }
               </div>
-              @if (!data.product.video && validImages(data.product).length > 1) {
-                <div class="flex gap-3">
+
+              @if (data.product.video || validImages(data.product).length > 1) {
+                <div class="flex gap-3 flex-wrap">
+                  @if (data.product.video) {
+                    <button
+                      class="w-14 h-14 sm:w-20 sm:h-20 rounded-xl overflow-hidden border-2 transition-colors duration-200 bg-black flex items-center justify-center flex-shrink-0"
+                      [class]="showVideo() ? 'border-lv-gold' : 'border-white/10 hover:border-lv-gold/40'"
+                      (click)="showVideo.set(true)">
+                      <svg class="w-6 h-6 text-lv-gold/80" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                    </button>
+                  }
                   @for (img of validImages(data.product); track img) {
                     <button
-                      class="w-14 h-14 sm:w-20 sm:h-20 rounded-xl overflow-hidden border-2 transition-colors duration-200"
-                      [class]="currentImageIndex() === $index ? 'border-lv-gold' : 'border-white/10 hover:border-lv-gold/40'"
-                      (click)="currentImageIndex.set($index)">
+                      class="w-14 h-14 sm:w-20 sm:h-20 rounded-xl overflow-hidden border-2 transition-colors duration-200 flex-shrink-0"
+                      [class]="!showVideo() && currentImageIndex() === $index ? 'border-lv-gold' : 'border-white/10 hover:border-lv-gold/40'"
+                      (click)="showVideo.set(false); currentImageIndex.set($index)">
                       <img [src]="cloudinary.thumb(img)" [alt]="data.product.name" class="w-full h-full object-cover"
                            draggable="false"
                            (contextmenu)="$event.preventDefault()"
@@ -198,6 +209,7 @@ export class ProductDetailComponent {
   readonly lightboxOpen      = signal(false);
   readonly lightboxZoomed    = signal(false);
   readonly lightboxImg       = signal('');
+  readonly showVideo         = signal(true);
 
   private addTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -208,6 +220,7 @@ export class ProductDetailComponent {
         this.failedIds.set(new Set());
         this.selectedVariant.set(null);
         this.selectedColor.set(null);
+        this.showVideo.set(true);
       }),
       switchMap(params => combineLatest([
         this.catalogService.getProductById(params['id']),
