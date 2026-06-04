@@ -23,7 +23,7 @@ type DetailData = { product: Product | null; colors: Color[] };
         <div class="w-10 h-10 border-2 border-lv-gold border-t-transparent rounded-full animate-spin"></div>
       </div>
     } @else if (data.product) {
-      <div class="bg-grid-premium min-h-screen relative overflow-x-hidden">
+      <div class="bg-lv-black bg-grid-premium min-h-screen relative overflow-x-hidden">
         <div class="absolute -top-20 -right-20 sm:-top-40 sm:-right-40 w-[250px] h-[250px] sm:w-[500px] sm:h-[500px] bg-[#C9A84C]/[0.05] rounded-full blur-[80px] sm:blur-[120px] animate-aurora pointer-events-none" style="z-index:0"></div>
 
         <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 lg:py-16">

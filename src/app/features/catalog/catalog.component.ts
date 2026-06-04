@@ -19,7 +19,7 @@ type CategoryPill = CategoryItem & { count: number };
   imports: [LvProductCardComponent, RevealDirective],
   host: { class: 'block' },
   template: `
-    <div class="bg-grid-premium min-h-screen relative">
+    <div class="bg-lv-black bg-grid-premium min-h-screen relative">
 
       <!-- Blobs de luz -->
       <div class="fixed -top-20 -right-20 sm:-top-40 sm:-right-40 w-[250px] h-[250px] sm:w-[450px] sm:h-[450px] lg:w-[600px] lg:h-[600px] bg-[#C9A84C]/[0.05] rounded-full blur-[80px] sm:blur-[140px] animate-aurora pointer-events-none" style="z-index:0"></div>
