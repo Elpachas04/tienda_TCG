@@ -51,7 +51,7 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
   imports: [FormsModule, RouterLink],
   host: { class: 'block animate-fade-up' },
   template: `
-    <div class="bg-grid-premium min-h-screen relative">
+    <div class="bg-grid-premium min-h-screen relative overflow-x-hidden">
       <div class="absolute -top-20 -right-20 sm:-top-40 sm:-right-40 w-[250px] h-[250px] sm:w-[500px] sm:h-[500px] bg-[#C9A84C]/[0.04] rounded-full blur-[80px] sm:blur-[120px] pointer-events-none"></div>
 
       <div class="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12 lg:py-16 relative" style="z-index:1">
@@ -66,8 +66,8 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
           </a>
           <p class="font-mono text-xs uppercase tracking-[0.35em] text-lv-gold/60 mb-4">— Estado del pedido</p>
           <h1 class="font-display uppercase leading-none">
-            <span class="block text-lv-cream" style="font-size:clamp(1.8rem,5vw,3rem)">CONSULTA TU</span>
-            <span class="block text-lv-gold"  style="font-size:clamp(1.8rem,5vw,3rem)">PEDIDO</span>
+            <span class="block text-lv-cream" style="font-size:clamp(1.4rem,5vw,3rem)">CONSULTA TU</span>
+            <span class="block text-lv-gold"  style="font-size:clamp(1.4rem,5vw,3rem)">PEDIDO</span>
           </h1>
         </div>
 
@@ -79,7 +79,7 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
           <div class="flex gap-2 sm:gap-3">
             <input
               type="text"
-              class="flex-1 min-w-0 bg-white/[0.03] border border-white/[0.07] rounded-xl px-3 sm:px-4 py-3 font-mono text-sm text-lv-cream placeholder-lv-cream/20 focus:outline-none focus:border-lv-gold/40 transition-colors uppercase tracking-widest"
+              class="flex-1 min-w-0 bg-white/[0.03] border border-white/[0.07] rounded-xl px-3 sm:px-4 py-3 font-mono text-base text-lv-cream placeholder-lv-cream/20 focus:outline-none focus:border-lv-gold/40 transition-colors uppercase tracking-widest"
               placeholder="LV-240604-A3K7"
               maxlength="14"
               [(ngModel)]="inputId"
@@ -136,7 +136,7 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
               <div class="flex items-start justify-between gap-4 flex-wrap">
                 <div>
                   <p class="font-mono text-[10px] uppercase tracking-widest text-lv-gold/60 mb-1">Pedido</p>
-                  <p class="font-display text-2xl text-lv-gold tracking-widest">{{ order()!.orderId }}</p>
+                  <p class="font-display text-lg sm:text-2xl text-lv-gold tracking-wide sm:tracking-widest break-all">{{ order()!.orderId }}</p>
                 </div>
                 <div class="text-right">
                   <p class="font-mono text-[10px] uppercase tracking-widest text-lv-cream/30 mb-1">Realizado el</p>
@@ -150,7 +150,7 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
               <p class="font-mono text-[10px] uppercase tracking-widest text-lv-cream/40 mb-5">Estado</p>
               <div class="space-y-0">
                 @for (step of steps; track step.key; let last = $last) {
-                  <div class="flex gap-4 items-start">
+                  <div class="flex gap-3 sm:gap-4 items-start">
                     <!-- Connector -->
                     <div class="flex flex-col items-center flex-shrink-0">
                       <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm transition-all duration-300"
@@ -172,16 +172,14 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
                       }
                     </div>
                     <!-- Label -->
-                    <div class="pb-5 pt-1 flex-1">
-                      <div class="flex items-baseline justify-between gap-2 flex-wrap">
-                        <p class="font-mono text-xs uppercase tracking-wider transition-colors duration-300"
-                          [class]="isCurrent(step.key) ? 'text-lv-gold' : isCompleted(step.key) ? 'text-lv-cream/70' : 'text-lv-cream/20'">
-                          {{ step.icon }} {{ step.label }}
-                        </p>
-                        @if (stepDate(step.key)) {
-                          <span class="font-mono text-[9px] text-lv-cream/30 flex-shrink-0">{{ stepDate(step.key) }}</span>
-                        }
-                      </div>
+                    <div class="pb-4 sm:pb-5 pt-1 flex-1 min-w-0">
+                      <p class="font-mono text-xs uppercase tracking-wider transition-colors duration-300"
+                        [class]="isCurrent(step.key) ? 'text-lv-gold' : isCompleted(step.key) ? 'text-lv-cream/70' : 'text-lv-cream/20'">
+                        {{ step.icon }} {{ step.label }}
+                      </p>
+                      @if (stepDate(step.key)) {
+                        <span class="font-mono text-[9px] text-lv-cream/30 block mt-0.5">{{ stepDate(step.key) }}</span>
+                      }
                       @if (isCurrent(step.key) && step.key === 'shipped' && order()!.trackingNumber) {
                         <p class="font-mono text-[10px] text-lv-gold/60 mt-1">
                           Tracking: {{ order()!.trackingNumber }}

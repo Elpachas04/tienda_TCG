@@ -8,7 +8,7 @@ import { NOTES_MAX, TELEGRAM_USERNAME } from '../../shared/constants';
 
 const NAME_MAX    = 100;
 const CONTACT_MAX = 200;
-const INPUT = 'w-full bg-white/[0.03] border rounded-xl px-4 py-3 font-body text-sm text-lv-cream placeholder-lv-cream/20 focus:outline-none transition-colors';
+const INPUT = 'w-full bg-white/[0.03] border rounded-xl px-4 py-3 font-body text-base text-lv-cream placeholder-lv-cream/20 focus:outline-none transition-colors';
 
 function isValidContact(v: string): boolean { return v.length >= 5; }
 
@@ -26,7 +26,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
   imports: [FormsModule, RouterLink],
   host: { class: 'block animate-fade-up' },
   template: `
-    <div class="bg-grid-premium min-h-screen relative">
+    <div class="bg-grid-premium min-h-screen relative overflow-x-hidden">
       <div class="absolute -top-20 -right-20 sm:-top-40 sm:-right-40 w-[250px] h-[250px] sm:w-[500px] sm:h-[500px] bg-[#C9A84C]/[0.04] rounded-full blur-[80px] sm:blur-[120px] animate-aurora pointer-events-none"></div>
 
       <div class="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12 lg:py-16 relative" style="z-index:1">
@@ -309,7 +309,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
             @if (orderId()) {
               <div class="liquid-glass rounded-[20px] p-6 border border-lv-gold/20 max-w-sm mx-auto">
                 <p class="font-mono text-[10px] uppercase tracking-widest text-lv-gold/60 mb-2">Tu número de pedido</p>
-                <p class="font-display text-3xl text-lv-gold tracking-widest">{{ orderId() }}</p>
+                <p class="font-display text-xl sm:text-3xl text-lv-gold tracking-wide sm:tracking-widest break-all">{{ orderId() }}</p>
                 <p class="font-mono text-[10px] text-lv-cream/30 mt-2 leading-relaxed">
                   Guárdalo para consultar el estado en cualquier momento.
                 </p>
