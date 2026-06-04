@@ -41,6 +41,10 @@
             "outputPath": "dist/tcg3d-shop",
             "index": "src/index.html",
             "browser": "src/main.ts",
+            "server": "src/main.server.ts",
+            "prerender": {
+              "discoverRoutes": true
+            },
             "polyfills": [
               "zone.js"
             ],
