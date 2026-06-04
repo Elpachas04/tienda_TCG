@@ -15,7 +15,7 @@
         "Ajuste milimétrico con doble funda",
         "Color a elegir sin coste extra"
       ],
-      "images": ["layervault/deckbox-ventana/01"],
+      "images": ["01", "02", "03"],
       "price": 20,
       "colorPickerEnabled": true,
       "available": true
