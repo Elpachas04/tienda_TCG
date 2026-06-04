@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
+import { TELEGRAM_URL, CONTACT_EMAIL } from '../../shared/constants';
 
 @Component({
   selector: 'app-lv-cta',
@@ -27,7 +28,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
       <!-- Content -->
       <div class="relative z-10 flex flex-col items-center gap-6 text-center py-32 px-6 max-w-2xl mx-auto">
 
-        <p lvReveal class="font-accent italic text-lv-gold text-2xl md:text-4xl">
+        <p lvReveal class="font-body italic text-lv-gold text-2xl md:text-4xl">
           ¿listo para jugar con estilo?
         </p>
 
@@ -37,19 +38,19 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
         </h2>
 
         <p lvReveal class="font-mono text-xs uppercase tracking-wide text-lv-cream/40 max-w-md leading-relaxed">
-          Enviado a toda España.<br>
+          Enviado a Península.<br>
           Cada pieza impresa cuando la pides, como la quieres.
         </p>
 
         <div lvReveal class="flex gap-4 flex-wrap justify-center">
-          <a href="https://t.me/Elpachas_04"
+          <a [href]="telegramUrl" target="_blank" rel="noopener noreferrer"
              class="flex items-center gap-2 bg-lv-gold text-black rounded-full px-10 py-4 font-mono text-xs uppercase tracking-wider font-semibold hover:brightness-110 transition-all duration-200">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
             </svg>
             Pedir por Telegram
           </a>
-          <a href="mailto:hola@layervault.es"
+          <a [href]="'mailto:' + contactEmail"
              class="liquid-glass flex items-center gap-2 border border-lv-gold/30 text-lv-cream rounded-full px-10 py-4 font-mono text-xs uppercase tracking-wider hover:border-lv-gold transition-all duration-200">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 6 10-6"/>
@@ -66,4 +67,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
     </section>
   `,
 })
-export class CtaComponent {}
+export class CtaComponent {
+  protected readonly telegramUrl  = TELEGRAM_URL;
+  protected readonly contactEmail = CONTACT_EMAIL;
+}

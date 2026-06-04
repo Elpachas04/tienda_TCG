@@ -5,7 +5,7 @@
 @layer base {
   html { scroll-behavior: smooth; }
   body {
-    @apply bg-tcg-bg text-tcg-text font-body;
+    @apply bg-lv-black text-lv-cream font-body;
   }
   img, video {
     -webkit-user-drag: none;
@@ -80,37 +80,6 @@ body::after {
 .lv-reveal.revealed {
   opacity: 1;
   transform: translateY(0);
-}
-
-.hero {
-  background: radial-gradient(circle, #1c1c1c 0%, #121212 100%);
-  text-align: center;
-  padding: 2.5rem 1rem 2rem;
-  border-bottom: 1px solid #2a2a2a;
-}
-
-@layer components {
-  .btn-gold {
-    @apply bg-tcg-gold hover:bg-yellow-500 text-black font-body font-semibold px-5 py-2.5 rounded-lg transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed;
-  }
-  .btn-outline {
-    @apply border border-tcg-border hover:border-tcg-gold text-tcg-muted hover:text-tcg-text font-body font-medium px-5 py-2.5 rounded-lg transition-colors duration-200;
-  }
-  .card {
-    @apply bg-tcg-surface rounded-card border border-tcg-border transition-colors duration-200;
-  }
-  .card-hover {
-    @apply hover:border-tcg-gold;
-  }
-  .input-field {
-    @apply w-full bg-tcg-bg border border-tcg-border text-tcg-text rounded-lg px-4 py-2.5 font-body
-           focus:outline-none focus:border-tcg-gold placeholder-tcg-muted;
-  }
-  .badge-gold   { @apply bg-tcg-gold text-black text-xs font-bold px-2 py-0.5 rounded; }
-  .badge-teal   { @apply bg-teal-500 text-white text-xs font-bold px-2 py-0.5 rounded; }
-  .badge-purple { @apply bg-purple-600 text-white text-xs font-bold px-2 py-0.5 rounded; }
-  .badge-coral  { @apply bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded; }
-  .btn-success  { @apply bg-green-700 hover:bg-green-600 text-white font-body font-semibold px-5 py-2.5 rounded-lg transition-colors duration-200; }
 }
 
 @keyframes toast-in {

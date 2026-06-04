@@ -5,6 +5,7 @@ import { filter, map, startWith } from 'rxjs';
 import { LvNavbarComponent } from './features/landing/lv-navbar.component';
 import { TelegramFabComponent } from './shared/components/telegram-fab.component';
 import { CartDrawerComponent } from './shared/components/cart-drawer.component';
+import { TELEGRAM_URL } from './shared/constants';
 
 @Component({
   selector: 'app-root',
@@ -16,7 +17,7 @@ import { CartDrawerComponent } from './shared/components/cart-drawer.component';
       <router-outlet />
     </main>
     @if (!isLanding()) {
-      <app-telegram-fab telegramUrl="https://t.me/Elpachas_04" />
+      <app-telegram-fab [telegramUrl]="telegramUrl" />
     }
     @if (!isCheckout()) {
       <app-cart-drawer />
@@ -24,6 +25,7 @@ import { CartDrawerComponent } from './shared/components/cart-drawer.component';
   `
 })
 export class AppComponent {
+  protected readonly telegramUrl = TELEGRAM_URL;
   private router = inject(Router);
 
   private currentUrl = toSignal(

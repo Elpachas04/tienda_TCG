@@ -62,7 +62,7 @@ import { NOTES_MAX } from '../constants';
               </div>
               <button
                 class="liquid-glass border border-lv-gold/20 text-lv-gold font-mono text-xs uppercase tracking-wider rounded-full px-6 py-2.5 hover:bg-lv-gold hover:text-black transition-all duration-200"
-                (click)="cart.closeDrawer()">
+                (click)="goToCatalog()">
                 Ver catálogo
               </button>
             </div>
@@ -153,5 +153,10 @@ export class CartDrawerComponent {
   goToCheckout() {
     this.cart.closeDrawer();
     this.router.navigate(['/checkout']);
+  }
+
+  goToCatalog() {
+    this.cart.closeDrawer();
+    this.router.navigate(['/catalog']);
   }
 }

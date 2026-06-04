@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 
 @Component({
   selector: 'app-lv-hero',
   standalone: true,
-  imports: [RevealDirective],
+  imports: [RevealDirective, RouterLink],
   host: { class: 'block' },
   template: `
     <section id="hero"
@@ -44,7 +45,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
         </p>
 
         <div lvReveal class="flex gap-4 flex-wrap justify-center">
-          <a href="#catalogo"
+          <a routerLink="/catalog"
              class="bg-lv-gold text-black rounded-full px-8 py-4 font-mono text-xs uppercase tracking-wider font-semibold hover:brightness-110 transition-all duration-200">
             Asegurar mi mazo
           </a>
