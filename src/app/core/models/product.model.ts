@@ -8,6 +8,7 @@ export type ProductCategory = 'deckbox' | 'storage' | 'tools' | 'accessories';
 
 export interface Product {
   id: string;
+  sku?: string;
   name: string;
   tagline: string;
   category: ProductCategory;

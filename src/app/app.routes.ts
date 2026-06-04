@@ -31,6 +31,11 @@ export const routes: Routes = [
       import('./features/checkout/checkout.component').then(m => m.CheckoutComponent),
   },
   {
+    path: 'seguimiento',
+    loadComponent: () =>
+      import('./features/tracking/tracking.component').then(m => m.TrackingComponent),
+  },
+  {
     path: 'legal',
     loadComponent: () =>
       import('./features/legal/legal.component').then(m => m.LegalComponent),

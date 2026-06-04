@@ -203,6 +203,7 @@ export class ProductDetailComponent {
   addToCart(product: Product): void {
     this.cartService.addItem({
       productId:   product.id,
+      productSku:  product.sku,
       productName: product.name,
       variant:     this.selectedVariant()?.label,
       color:       this.selectedColor()?.name,

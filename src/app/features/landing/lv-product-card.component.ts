@@ -191,6 +191,7 @@ export class LvProductCardComponent implements OnChanges {
     event.stopPropagation();
     this.added.emit({
       productId:   this.product.id,
+      productSku:  this.product.sku,
       productName: this.product.name,
       variant:     this.selectedVariant()?.label,
       color:       this.selectedColor()?.name,

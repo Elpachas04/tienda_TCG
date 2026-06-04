@@ -25,6 +25,18 @@ function sanitizeOptionalStr(value: unknown, maxLen: number): string | undefined
   return cleaned.length > 0 ? cleaned.slice(0, maxLen) : undefined;
 }
 
+const ID_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+function generateOrderId(): string {
+  const now = new Date();
+  const yy  = String(now.getFullYear()).slice(2);
+  const mm  = String(now.getMonth() + 1).padStart(2, "0");
+  const dd  = String(now.getDate()).padStart(2, "0");
+  let rand  = "";
+  for (let i = 0; i < 4; i++) rand += ID_CHARS[Math.floor(Math.random() * ID_CHARS.length)];
+  return `LV-${yy}${mm}${dd}-${rand}`;
+}
+
 class ValidationError extends Error {
   constructor(message: string) {
     super(message);
@@ -35,6 +47,8 @@ class ValidationError extends Error {
 // ── Types ──────────────────────────────────────────────────────────────────
 
 interface ValidatedItem {
+  productId:   string;
+  productSku?: string;
   productName: string;
   quantity:    number;
   unitPrice:   number;
@@ -52,6 +66,7 @@ interface ValidatedOficina {
 }
 
 interface ValidatedOrder {
+  orderId:         string;
   customerName:    string;
   customerContact: string;
   deliveryMethod:  "pickup" | "shipping";
@@ -66,7 +81,7 @@ interface ValidatedOrder {
 
 // ── Validation ─────────────────────────────────────────────────────────────
 
-function validateOrder(body: unknown): ValidatedOrder {
+function validateOrder(body: unknown, orderId: string): ValidatedOrder {
   if (!body || typeof body !== "object" || Array.isArray(body)) {
     throw new ValidationError("Cuerpo de la petición inválido");
   }
@@ -94,6 +109,7 @@ function validateOrder(body: unknown): ValidatedOrder {
     if (!item || typeof item !== "object") throw new ValidationError(`Artículo ${idx + 1} inválido`);
     const i = item as Record<string, unknown>;
     const productName = sanitizeStr(i["productName"], 200, `Artículo ${idx + 1} nombre`);
+    const productId   = sanitizeStr(i["productId"],   100, `Artículo ${idx + 1} id`);
     const quantity = i["quantity"];
     if (typeof quantity !== "number" || !Number.isInteger(quantity) || quantity < 1 || quantity > 99) {
       throw new ValidationError(`Artículo ${idx + 1}: cantidad inválida`);
@@ -103,6 +119,8 @@ function validateOrder(body: unknown): ValidatedOrder {
       throw new ValidationError(`Artículo ${idx + 1}: precio inválido`);
     }
     return {
+      productId,
+      productSku: sanitizeOptionalStr(i["productSku"], 20),
       productName,
       quantity,
       unitPrice,
@@ -116,7 +134,6 @@ function validateOrder(body: unknown): ValidatedOrder {
     ? raw["shippingCost"]
     : undefined;
 
-  // Cross-check total: items subtotal + shipping must match claimed total (±1€ float drift)
   const itemsSubtotal = items.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
   const expectedTotal = itemsSubtotal + (shippingCost ?? 0);
   const claimedTotal  = raw["totalAmount"];
@@ -144,6 +161,7 @@ function validateOrder(body: unknown): ValidatedOrder {
   }
 
   return {
+    orderId,
     customerName,
     customerContact,
     deliveryMethod,
@@ -157,11 +175,12 @@ function validateOrder(body: unknown): ValidatedOrder {
   };
 }
 
-// ── Message builder ────────────────────────────────────────────────────────
+// ── Telegram message builder ───────────────────────────────────────────────
 
 function buildMessage(order: ValidatedOrder): string {
   const itemLines = order.items.map(item => {
-    let line = `• ${item.quantity}× <b>${escapeHtml(item.productName)}</b>`;
+    const ref  = item.productSku ?? item.productId;
+    let line   = `• ${item.quantity}× <b>${escapeHtml(item.productName)}</b> <code>[${escapeHtml(ref)}]</code>`;
     if (item.variant) line += ` (${escapeHtml(item.variant)})`;
     if (item.color)   line += ` — Color: ${escapeHtml(item.color)}`;
     line += ` — ${(item.quantity * item.unitPrice).toFixed(2)}€`;
@@ -178,6 +197,7 @@ function buildMessage(order: ValidatedOrder): string {
   const lines: string[] = [
     `🏴‍☠️ <b>NUEVO PEDIDO — LayerVault</b>`,
     `━━━━━━━━━━━━━━━━━━━━`,
+    `🔑 <b>ID Pedido:</b> <code>${escapeHtml(order.orderId)}</code>`,
     ``,
     `👤 <b>Cliente:</b> ${escapeHtml(order.customerName)}`,
     `📞 <b>Contacto:</b> ${escapeHtml(order.customerContact)}`,
@@ -210,6 +230,54 @@ function buildMessage(order: ValidatedOrder): string {
   return lines.join("\n");
 }
 
+// ── Notion writer ──────────────────────────────────────────────────────────
+
+async function writeOrderToNotion(order: ValidatedOrder, token: string, dbId: string): Promise<void> {
+  const productosSummary = order.items
+    .map(i => `${i.quantity}× [${i.productSku ?? i.productId}] ${i.productName}${i.variant ? ` (${i.variant})` : ""}${i.color ? ` — ${i.color}` : ""}`)
+    .join(", ")
+    .slice(0, 1900);
+
+  const itemsJson = JSON.stringify(
+    order.items.map(i => ({
+      productId:   i.productId,
+      productSku:  i.productSku,
+      productName: i.productName,
+      quantity:    i.quantity,
+      variant:     i.variant,
+      color:       i.color,
+    }))
+  ).slice(0, 1900);
+
+  const res = await fetch("https://api.notion.com/v1/pages", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
+      "Notion-Version": "2022-06-28",
+    },
+    body: JSON.stringify({
+      parent: { database_id: dbId },
+      properties: {
+        "ID Pedido": { title: [{ text: { content: order.orderId } }] },
+        "Estado":    { select: { name: "Pendiente de pago" } },
+        "Cliente":   { rich_text: [{ text: { content: order.customerName } }] },
+        "Contacto":  { rich_text: [{ text: { content: order.customerContact } }] },
+        "Total":     { number: order.totalAmount },
+        "Entrega":   { select: { name: order.deliveryMethod === "pickup" ? "En mano" : "Envío" } },
+        "Productos": { rich_text: [{ text: { content: productosSummary } }] },
+        "Items JSON":{ rich_text: [{ text: { content: itemsJson } }] },
+        "Fecha":     { date: { start: new Date().toISOString() } },
+      },
+    }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`Notion API ${res.status}: ${body}`);
+  }
+}
+
 // ── Handler ────────────────────────────────────────────────────────────────
 
 const handler: Handler = async (event: HandlerEvent) => {
@@ -221,18 +289,22 @@ const handler: Handler = async (event: HandlerEvent) => {
     return { statusCode: 413, body: "Payload Too Large" };
   }
 
-  const botToken = process.env["TELEGRAM_BOT_TOKEN"];
-  const chatId   = process.env["TELEGRAM_CHAT_ID"];
+  const botToken  = process.env["TELEGRAM_BOT_TOKEN"];
+  const chatId    = process.env["TELEGRAM_CHAT_ID"];
+  const notionToken = process.env["NOTION_TOKEN"];
+  const notionDb    = process.env["NOTION_DATABASE_ID"];
 
   if (!botToken || !chatId) {
     console.error("Missing TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID env vars");
     return { statusCode: 500, body: JSON.stringify({ error: "Server configuration error" }) };
   }
 
+  const orderId = generateOrderId();
+
   let order: ValidatedOrder;
   try {
     const raw: unknown = JSON.parse(event.body ?? "{}");
-    order = validateOrder(raw);
+    order = validateOrder(raw, orderId);
   } catch (err) {
     if (err instanceof ValidationError) {
       return { statusCode: 400, body: JSON.stringify({ error: err.message }) };
@@ -247,8 +319,8 @@ const handler: Handler = async (event: HandlerEvent) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          chat_id: chatId,
-          text:    buildMessage(order),
+          chat_id:    chatId,
+          text:       buildMessage(order),
           parse_mode: "HTML",
         }),
       }
@@ -259,12 +331,21 @@ const handler: Handler = async (event: HandlerEvent) => {
       console.error("Telegram API error:", response.status, errBody);
       throw new Error(`Telegram API error: ${response.status}`);
     }
-
-    return { statusCode: 200, body: JSON.stringify({ success: true }) };
   } catch (err) {
     console.error("Error sending Telegram message:", err);
     return { statusCode: 500, body: JSON.stringify({ error: "Error al enviar la notificación" }) };
   }
+
+  // Notion write is non-critical — log errors but don't fail the request
+  if (notionToken && notionDb) {
+    try {
+      await writeOrderToNotion(order, notionToken, notionDb);
+    } catch (err) {
+      console.error("Error writing to Notion (non-critical):", err);
+    }
+  }
+
+  return { statusCode: 200, body: JSON.stringify({ success: true, orderId }) };
 };
 
 export { handler };
