@@ -1,11 +1,11 @@
-// Uso: node setup-notion.mjs <NOTION_TOKEN>
+// Uso: node setup-notion.mjs <NOTION_TOKEN> <NOTION_DATABASE_ID>
 // Configura la base de datos Pedidos LayerVault con todas las columnas necesarias.
 
 const TOKEN = process.argv[2];
-const DB_ID = "375c420ad3f5800db539e01ca6103386";
+const DB_ID = process.argv[3];
 
-if (!TOKEN) {
-  console.error("❌ Falta el token.\n   Uso: node setup-notion.mjs <NOTION_TOKEN>");
+if (!TOKEN || !DB_ID) {
+  console.error("❌ Faltan argumentos.\n   Uso: node setup-notion.mjs <NOTION_TOKEN> <NOTION_DATABASE_ID>");
   process.exit(1);
 }
 
