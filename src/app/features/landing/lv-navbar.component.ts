@@ -21,8 +21,8 @@ import { CartService } from '../../core/services/cart.service';
         <div class="hidden lg:flex items-center gap-8">
           @if (isLanding()) {
             <a routerLink="/catalog" class="font-mono text-xs uppercase tracking-widest text-lv-cream/70 hover:text-lv-gold transition-colors">Productos</a>
-            <a href="#colores"       class="font-mono text-xs uppercase tracking-widest text-lv-cream/70 hover:text-lv-gold transition-colors">Colores</a>
-            <a href="#contacto"      class="font-mono text-xs uppercase tracking-widest text-lv-cream/70 hover:text-lv-gold transition-colors">Contacto</a>
+            <a routerLink="/" fragment="colores"  class="font-mono text-xs uppercase tracking-widest text-lv-cream/70 hover:text-lv-gold transition-colors">Colores</a>
+            <a routerLink="/" fragment="contacto" class="font-mono text-xs uppercase tracking-widest text-lv-cream/70 hover:text-lv-gold transition-colors">Contacto</a>
           } @else {
             <a routerLink="/catalog" class="font-mono text-xs uppercase tracking-widest text-lv-cream/70 hover:text-lv-gold transition-colors">Catálogo</a>
           }
