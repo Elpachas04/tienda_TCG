@@ -51,6 +51,8 @@ type DetailData = { product: Product | null; colors: Color[] };
                 } @else {
                   <img [src]="currentImage(data.product)" [alt]="data.product.name"
                        class="w-full h-full object-cover"
+                       draggable="false"
+                       (contextmenu)="$event.preventDefault()"
                        (error)="onImageError($event)"/>
                 }
               </div>
@@ -62,6 +64,8 @@ type DetailData = { product: Product | null; colors: Color[] };
                       [class]="currentImageIndex() === $index ? 'border-lv-gold' : 'border-white/10 hover:border-lv-gold/40'"
                       (click)="currentImageIndex.set($index)">
                       <img [src]="cloudinary.thumb(img)" [alt]="data.product.name" class="w-full h-full object-cover"
+                           draggable="false"
+                           (contextmenu)="$event.preventDefault()"
                            (error)="onImageError($event)"/>
                     </button>
                   }

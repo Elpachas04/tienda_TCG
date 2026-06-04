@@ -37,6 +37,8 @@ import { CloudinaryService } from '../../core/services/cloudinary.service';
             [src]="currentImage()"
             [alt]="product.name"
             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            draggable="false"
+            (contextmenu)="$event.preventDefault()"
             (error)="onImageError($event)"
           />
         }
