@@ -3,7 +3,7 @@
   publish = "dist/tcg3d-shop/browser"
 
 [build.environment]
-  NODE_VERSION = "22.16.0"
+  NODE_VERSION = "22.22.3"
   NPM_FLAGS = "--include=dev"
 
 [functions]
