@@ -7,6 +7,7 @@ import { CartService } from '../../core/services/cart.service';
 import { Product, ProductVariant, Color } from '../../core/models/product.model';
 import { ColorPickerComponent } from '../../shared/components/color-picker.component';
 import { PLACEHOLDER } from '../../shared/constants';
+import { CloudinaryService } from '../../core/services/cloudinary.service';
 
 type DetailData = { product: Product | null; colors: Color[] };
 
@@ -60,7 +61,7 @@ type DetailData = { product: Product | null; colors: Color[] };
                       class="w-14 h-14 sm:w-20 sm:h-20 rounded-xl overflow-hidden border-2 transition-colors duration-200"
                       [class]="currentImageIndex() === $index ? 'border-lv-gold' : 'border-white/10 hover:border-lv-gold/40'"
                       (click)="currentImageIndex.set($index)">
-                      <img [src]="img" [alt]="data.product.name" class="w-full h-full object-cover"
+                      <img [src]="cloudinary.thumb(img)" [alt]="data.product.name" class="w-full h-full object-cover"
                            (error)="onImageError($event)"/>
                     </button>
                   }
@@ -161,6 +162,7 @@ export class ProductDetailComponent {
   private catalogService = inject(CatalogService);
   private cartService    = inject(CartService);
   private destroyRef     = inject(DestroyRef);
+  protected readonly cloudinary = inject(CloudinaryService);
 
   readonly currentImageIndex = signal(0);
   readonly selectedVariant   = signal<ProductVariant | null>(null);
@@ -200,7 +202,8 @@ export class ProductDetailComponent {
   }
 
   currentImage(product: Product): string {
-    return product.images[this.currentImageIndex()] || PLACEHOLDER;
+    const id = product.images[this.currentImageIndex()];
+    return id ? this.cloudinary.detail(id) : PLACEHOLDER;
   }
 
   currentPrice(product: Product): number {

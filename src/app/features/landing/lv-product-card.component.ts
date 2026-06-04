@@ -5,6 +5,7 @@ import { CartItem } from '../../core/models/cart-item.model';
 import { CardGlowDirective } from '../../shared/directives/card-glow.directive';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 import { PLACEHOLDER } from '../../shared/constants';
+import { CloudinaryService } from '../../core/services/cloudinary.service';
 
 @Component({
   selector: 'app-lv-product-card',
@@ -147,6 +148,7 @@ export class LvProductCardComponent implements OnChanges {
   @Input() delay = '0ms';
   @Output() added = new EventEmitter<CartItem>();
 
+  protected readonly cloudinary = inject(CloudinaryService);
   private destroyRef = inject(DestroyRef);
   private addTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -171,7 +173,8 @@ export class LvProductCardComponent implements OnChanges {
   }
 
   currentImage() {
-    return this.product.images[this.currentImageIndex()] || PLACEHOLDER;
+    const id = this.product.images[this.currentImageIndex()];
+    return id ? this.cloudinary.card(id) : PLACEHOLDER;
   }
 
   currentPrice() {
