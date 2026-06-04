@@ -25,6 +25,11 @@ export class CloudinaryService {
     return this.build(publicId, 'f_auto,q_auto,c_pad,b_rgb:111111,w_160,h_160');
   }
 
+  /** Lightbox — imagen completa sin recorte, hasta 1800 px de ancho */
+  full(publicId: string): string {
+    return this.build(publicId, 'f_auto,q_auto,c_limit,w_1800');
+  }
+
   private build(publicId: string, transforms: string): string {
     if (!publicId) return '';
     return `${BASE}/${transforms}/${publicId}`;

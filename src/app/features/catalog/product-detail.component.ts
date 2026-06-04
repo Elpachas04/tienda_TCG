@@ -1,4 +1,4 @@
-import { Component, inject, signal, DestroyRef } from '@angular/core';
+import { Component, inject, signal, DestroyRef, HostListener } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal, toObservable, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { combineLatest, switchMap, map, tap, catchError, of } from 'rxjs';
@@ -40,7 +40,9 @@ type DetailData = { product: Product | null; colors: Color[] };
 
             <!-- Media: vídeo o imágenes -->
             <div class="space-y-3">
-              <div class="liquid-glass rounded-[20px] overflow-hidden aspect-square">
+              <div class="liquid-glass rounded-[20px] overflow-hidden aspect-square"
+                   [class.cursor-zoom-in]="!data.product.video"
+                   (click)="!data.product.video && openLightbox(data.product)">
                 @if (data.product.video) {
                   <video
                     class="w-full h-full object-cover"
@@ -50,7 +52,7 @@ type DetailData = { product: Product | null; colors: Color[] };
                   </video>
                 } @else {
                   <img [src]="currentImage(data.product)" [alt]="data.product.name"
-                       class="w-full h-full object-cover"
+                       class="w-full h-full object-contain"
                        draggable="false"
                        (contextmenu)="$event.preventDefault()"
                        (error)="onImageError(data.product)"/>
@@ -150,6 +152,26 @@ type DetailData = { product: Product | null; colors: Color[] };
           </div>
         </div>
       </div>
+      @if (lightboxOpen()) {
+        <div class="fixed inset-0 flex items-center justify-center"
+             style="z-index:200; background:rgba(0,0,0,0.96);"
+             (click)="closeLightbox()">
+          <button class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+                  (click)="closeLightbox()">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+          <img [src]="lightboxImg()"
+               class="max-w-[95vw] max-h-[95vh] object-contain select-none transition-transform duration-300"
+               [style.transform]="lightboxZoomed() ? 'scale(2.2)' : 'scale(1)'"
+               [style.cursor]="lightboxZoomed() ? 'zoom-out' : 'zoom-in'"
+               draggable="false"
+               (contextmenu)="$event.preventDefault()"
+               (click)="toggleZoom($event)" />
+        </div>
+      }
+
     } @else {
       <div class="flex flex-col items-center justify-center min-h-screen gap-4 text-center">
         <p class="font-display text-4xl text-lv-cream/30 uppercase tracking-wide">Producto no encontrado</p>
@@ -173,6 +195,9 @@ export class ProductDetailComponent {
   readonly selectedVariant   = signal<ProductVariant | null>(null);
   readonly selectedColor     = signal<Color | null>(null);
   readonly justAdded         = signal(false);
+  readonly lightboxOpen      = signal(false);
+  readonly lightboxZoomed    = signal(false);
+  readonly lightboxImg       = signal('');
 
   private addTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -254,5 +279,28 @@ export class ProductDetailComponent {
 
   onThumbError(publicId: string): void {
     this.failedIds.update(s => new Set([...s, publicId]));
+  }
+
+  openLightbox(product: Product): void {
+    const id = this.validImages(product)[this.currentImageIndex()];
+    if (!id) return;
+    this.lightboxImg.set(this.cloudinary.full(id));
+    this.lightboxZoomed.set(false);
+    this.lightboxOpen.set(true);
+  }
+
+  closeLightbox(): void {
+    this.lightboxOpen.set(false);
+    this.lightboxZoomed.set(false);
+  }
+
+  toggleZoom(event: Event): void {
+    event.stopPropagation();
+    this.lightboxZoomed.update(z => !z);
+  }
+
+  @HostListener('document:keydown.escape')
+  onEsc(): void {
+    if (this.lightboxOpen()) this.closeLightbox();
   }
 }
