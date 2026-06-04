@@ -24,7 +24,7 @@ const STEPS = [
         <!-- LEFT: Paleta -->
         <div>
           <p lvReveal class="font-mono text-xs uppercase tracking-wider text-lv-gold/70 mb-3">— Colores disponibles</p>
-          <h2 lvReveal class="font-display uppercase text-4xl sm:text-5xl md:text-7xl text-lv-cream leading-none mb-4">
+          <h2 lvReveal class="font-display uppercase text-3xl sm:text-4xl md:text-7xl text-lv-cream leading-none mb-4">
             TU COLOR,<br>TU PIEZA
           </h2>
           <p lvReveal class="font-mono text-xs uppercase tracking-wide text-lv-cream/50 mt-4 max-w-sm leading-relaxed">
@@ -49,7 +49,7 @@ const STEPS = [
         <!-- RIGHT: Proceso -->
         <div>
           <p lvReveal class="font-mono text-xs uppercase tracking-wider text-lv-gold/70 mb-3">— Proceso de pedido</p>
-          <h2 lvReveal class="font-display uppercase text-4xl sm:text-5xl md:text-7xl text-lv-cream leading-none mb-6 sm:mb-8">
+          <h2 lvReveal class="font-display uppercase text-3xl sm:text-4xl md:text-7xl text-lv-cream leading-none mb-6 sm:mb-8">
             EN 4<br>PASOS
           </h2>
 
