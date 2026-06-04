@@ -139,6 +139,5 @@ export class CatalogComponent {
 
   onAddToCart(item: CartItem) {
     this.cartService.addItem(item);
-    this.cartService.openDrawer();
   }
 }
