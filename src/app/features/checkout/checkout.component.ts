@@ -237,7 +237,10 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                           </button>
                         }
                       </div>
-                      @if (selectedOficina()) {
+                      @if (touched.oficina && oficinas().length > 1 && !selectedOficina()) {
+                        <p class="text-red-400/80 font-mono text-[10px] uppercase tracking-wider mt-2">Selecciona una Oficina de Correos</p>
+                      }
+                      @if (selectedOficina() && oficinas().length > 1) {
                         <button type="button"
                           class="mt-2 font-mono text-[9px] uppercase tracking-wider text-lv-cream/30 hover:text-lv-cream/60 transition-colors"
                           (click)="selectedOficina.set(null)">
@@ -340,7 +343,7 @@ export class CheckoutComponent implements OnInit {
     notes:           '',
   };
 
-  touched = { name: false, contact: false, cp: false };
+  touched = { name: false, contact: false, cp: false, oficina: false };
 
   orderConfirmed   = signal(false);
   errorMsg         = signal('');
@@ -404,9 +407,13 @@ export class CheckoutComponent implements OnInit {
       this.oficinaService.buscarOficinas(digits).subscribe(list => {
         if (list.length > 0) {
           this.oficinas.set(list);
+          if (list.length === 1) this.selectedOficina.set(list[0]);
         } else {
           this.oficinasExactas.set(false);
-          this.oficinaService.buscarOficinas(digits.slice(0, 4)).subscribe(nearby => this.oficinas.set(nearby));
+          this.oficinaService.buscarOficinas(digits.slice(0, 4)).subscribe(nearby => {
+            this.oficinas.set(nearby);
+            if (nearby.length === 1) this.selectedOficina.set(nearby[0]);
+          });
         }
       });
     }
@@ -429,6 +436,7 @@ export class CheckoutComponent implements OnInit {
     if (this.cartService.cartItems().length === 0) return false;
     if (this.form.deliveryMethod === 'shipping') {
       if (!this.isPostalCodeValid() || this.shippingBlocked() || !this.shippingInfo()) return false;
+      if (this.oficinas().length > 1 && !this.selectedOficina()) return false;
     }
     return true;
   }
@@ -439,7 +447,7 @@ export class CheckoutComponent implements OnInit {
   }
 
   async submitOrder(): Promise<void> {
-    this.touched = { name: true, contact: true, cp: true };
+    this.touched = { name: true, contact: true, cp: true, oficina: true };
     if (!this.isFormValid()) {
       this.errorMsg.set('Rellena todos los campos obligatorios antes de continuar.');
       window.scrollTo({ top: 0, behavior: 'smooth' });
