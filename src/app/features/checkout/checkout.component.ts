@@ -1,4 +1,5 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../../core/services/cart.service';
@@ -349,6 +350,7 @@ export class CheckoutComponent implements OnInit {
   protected readonly cartService = inject(CartService);
   private router = inject(Router);
   private oficinaService = inject(OficinaService);
+  private platformId = inject(PLATFORM_ID);
 
   form = {
     customerName:    '',
@@ -466,8 +468,10 @@ export class CheckoutComponent implements OnInit {
     this.touched = { name: true, contact: true, cp: true, oficina: true };
     if (!this.isFormValid()) {
       if (this.form.deliveryMethod === 'shipping' && this.oficinas().length > 1 && !this.selectedOficina()) {
-        document.getElementById('oficinas-list')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      } else {
+        if (isPlatformBrowser(this.platformId)) {
+          document.getElementById('oficinas-list')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      } else if (isPlatformBrowser(this.platformId)) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
       return;
@@ -527,7 +531,9 @@ export class CheckoutComponent implements OnInit {
     } catch {
       this.fallbackUrl.set(this.buildTelegramFallbackUrl());
       this.errorMsg.set('No se pudo enviar el pedido. Inténtalo de nuevo o usa el enlace de abajo.');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (isPlatformBrowser(this.platformId)) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     } finally {
       this.submitting.set(false);
     }

@@ -1,4 +1,5 @@
-import { Component, HostListener, inject, signal, computed } from '@angular/core';
+import { Component, HostListener, inject, signal, computed, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterLink, NavigationEnd } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs';
@@ -58,6 +59,7 @@ import { CartService } from '../../core/services/cart.service';
 export class LvNavbarComponent {
   protected cart = inject(CartService);
   private router = inject(Router);
+  private platformId = inject(PLATFORM_ID);
   readonly scrolled = signal(false);
 
   private currentUrl = toSignal(
@@ -78,6 +80,7 @@ export class LvNavbarComponent {
 
   @HostListener('window:scroll')
   onScroll(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     this.scrolled.set(window.scrollY > 50);
   }
 
