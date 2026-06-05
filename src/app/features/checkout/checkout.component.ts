@@ -494,6 +494,36 @@ export class CheckoutComponent implements OnInit {
     this.router.navigate(['/catalog']);
   }
 
+  private sendConfirmationEmail(
+    items: ReturnType<typeof this.cartService.cartItems>,
+    info:  { zone: string; price: number } | null
+  ): void {
+    const contact = this.form.customerContact.trim();
+    if (contactType(contact) !== 'email') return;
+
+    const deliveryLine = this.form.deliveryMethod === 'pickup'
+      ? 'En mano (sin coste)'
+      : `Correos · CP ${this.form.postalCode} — ${info?.price.toFixed(2) ?? '?'} €`;
+
+    fetch('/api/confirmation', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        customerName:  this.form.customerName,
+        customerEmail: contact,
+        deliveryLine,
+        total: this.grandTotal(),
+        items: items.map(i => ({
+          name:    i.productName,
+          qty:     i.quantity,
+          variant: i.variant,
+          color:   i.color,
+          price:   i.unitPrice,
+        })),
+      }),
+    }).catch(() => { /* silencioso — el pedido ya está enviado */ });
+  }
+
   async submitOrder(): Promise<void> {
     this.touched = { name: true, contact: true, cp: true, oficina: true };
     if (!this.isFormValid()) {
@@ -558,6 +588,7 @@ export class CheckoutComponent implements OnInit {
       const data = await res.json() as { success: boolean; orderId?: string };
       this.orderId.set(data.orderId ?? '');
       this.orderConfirmed.set(true);
+      this.sendConfirmationEmail(items, info);
     } catch {
       this.fallbackUrl.set(this.buildTelegramFallbackUrl());
       this.errorMsg.set('No se pudo enviar el pedido. Inténtalo de nuevo o usa el enlace de abajo.');
