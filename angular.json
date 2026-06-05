@@ -42,9 +42,7 @@
             "index": "src/index.html",
             "browser": "src/main.ts",
             "server": "src/main.server.ts",
-            "prerender": {
-              "discoverRoutes": true
-            },
+            "prerender": false,
             "polyfills": [
               "zone.js"
             ],
