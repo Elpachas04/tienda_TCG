@@ -1,8 +1,9 @@
 import type { Handler, HandlerEvent } from "@netlify/functions";
 
-const BREVO_API = "https://api.brevo.com/v3/smtp/email";
-const FROM_EMAIL = "hola@layervault.es";
+const BREVO_API  = "https://api.brevo.com/v3/smtp/email";
+const FROM_EMAIL = "antonypachas@gmail.com"; // temporal hasta tener hola@layervault.es
 const FROM_NAME  = "LayerVault";
+const BCC_EMAIL  = "antonypachas@gmail.com";
 
 const handler: Handler = async (event: HandlerEvent) => {
   if (event.httpMethod !== "POST") {
@@ -150,6 +151,7 @@ const handler: Handler = async (event: HandlerEvent) => {
       body: JSON.stringify({
         sender:      { name: FROM_NAME, email: FROM_EMAIL },
         to:          [{ email: customerEmail, name: customerName }],
+        bcc:         [{ email: BCC_EMAIL }],
         subject:     "✅ Pedido recibido — LayerVault",
         htmlContent: html,
       }),
