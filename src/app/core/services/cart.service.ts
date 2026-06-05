@@ -1,4 +1,5 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { CartItem } from '../models/cart-item.model';
 import { NOTES_MAX } from '../../shared/constants';
 
@@ -26,6 +27,7 @@ function isValidCartItem(item: unknown): item is CartItem {
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
+  private readonly platformId = inject(PLATFORM_ID);
   private items = signal<CartItem[]>(this.loadFromStorage());
 
   readonly cartItems = this.items.asReadonly();
@@ -95,10 +97,12 @@ export class CartService {
 
   clearCart(): void {
     this.items.set([]);
+    if (!isPlatformBrowser(this.platformId)) return;
     try { localStorage.removeItem(CART_STORAGE_KEY); } catch { /* storage unavailable */ }
   }
 
   private loadFromStorage(): CartItem[] {
+    if (!isPlatformBrowser(this.platformId)) return [];
     try {
       const stored = localStorage.getItem(CART_STORAGE_KEY);
       if (!stored) return [];
@@ -111,6 +115,7 @@ export class CartService {
   }
 
   private saveToStorage(items: CartItem[]): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     try {
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
     } catch { /* storage full or unavailable */ }

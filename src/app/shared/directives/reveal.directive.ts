@@ -1,4 +1,5 @@
-import { Directive, ElementRef, AfterViewInit, OnDestroy, inject } from '@angular/core';
+import { Directive, ElementRef, AfterViewInit, OnDestroy, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 @Directive({
   selector: '[lvReveal]',
@@ -7,9 +8,11 @@ import { Directive, ElementRef, AfterViewInit, OnDestroy, inject } from '@angula
 })
 export class RevealDirective implements AfterViewInit, OnDestroy {
   private el = inject(ElementRef<HTMLElement>);
-  private observer!: IntersectionObserver;
+  private platformId = inject(PLATFORM_ID);
+  private observer?: IntersectionObserver;
 
   ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     // rAF ensures the element is painted before observing
     requestAnimationFrame(() => {
       this.observer = new IntersectionObserver(
@@ -17,7 +20,7 @@ export class RevealDirective implements AfterViewInit, OnDestroy {
           entries.forEach(entry => {
             if (entry.isIntersecting) {
               entry.target.classList.add('revealed');
-              this.observer.unobserve(entry.target);
+              this.observer?.unobserve(entry.target);
             }
           });
         },
