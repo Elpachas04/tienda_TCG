@@ -8,10 +8,37 @@ import { OficinaCorreos } from '../../core/models/oficina.model';
 import { NOTES_MAX, TELEGRAM_USERNAME } from '../../shared/constants';
 
 const NAME_MAX    = 100;
-const CONTACT_MAX = 200;
+const CONTACT_MAX = 100;
 const INPUT = 'w-full bg-white/[0.03] border rounded-xl px-4 py-3 font-body text-base text-lv-cream placeholder-lv-cream/20 focus:outline-none transition-colors';
 
-function isValidContact(v: string): boolean { return v.length >= 5; }
+function isSpanishPhone(v: string): boolean {
+  return /^[6789]\d{8}$/.test(v.replace(/[\s\-\.\(\)]/g, ''));
+}
+function isValidEmail(v: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+}
+function contactType(v: string): 'phone' | 'email' | 'unknown' {
+  const c = v.trim();
+  if (/^\d/.test(c.replace(/[\s\-\.\(\)]/g, ''))) return 'phone';
+  if (c.includes('@')) return 'email';
+  return 'unknown';
+}
+function isValidContact(v: string): boolean {
+  const c = v.trim();
+  if (!c) return false;
+  const t = contactType(c);
+  if (t === 'phone') return isSpanishPhone(c);
+  if (t === 'email') return isValidEmail(c);
+  return false;
+}
+function contactError(v: string): string {
+  const c = v.trim();
+  if (!c) return 'Obligatorio';
+  const t = contactType(c);
+  if (t === 'phone') return 'Teléfono español no válido (ej: 612 345 678)';
+  if (t === 'email') return 'Email no válido (ej: tu@email.com)';
+  return 'Introduce un email válido o teléfono español';
+}
 
 // Solo Península — no enviamos a islas, Ceuta ni Melilla
 const NO_SHIP_PREFIXES = new Set(['07', '35', '38', '51', '52']);
@@ -145,16 +172,18 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
               </div>
 
               <div>
-                <label class="block font-mono text-[10px] uppercase tracking-widest text-lv-cream/40 mb-2">Email o teléfono *</label>
+                <label class="block font-mono text-[10px] uppercase tracking-widest text-lv-cream/40 mb-2">Email o teléfono español *</label>
                 <input type="text"
                   [class]="inputClass(touched.contact && !isContactValid())"
-                  placeholder="tu@email.com o 6XX XXX XXX"
+                  placeholder="tu@email.com  ó  612 345 678"
                   [attr.maxlength]="CONTACT_MAX"
                   autocomplete="email"
                   [(ngModel)]="form.customerContact"
                   (blur)="touched.contact = true" />
                 @if (touched.contact && !isContactValid()) {
-                  <p class="text-red-400/80 font-mono text-[10px] uppercase tracking-wider mt-1.5">Mínimo 5 caracteres</p>
+                  <p class="text-red-400/80 font-mono text-[10px] uppercase tracking-wider mt-1.5">
+                    {{ contactErrorMsg() }}
+                  </p>
                 }
               </div>
 
@@ -399,6 +428,7 @@ export class CheckoutComponent implements OnInit {
   }
 
   isContactValid():    boolean { return isValidContact(this.form.customerContact.trim()); }
+  contactErrorMsg():   string  { return contactError(this.form.customerContact); }
   isPostalCodeValid(): boolean { return /^\d{5}$/.test(this.form.postalCode); }
 
   selectPickup(): void {
