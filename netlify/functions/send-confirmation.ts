@@ -1,9 +1,9 @@
 import type { Handler, HandlerEvent } from "@netlify/functions";
 
 const BREVO_API    = "https://api.brevo.com/v3/smtp/email";
-const FROM_EMAIL   = "antonypachas@gmail.com"; // temporal hasta tener hola@layervault.es
+const FROM_EMAIL   = "hola@layervault.es";
 const FROM_NAME    = "LayerVault";
-const BCC_EMAIL    = "antonypachas@gmail.com";
+const BCC_EMAIL    = "hola@layervault.es";
 const CONTACT_EMAIL = "hola@layervault.es";
 const SITE_URL     = "https://layervault.es";
 
