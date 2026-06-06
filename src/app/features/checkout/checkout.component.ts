@@ -591,6 +591,7 @@ export class CheckoutComponent implements OnInit {
       const orderId = data.orderId ?? '';
       this.orderId.set(orderId);
       this.orderConfirmed.set(true);
+      this.cartService.clearCart();
       this.sendConfirmationEmail(items, info, orderId);
     } catch {
       this.fallbackUrl.set(this.buildTelegramFallbackUrl());
