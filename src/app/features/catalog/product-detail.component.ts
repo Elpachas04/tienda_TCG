@@ -271,16 +271,21 @@ export class ProductDetailComponent {
   }
 
   addToCart(product: Product): void {
+    const colors = this.productData()?.colors ?? [];
+    let color = this.selectedColor();
+    if (product.colorPickerEnabled && !color && colors.length > 0) {
+      color = colors.find(c => c.id === 'negro') ?? colors[0];
+      this.selectedColor.set(color);
+    }
     this.cartService.addItem({
       productId:   product.id,
       productSku:  product.sku,
       productName: product.name,
       variant:     this.selectedVariant()?.label,
-      color:       this.selectedColor()?.name,
+      color:       color?.name,
       quantity:    1,
       unitPrice:   this.currentPrice(product)
     });
-    const colors = this.productData()?.colors ?? [];
     this.selectedColor.set(colors.find(c => c.id === 'negro') ?? colors[0] ?? null);
     this.justAdded.set(true);
     if (this.addTimer) clearTimeout(this.addTimer);
