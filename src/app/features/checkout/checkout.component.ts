@@ -194,7 +194,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                     class="p-3 sm:p-4 rounded-[16px] border-2 transition-all duration-200 text-left"
                     [class]="form.deliveryMethod === 'pickup' ? 'border-lv-gold bg-lv-gold/[0.08]' : 'border-white/[0.06] hover:border-lv-gold/30 bg-white/[0.02]'"
                     (click)="selectPickup()">
-                    <div class="text-xl sm:text-2xl mb-1.5 sm:mb-2">🤝</div>
+                    <div class="mb-1.5 sm:mb-2 text-lv-gold/70"><svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg></div>
                     <div class="font-display text-sm sm:text-base text-lv-cream tracking-wide">EN MANO</div>
                     <div class="font-mono text-[9px] sm:text-[10px] text-lv-cream/30 uppercase tracking-wider mt-0.5">Sin coste</div>
                   </button>
@@ -202,7 +202,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                     class="p-3 sm:p-4 rounded-[16px] border-2 transition-all duration-200 text-left"
                     [class]="form.deliveryMethod === 'shipping' ? 'border-lv-gold bg-lv-gold/[0.08]' : 'border-white/[0.06] hover:border-lv-gold/30 bg-white/[0.02]'"
                     (click)="form.deliveryMethod = 'shipping'">
-                    <div class="text-xl sm:text-2xl mb-1.5 sm:mb-2">📦</div>
+                    <div class="mb-1.5 sm:mb-2 text-lv-gold/70"><svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg></div>
                     <div class="font-display text-sm sm:text-base text-lv-cream tracking-wide">ENVÍO</div>
                     <div class="font-mono text-[9px] sm:text-[10px] text-lv-cream/30 uppercase tracking-wider mt-0.5">Correos · Península</div>
                   </button>

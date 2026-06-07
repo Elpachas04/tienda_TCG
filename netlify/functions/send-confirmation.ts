@@ -7,6 +7,15 @@ const BCC_EMAIL    = "hola@layervault.es";
 const CONTACT_EMAIL = "hola@layervault.es";
 const SITE_URL     = "https://layervault.es";
 
+function esc(s: string): string {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 const handler: Handler = async (event: HandlerEvent) => {
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method Not Allowed" };
@@ -37,15 +46,15 @@ const handler: Handler = async (event: HandlerEvent) => {
     return { statusCode: 400, body: JSON.stringify({ error: "Datos incompletos" }) };
   }
 
-  const trackingUrl = orderId ? `${SITE_URL}/seguimiento?ref=${orderId}` : `${SITE_URL}/seguimiento`;
+  const trackingUrl = orderId ? `${SITE_URL}/seguimiento?ref=${encodeURIComponent(orderId)}` : `${SITE_URL}/seguimiento`;
 
   const itemRows = (items as { name: string; qty: number; variant?: string; color?: string; price: number }[])
     .map(i => {
-      const detail = [i.variant, i.color].filter(Boolean).join(" &middot; ");
+      const detail = [i.variant, i.color].filter(Boolean).map(v => esc(v as string)).join(" &middot; ");
       return `
         <tr>
           <td style="padding:10px 0;border-bottom:1px solid #2a2a2a;color:#f0f0f0;font-family:'Barlow',Arial,sans-serif;font-size:14px;">
-            <strong style="color:#C9A84C;">${i.qty}&times;</strong> ${i.name}
+            <strong style="color:#C9A84C;">${i.qty}&times;</strong> ${esc(i.name)}
             ${detail ? `<br><span style="color:#888;font-size:12px;">${detail}</span>` : ""}
           </td>
           <td style="padding:10px 0;border-bottom:1px solid #2a2a2a;text-align:right;color:#C9A84C;font-family:'Barlow',Arial,sans-serif;font-size:14px;white-space:nowrap;">
@@ -95,7 +104,7 @@ const handler: Handler = async (event: HandlerEvent) => {
             <h1 style="margin:0 0 24px;font-family:Impact,Arial,sans-serif;font-size:36px;color:#f0f0f0;letter-spacing:2px;">PEDIDO RECIBIDO</h1>
 
             <p style="margin:0 0 24px;font-size:14px;color:#aaa;line-height:1.6;">
-              Hola <strong style="color:#f0f0f0;">${customerName}</strong>,<br>
+              Hola <strong style="color:#f0f0f0;">${esc(customerName)}</strong>,<br>
               hemos recibido tu pedido. Te respondemos por Telegram en menos de 1 hora para coordinar el pago y los detalles.
             </p>
 
@@ -108,7 +117,7 @@ const handler: Handler = async (event: HandlerEvent) => {
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
               <tr>
                 <td style="padding:8px 0;font-size:12px;color:#888;text-transform:uppercase;letter-spacing:1px;">Entrega</td>
-                <td style="padding:8px 0;font-size:13px;color:#f0f0f0;text-align:right;">${deliveryLine}</td>
+                <td style="padding:8px 0;font-size:13px;color:#f0f0f0;text-align:right;">${esc(deliveryLine)}</td>
               </tr>
               <tr>
                 <td style="padding:12px 0;font-size:13px;color:#888;text-transform:uppercase;letter-spacing:1px;border-top:1px solid #2a2a2a;"><strong>Total</strong></td>
@@ -123,7 +132,7 @@ const handler: Handler = async (event: HandlerEvent) => {
             <table width="100%" cellpadding="0" cellspacing="0" style="background:#111118;border-radius:12px;margin-bottom:20px;">
               <tr><td style="padding:16px 24px;">
                 <p style="margin:0 0 4px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#888;">N&uacute;mero de pedido</p>
-                <p style="margin:0;font-family:Impact,Arial,sans-serif;font-size:22px;letter-spacing:2px;color:#C9A84C;">${orderId}</p>
+                <p style="margin:0;font-family:Impact,Arial,sans-serif;font-size:22px;letter-spacing:2px;color:#C9A84C;">${esc(orderId)}</p>
               </td></tr>
             </table>
 
