@@ -2,10 +2,14 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <title>LayerVault — Cajas, Organizadores y Almacenamiento TCG</title>
+  <title>LayerVault — Accesorios TCG impresos en 3D | Barcelona</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Deckboxes, cajas de almacenamiento y accesorios impresos en 3D para TCG. Pedidos por encargo.">
+  <meta name="description" content="Deckboxes, cajas de almacenamiento y accesorios impresos en 3D para One Piece TCG. Alta precisión, colores personalizados, fabricación bajo demanda. Envío a Península.">
+  <meta name="robots" content="index, follow">
+  <meta name="geo.region" content="ES-CT">
+  <meta name="geo.placename" content="Barcelona">
+  <link rel="canonical" href="https://layervault.es">
 
   <!-- Open Graph -->
   <meta property="og:type"        content="website">
@@ -13,6 +17,10 @@
   <meta property="og:title"       content="LayerVault — Accesorios TCG impresos en 3D">
   <meta property="og:description" content="Deckboxes, cajas de almacenamiento y accesorios para One Piece TCG. Alta precisión, fabricación bajo demanda, envío a Península.">
   <meta property="og:image"       content="https://layervault.es/assets/og-image.jpg">
+  <meta property="og:locale"      content="es_ES">
+  <meta property="og:site_name"   content="LayerVault">
+
+  <!-- Twitter / X -->
   <meta name="twitter:card"        content="summary_large_image">
   <meta name="twitter:title"       content="LayerVault — Accesorios TCG impresos en 3D">
   <meta name="twitter:description" content="Deckboxes, cajas de almacenamiento y accesorios para One Piece TCG. Alta precisión, fabricación bajo demanda.">
@@ -20,12 +28,36 @@
 
   <!-- Icons & theme -->
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
   <meta name="theme-color" content="#121212">
 
-  <!-- Preconnect a Cloudinary para que el browser abra el socket antes de que Angular renderice -->
-  <link rel="preconnect" href="https://res.cloudinary.com">
+  <!-- JSON-LD: LocalBusiness structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "LayerVault",
+    "description": "Accesorios TCG impresos en 3D de alta precisión. Deckboxes, cajas de almacenamiento y organizadores para One Piece TCG.",
+    "url": "https://layervault.es",
+    "image": "https://layervault.es/assets/og-image.jpg",
+    "priceRange": "€€",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Barcelona",
+      "addressCountry": "ES"
+    },
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer service",
+      "availableLanguage": "Spanish"
+    },
+    "sameAs": []
+  }
+  </script>
 
-  <!-- Fonts -->
+  <!-- Preconnect para recursos externos -->
+  <link rel="preconnect" href="https://res.cloudinary.com">
+  <link rel="dns-prefetch" href="https://res.cloudinary.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
