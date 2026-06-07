@@ -1,4 +1,4 @@
-import { Component, computed, inject, HostListener } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, HostListener } from '@angular/core';
 import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs';
@@ -10,6 +10,7 @@ import { TELEGRAM_URL } from './shared/constants';
 @Component({
   selector: 'app-root',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterOutlet, LvNavbarComponent, TelegramFabComponent, CartDrawerComponent],
   template: `
     <app-lv-navbar />

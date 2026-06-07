@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 
 @Component({
   selector: 'app-lv-hero',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RevealDirective, RouterLink],
   host: { class: 'block' },
   template: `

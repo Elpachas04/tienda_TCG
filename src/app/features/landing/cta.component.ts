@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 import { TELEGRAM_URL, CONTACT_EMAIL } from '../../shared/constants';
 
 @Component({
   selector: 'app-lv-cta',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RevealDirective],
   host: { class: 'block' },
   template: `

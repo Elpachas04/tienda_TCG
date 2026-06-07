@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CartService, cartItemKey } from '../../core/services/cart.service';
@@ -7,6 +7,7 @@ import { NOTES_MAX } from '../constants';
 @Component({
   selector: 'app-cart-drawer',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule],
   template: `
     <div class="fixed inset-0 flex justify-end"

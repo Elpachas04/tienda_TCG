@@ -1,7 +1,7 @@
-import { Component, inject, signal, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, DestroyRef } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal, toObservable, takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { combineLatest, switchMap, map, tap, catchError, of } from 'rxjs';
+import { map, tap } from 'rxjs';
 import { CatalogService } from '../../core/services/catalog.service';
 import { CartService } from '../../core/services/cart.service';
 import { Product, ProductVariant, Color } from '../../core/models/product.model';
@@ -14,6 +14,7 @@ type DetailData = { product: Product | null; colors: Color[] };
 @Component({
   selector: 'app-product-detail',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, ColorPickerComponent],
   host: { class: 'block animate-fade-up' },
   template: `
@@ -205,13 +206,10 @@ export class ProductDetailComponent {
         this.readyThumbs.set([]);
         this.abortThumbProbes();
       }),
-      switchMap(params => combineLatest([
-        this.catalogService.getProductById(params['id']),
-        this.catalogService.getColors()
-      ]).pipe(
-        map(([product, colors]): DetailData => ({ product: product ?? null, colors })),
-        catchError(() => of<DetailData>({ product: null, colors: [] }))
-      ))
+      map(params => ({
+        product: this.catalogService.getProductById(params['id']) ?? null,
+        colors:  this.catalogService.colors as Color[],
+      }))
     )
   );
 

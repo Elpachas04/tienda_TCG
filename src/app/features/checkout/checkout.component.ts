@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, computed, OnInit, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -51,6 +51,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
 @Component({
   selector: 'app-checkout',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, RouterLink],
   host: { class: 'block animate-fade-up' },
   template: `

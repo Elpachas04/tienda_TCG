@@ -1,8 +1,9 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-telegram-fab',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <a [href]="telegramUrl" target="_blank" rel="noopener noreferrer"
        class="fixed bottom-24 right-4 sm:bottom-6 sm:right-6 z-50 flex items-center gap-2 bg-lv-black border border-lv-gold/40 hover:border-lv-gold text-lv-gold hover:bg-lv-gold hover:text-black font-semibold px-3 sm:px-4 py-3 rounded-full shadow-xl sm:shadow-2xl transition-all duration-200 hover:scale-105 group">

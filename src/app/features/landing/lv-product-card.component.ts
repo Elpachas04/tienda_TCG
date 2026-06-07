@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, signal, inject, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, signal, inject, DestroyRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Product, ProductVariant, Color } from '../../core/models/product.model';
 import { CartItem } from '../../core/models/cart-item.model';
@@ -10,6 +10,7 @@ import { CloudinaryService } from '../../core/services/cloudinary.service';
 @Component({
   selector: 'app-lv-product-card',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, CardGlowDirective, RevealDirective],
   host: { class: 'block h-full' },
   template: `

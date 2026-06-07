@@ -1,10 +1,11 @@
-import { Component, signal, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CONTACT_EMAIL } from '../../shared/constants';
 
 @Component({
   selector: 'app-legal',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink],
   host: { class: 'block animate-fade-up' },
   template: `

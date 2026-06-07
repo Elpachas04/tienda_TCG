@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
 import { Product, ProductCatalog, CategoryItem, Color, ShopSettings } from '../models/product.model';
 import productsData from '../../../assets/data/products.json';
 
@@ -7,23 +6,13 @@ import productsData from '../../../assets/data/products.json';
 export class CatalogService {
   private readonly catalog = productsData as unknown as ProductCatalog;
 
-  getProducts(): Observable<Product[]> {
-    return of(this.catalog.products);
-  }
+  // Datos leídos una sola vez del JSON bundleado — no hay suscripciones ni recálculo
+  readonly products:   readonly Product[]        = this.catalog.products;
+  readonly categories: readonly CategoryItem[]   = this.catalog.categories;
+  readonly colors:     readonly Color[]          = this.catalog.colors;
+  readonly settings:   Readonly<ShopSettings>    = this.catalog.settings;
 
-  getCategories(): Observable<CategoryItem[]> {
-    return of(this.catalog.categories);
-  }
-
-  getColors(): Observable<Color[]> {
-    return of(this.catalog.colors);
-  }
-
-  getSettings(): Observable<ShopSettings> {
-    return of(this.catalog.settings);
-  }
-
-  getProductById(id: string): Observable<Product | undefined> {
-    return of(this.catalog.products.find(p => p.id === id));
+  getProductById(id: string): Product | undefined {
+    return this.catalog.products.find(p => p.id === id);
   }
 }

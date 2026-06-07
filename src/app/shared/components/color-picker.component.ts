@@ -1,10 +1,11 @@
-import { Component, Input, Output, EventEmitter, signal, inject, ElementRef, HostListener } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, signal, inject, ElementRef, HostListener } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { Color } from '../../core/models/product.model';
 
 @Component({
   selector: 'app-color-picker',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: { style: 'display: contents' },
   imports: [NgTemplateOutlet],
   template: `

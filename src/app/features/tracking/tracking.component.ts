@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
@@ -48,6 +48,7 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
 @Component({
   selector: 'app-tracking',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, RouterLink],
   host: { class: 'block animate-fade-up' },
   template: `

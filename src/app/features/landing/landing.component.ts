@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { HeroComponent } from './hero.component';
 import { ColorsProcessComponent } from './colors-process.component';
 import { CtaComponent } from './cta.component';
@@ -7,6 +7,7 @@ import { LvFooterComponent } from './lv-footer.component';
 @Component({
   selector: 'app-landing',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     HeroComponent,
     ColorsProcessComponent,

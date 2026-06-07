@@ -1,6 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { combineLatest, map, catchError, of } from 'rxjs';
+import { ChangeDetectionStrategy, Component, inject, signal, computed } from '@angular/core';
 import { CatalogService } from '../../core/services/catalog.service';
 import { CartService } from '../../core/services/cart.service';
 import { LvProductCardComponent } from '../landing/lv-product-card.component';
@@ -10,12 +8,12 @@ import { Product, CategoryItem, Color } from '../../core/models/product.model';
 import { BASE_PILL } from '../../shared/constants';
 
 type CategoryFilter = CategoryItem['id'];
-type CatalogData = { products: Product[]; categories: CategoryItem[]; colors: Color[] };
 type CategoryPill = CategoryItem & { count: number };
 
 @Component({
   selector: 'app-catalog',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [LvProductCardComponent, RevealDirective],
   host: { class: 'block' },
   template: `
@@ -39,96 +37,62 @@ type CategoryPill = CategoryItem & { count: number };
           </p>
         </div>
 
-        @if (isLoading()) {
-          <!-- Skeleton -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            @for (i of [1,2,3,4,5,6,7,8]; track i) {
-              <div class="liquid-glass rounded-[24px] animate-pulse">
-                <div class="aspect-square bg-white/[0.03] rounded-[16px] m-3"></div>
-                <div class="px-4 pb-4 space-y-3">
-                  <div class="h-3 bg-white/[0.04] rounded-full w-1/3"></div>
-                  <div class="h-5 bg-white/[0.06] rounded-full w-4/5"></div>
-                  <div class="h-7 bg-white/[0.04] rounded-full w-2/5"></div>
-                </div>
-              </div>
-            }
-          </div>
-        } @else if (hasError()) {
-          <div class="flex flex-col items-center justify-center py-32 gap-4 text-center">
-            <p class="font-display text-4xl text-lv-cream/20 uppercase tracking-wide">Sin conexión</p>
-            <p class="font-mono text-xs text-lv-cream/15 uppercase tracking-wider">Comprueba tu conexión y recarga</p>
-          </div>
-        } @else {
-
-          <!-- Pills de filtro -->
-          <div lvReveal class="flex flex-wrap gap-2 mb-8 sm:mb-12">
-            @for (cat of categories(); track cat.id) {
-              <button [class]="pillClass(cat.id)" (click)="activeCategory.set(cat.id)">
-                {{ cat.label }}
-                <span class="opacity-40 ml-1">({{ cat.count }})</span>
-              </button>
-            }
-          </div>
-
-          <!-- Grid de productos -->
-          @if (filteredProducts().length === 0) {
-            <p class="font-mono text-xs uppercase tracking-wider text-lv-cream/25 text-center py-28">
-              Sin productos en esta categoría
-            </p>
-          } @else {
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-              @for (product of filteredProducts(); track product.id; let i = $index) {
-                <app-lv-product-card
-                  [product]="product"
-                  [colors]="colors()"
-                  [delay]="(i * 50) + 'ms'"
-                  (added)="onAddToCart($event)">
-                </app-lv-product-card>
-              }
-            </div>
+        <!-- Pills de filtro -->
+        <div lvReveal class="flex flex-wrap gap-2 mb-8 sm:mb-12">
+          @for (cat of categories(); track cat.id) {
+            <button [class]="pillClass(cat.id)" (click)="activeCategory.set(cat.id)">
+              {{ cat.label }}
+              <span class="opacity-40 ml-1">({{ cat.count }})</span>
+            </button>
           }
+        </div>
+
+        <!-- Grid de productos -->
+        @if (filteredProducts().length === 0) {
+          <p class="font-mono text-xs uppercase tracking-wider text-lv-cream/25 text-center py-28">
+            Sin productos en esta categoría
+          </p>
+        } @else {
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            @for (product of filteredProducts(); track product.id; let i = $index) {
+              <app-lv-product-card
+                [product]="product"
+                [colors]="colorsArr"
+                [delay]="(i * 50) + 'ms'"
+                (added)="onAddToCart($event)">
+              </app-lv-product-card>
+            }
+          </div>
         }
+
       </div>
     </div>
   `
 })
 export class CatalogComponent {
-  private catalogService = inject(CatalogService);
-  private cartService    = inject(CartService);
+  protected readonly catalogService = inject(CatalogService);
+  private   readonly cartService    = inject(CartService);
 
-  private readonly catalogData = toSignal(
-    combineLatest([
-      this.catalogService.getProducts(),
-      this.catalogService.getCategories(),
-      this.catalogService.getColors()
-    ]).pipe(
-      map(([products, categories, colors]): CatalogData => ({ products, categories, colors })),
-      catchError(() => of(null as CatalogData | null))
-    )
-  );
+  // El Input de LvProductCardComponent espera Color[] mutable
+  get colorsArr() { return this.catalogService.colors as Color[]; }
 
   readonly activeCategory = signal<CategoryFilter>('all');
-  readonly isLoading = computed(() => this.catalogData() === undefined);
-  readonly hasError  = computed(() => this.catalogData() === null);
 
-  readonly categories = computed((): CategoryPill[] => {
-    const data = this.catalogData();
-    if (!data) return [];
-    return data.categories.map(cat => ({
+  // computed() memoriza hasta que activeCategory cambia — no recalcula en cada tick
+  readonly categories = computed((): CategoryPill[] =>
+    this.catalogService.categories.map(cat => ({
       ...cat,
       count: cat.id === 'all'
-        ? data.products.length
-        : data.products.filter(p => p.category === cat.id).length
-    }));
-  });
-
-  readonly colors = computed(() => this.catalogData()?.colors ?? []);
+        ? this.catalogService.products.length
+        : this.catalogService.products.filter((p: Product) => p.category === cat.id).length
+    }))
+  );
 
   readonly filteredProducts = computed((): Product[] => {
-    const data = this.catalogData();
-    if (!data) return [];
     const cat = this.activeCategory();
-    return cat === 'all' ? data.products : data.products.filter(p => p.category === cat);
+    return cat === 'all'
+      ? [...this.catalogService.products]
+      : this.catalogService.products.filter((p: Product) => p.category === cat);
   });
 
   pillClass(id: CategoryFilter): string {

@@ -1,4 +1,4 @@
-import { Component, HostListener, inject, signal, computed, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, inject, signal, computed, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterLink, NavigationEnd } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -8,6 +8,7 @@ import { CartService } from '../../core/services/cart.service';
 @Component({
   selector: 'app-lv-navbar',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink],
   host: { class: 'block' },
   template: `

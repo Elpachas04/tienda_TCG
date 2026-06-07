@@ -1,7 +1,5 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { NgClass } from '@angular/common';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { catchError, of } from 'rxjs';
 import { CatalogService } from '../../core/services/catalog.service';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 
@@ -15,6 +13,7 @@ const STEPS = [
 @Component({
   selector: 'app-lv-colors-process',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RevealDirective, NgClass],
   host: { class: 'block' },
   template: `
@@ -32,7 +31,7 @@ const STEPS = [
           </p>
 
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-8">
-            @for (color of colors(); track color.id) {
+            @for (color of colors; track color.id) {
               <div lvReveal class="liquid-glass rounded-[20px] p-4 flex items-center gap-3">
                 <span class="w-10 h-10 rounded-full border border-white/10 flex-shrink-0"
                       [style.background]="color.hex">
@@ -78,12 +77,8 @@ const STEPS = [
   `,
 })
 export class ColorsProcessComponent {
-  private catalogService = inject(CatalogService);
+  private readonly catalogService = inject(CatalogService);
 
-  protected readonly colors = toSignal(
-    this.catalogService.getColors().pipe(catchError(() => of([]))),
-    { initialValue: [] }
-  );
-
-  protected readonly steps = STEPS;
+  protected readonly colors = this.catalogService.colors;
+  protected readonly steps  = STEPS;
 }
