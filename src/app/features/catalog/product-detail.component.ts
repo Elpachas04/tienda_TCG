@@ -51,7 +51,7 @@ type DetailData = { product: Product | null; colors: Color[] };
                   </video>
                 } @else {
                   <img [src]="currentImage(data.product)" [alt]="data.product.name"
-                       class="w-full h-full object-contain transition-transform duration-500 hover:scale-125"
+                       class="w-full h-full object-contain transition-transform duration-700 ease-out hover:scale-110"
                        loading="eager"
                        draggable="false"
                        (load)="mainImageLoaded.set(true)"

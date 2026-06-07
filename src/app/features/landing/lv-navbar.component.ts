@@ -38,6 +38,7 @@ import { CartService } from '../../core/services/cart.service';
           </a>
           @if (!isCheckout() && cart.itemCount() > 0) {
             <button type="button"
+              [attr.aria-label]="'Ver cesta — ' + cart.itemCount() + ' artículos'"
               class="w-8 h-8 rounded-full bg-lv-gold text-black font-mono text-xs font-bold flex items-center justify-center hover:brightness-110 transition-all [animation:badge-pop_0.35s_ease-out] flex-shrink-0"
               (click)="cart.openDrawer()">
               {{ cart.itemCount() }}
