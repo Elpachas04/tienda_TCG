@@ -1,0 +1,80 @@
+# Escenario 1 — Capa CDN / activos estáticos
+# Simula usuarios navegando la SPA: carga inicial + datos del catálogo
+#
+# Objetivo: verificar que el CDN de Netlify aguanta ráfagas sin degradar
+# el TTFB y que los headers Cache-Control son correctos.
+#
+# Seguro de ejecutar contra producción: solo GETs a assets cacheados, sin
+# side effects.
+
+config:
+  target: "https://layervault.es"
+  http:
+    timeout: 15
+    # Simula conexiones reales (no HTTP keep-alive agresivo)
+    pool: 10
+  phases:
+    # Rampa suave — 30 s para llegar a 30 usuarios simultáneos
+    - name: "ramp-up"
+      duration: 30
+      arrivalRate: 2
+      rampTo: 30
+    # Carga sostenida — 60 s a 30 usuarios
+    - name: "sustained"
+      duration: 60
+      arrivalRate: 30
+    # Bajada gradual
+    - name: "ramp-down"
+      duration: 15
+      arrivalRate: 30
+      rampTo: 1
+  ensure:
+    # El 95 % de respuestas debe llegar en <800 ms (CDN debería ser ~50-150 ms)
+    p95: 800
+    maxErrorRate: 1
+
+scenarios:
+  # ── Visitante que llega al landing
+  - name: "landing-page"
+    weight: 40
+    flow:
+      - get:
+          url: "/"
+          expect:
+            - statusCode: 200
+            - hasHeader: "cache-control"
+      # Pausa natural — el usuario lee el landing
+      - think: 3
+
+  # ── Visitante que navega al catálogo y carga el JSON de productos
+  - name: "catalog-browse"
+    weight: 40
+    flow:
+      - get:
+          url: "/"
+          expect:
+            - statusCode: 200
+      - think: 1
+      - get:
+          url: "/catalogo"
+          expect:
+            - statusCode: 200
+      - think: 2
+      # El frontend Angular carga el JSON del catálogo
+      - get:
+          url: "/assets/data/products.json"
+          expect:
+            - statusCode: 200
+            - hasHeader: "cache-control"
+            - contentType: "application/json"
+      - think: 4
+
+  # ── Visitante que mira el seguimiento de un pedido (ruta estática)
+  - name: "tracking-page"
+    weight: 20
+    flow:
+      - get:
+          url: "/seguimiento"
+          expect:
+            - statusCode: 200
+      - think: 2

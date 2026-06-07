@@ -1,0 +1,70 @@
+# Escenario 3 — Spike test
+#
+# Simula una ráfaga viral: tráfico que pasa de 0 a ~500 usuarios en 20 s
+# y luego cae. Responde a "¿qué pasa si salimos en redes y llega mucha gente?"
+#
+# NOTA: Este test envía ~500 req/s en el pico.
+# SOLO ejecutar si tienes confirmación de Netlify (plan Pro o superior)
+# o contra un entorno staging. En free tier puede activar rate-limiting.
+#
+# Ejecuta SOLO escenarios estáticos (sin funciones con side-effects) para
+# no consumir el límite de invocaciones de Functions.
+
+config:
+  target: "https://layervault.es"
+  http:
+    timeout: 10
+    pool: 50
+  phases:
+    # Antes del spike: tráfico de base real
+    - name: "baseline"
+      duration: 20
+      arrivalRate: 5
+    # SPIKE — de golpe llegan cientos de usuarios (viral)
+    - name: "spike"
+      duration: 20
+      arrivalRate: 5
+      rampTo: 200
+    # Pico mantenido 20 s
+    - name: "peak"
+      duration: 20
+      arrivalRate: 200
+    # Decae orgánicamente
+    - name: "decay"
+      duration: 30
+      arrivalRate: 200
+      rampTo: 10
+    # Vuelta a normalidad
+    - name: "recovery"
+      duration: 20
+      arrivalRate: 10
+  # NO ponemos ensure.p95 aquí — el spike es estresante por diseño,
+  # queremos ver los percentiles reales en el reporte
+
+scenarios:
+  # ── Landing (el primer golpe del viral es siempre el /  )
+  - name: "landing-spike"
+    weight: 60
+    flow:
+      - get:
+          url: "/"
+      - think: 1
+
+  # ── Catálogo (el usuario curioso va al /catalogo)
+  - name: "catalog-spike"
+    weight: 30
+    flow:
+      - get:
+          url: "/catalogo"
+      - think: 1
+      - get:
+          url: "/assets/data/products.json"
+      - think: 2
+
+  # ── Precio de envío durante spike (no tiene side effects, está cacheado)
+  - name: "shipping-spike"
+    weight: 10
+    flow:
+      - get:
+          url: "/.netlify/functions/shipping-price?cp=08001"
+      - think: 1

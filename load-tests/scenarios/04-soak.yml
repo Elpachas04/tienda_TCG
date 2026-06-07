@@ -1,0 +1,60 @@
+# Escenario 4 — Soak test (prueba de resistencia)
+#
+# Tráfico moderado sostenido durante 10 minutos.
+# Detecta: memory leaks en functions, degradación por cold starts
+# acumulados, límites de Notion API bajo carga continua.
+#
+# 10 usuarios × 10 min = ~6000 requests
+# Función shipping-price: ~600 calls, muy por debajo del límite mensual
+
+config:
+  target: "https://layervault.es"
+  http:
+    timeout: 15
+    pool: 10
+  phases:
+    - name: "soak"
+      duration: 600
+      arrivalRate: 10
+  ensure:
+    p95: 1500
+    maxErrorRate: 2
+
+scenarios:
+  - name: "user-journey"
+    weight: 100
+    flow:
+      # 1. Landing
+      - get:
+          url: "/"
+          expect:
+            - statusCode: 200
+      - think: 3
+
+      # 2. Navega al catálogo
+      - get:
+          url: "/catalogo"
+          expect:
+            - statusCode: 200
+      - think: 2
+
+      # 3. Carga JSON del catálogo (Angular lo pide al arrancar el componente)
+      - get:
+          url: "/assets/data/products.json"
+          expect:
+            - statusCode: 200
+      - think: 4
+
+      # 4. Consulta precio de envío (como si estuviera en checkout)
+      - get:
+          url: "/.netlify/functions/shipping-price?cp={{ cp }}"
+          expect:
+            - statusCode: 200
+      - think: 2
+
+      # 5. Consulta de seguimiento con ID inválido (validación rápida)
+      - get:
+          url: "/.netlify/functions/get-order-status?id=SOAKTEST"
+          expect:
+            - statusCode: 400
+      - think: 5

@@ -1,0 +1,98 @@
+# Escenario 2 — Netlify Functions (rutas sin side effects)
+#
+# Testea las funciones serverless de forma SEGURA:
+#   - shipping-price:    GET puro, resultado cacheado, sin DB
+#   - get-order-status:  GET con ID inválido → 400 antes de llamar a Notion
+#   - send-telegram:     POST con payload vacío → 400 antes de llamar a Telegram
+#   - send-confirmation: POST sin BREVO_API_KEY en local → 500 (estructura ok)
+#
+# Con IDs y payloads inválidos las funciones devuelven 4xx en la capa de
+# validación — nunca se llama a Telegram, Brevo ni Notion.
+# Es seguro ejecutar contra producción.
+
+config:
+  target: "https://layervault.es"
+  http:
+    timeout: 15
+    pool: 5
+  phases:
+    - name: "warm-up"
+      duration: 15
+      arrivalRate: 1
+      rampTo: 10
+    - name: "load"
+      duration: 60
+      arrivalRate: 10
+    - name: "cool-down"
+      duration: 10
+      arrivalRate: 10
+      rampTo: 1
+  ensure:
+    # Las funciones tienen cold start (~300 ms) + ejecución; aceptamos 2 s p95
+    p95: 2000
+    maxErrorRate: 5
+
+scenarios:
+  # ── Cálculo de precio de envío (el más llamado en el checkout)
+  - name: "shipping-price-valid"
+    weight: 50
+    flow:
+      # CP válido Península → debe devolver 200 con { zone, price }
+      - get:
+          url: "/.netlify/functions/shipping-price?cp={{ cp }}"
+          expect:
+            - statusCode: 200
+            - contentType: "application/json"
+        # Rota entre CPs reales de la hoja de datos
+      - think: 2
+
+  # ── Envío a zona no disponible (Canarias / Ceuta / Melilla)
+  - name: "shipping-price-no-ship"
+    weight: 10
+    flow:
+      - get:
+          url: "/.netlify/functions/shipping-price?cp=35001"
+          expect:
+            - statusCode: 422
+      - think: 1
+
+  # ── Consulta de estado con ID inválido → validación 400, sin llamar a Notion
+  - name: "order-status-invalid"
+    weight: 20
+    flow:
+      - get:
+          url: "/.netlify/functions/get-order-status?id=FAKE-ID"
+          expect:
+            - statusCode: 400
+      - think: 1
+
+  # ── Checkout: payload vacío → validación 400/500, sin llamar a Telegram
+  - name: "send-telegram-empty"
+    weight: 10
+    flow:
+      - post:
+          url: "/.netlify/functions/send-telegram"
+          headers:
+            Content-Type: "application/json"
+          json: {}
+          # 400 (ValidationError) o 500 si faltan env vars en local
+          expect:
+            - statusCode:
+                - 400
+                - 500
+      - think: 1
+
+  # ── Email: payload vacío → validación 400, sin llamar a Brevo
+  - name: "send-confirmation-empty"
+    weight: 10
+    flow:
+      - post:
+          url: "/.netlify/functions/send-confirmation"
+          headers:
+            Content-Type: "application/json"
+          json: {}
+          expect:
+            - statusCode:
+                - 400
+                - 500
+      - think: 1
