@@ -64,7 +64,7 @@ type CategoryPill = CategoryItem & { count: number };
           <div lvReveal class="flex flex-wrap gap-2 mb-8 sm:mb-12">
             @for (cat of categories(); track cat.id) {
               <button [class]="pillClass(cat.id)" (click)="activeCategory.set(cat.id)">
-                {{ cat.emoji }} {{ cat.label }}
+                {{ cat.label }}
                 <span class="opacity-40 ml-1">({{ cat.count }})</span>
               </button>
             }
