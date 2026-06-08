@@ -33,14 +33,15 @@ const handler: Handler = async (event: HandlerEvent) => {
     return { statusCode: 400, body: JSON.stringify({ error: "JSON invalido" }) };
   }
 
-  const { customerName, customerEmail, items, deliveryLine, oficina, total, orderId } = body as {
-    customerName:  string;
-    customerEmail: string;
-    items:         { name: string; qty: number; variant?: string; color?: string; price: number }[];
-    deliveryLine:  string;
-    oficina?:      { nombre: string; direccion: string; codigoPostal: string; localidad: string };
-    total:         number;
-    orderId:       string;
+  const { customerName, customerEmail, items, deliveryLine, deliveryMethod, oficina, total, orderId } = body as {
+    customerName:   string;
+    customerEmail:  string;
+    items:          { name: string; qty: number; variant?: string; color?: string; price: number }[];
+    deliveryLine:   string;
+    deliveryMethod?: string;
+    oficina?:       { nombre: string; direccion: string; codigoPostal: string; localidad: string };
+    total:          number;
+    orderId:        string;
   };
 
   if (!customerEmail || !customerName || !items) {
@@ -64,11 +65,15 @@ const handler: Handler = async (event: HandlerEvent) => {
         </tr>`;
     }).join("");
 
+  const step04 = deliveryMethod === "shipping"
+    ? "Enviamos tu pedido por Correos a tu direcci&oacute;n. Recibir&aacute;s el n&uacute;mero de seguimiento cuando est&eacute; en camino"
+    : "Nos pondremos en contacto por WhatsApp o tel&eacute;fono para coordinar lugar y hora de recogida";
+
   const steps = [
-    ["01", "Te contactamos por email para confirmar detalles y coordinar el pago"],
-    ["02", "Abonas el total por Bizum o transferencia"],
+    ["01", "Te contactamos para confirmar detalles"],
+    ["02", "Abonas el total por Bizum"],
     ["03", "Fabricamos en 3&ndash;7 d&iacute;as laborables"],
-    ["04", "Entrega o recogida acordada contigo"],
+    ["04", step04],
   ].map(([n, t]) => `
     <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:10px;">
       <tr>
@@ -147,7 +152,7 @@ const handler: Handler = async (event: HandlerEvent) => {
                   <tr>
                     <td style="padding:12px 16px;background:#1a1a1a;border-radius:8px;border:1px solid #2a2a2a;">
                       <p style="margin:0 0 3px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#888;">Bizum al</p>
-                      <p style="margin:0;font-family:Impact,Arial,sans-serif;font-size:26px;letter-spacing:4px;color:#f0f0f0;">674 012 922</p>
+                      <p style="margin:0;font-family:Impact,Arial,sans-serif;font-size:26px;letter-spacing:4px;color:#f0f0f0;">644 794 412</p>
                     </td>
                   </tr>
                 </table>
@@ -192,8 +197,9 @@ const handler: Handler = async (event: HandlerEvent) => {
               </td></tr>
             </table>
 
-            <p style="margin:0;font-size:13px;color:#666;line-height:1.6;">
-              &iquest;Dudas? Esc&iacute;rbenos a
+            <p style="margin:0;font-size:13px;color:#666;line-height:1.8;">
+              &iquest;Dudas? WhatsApp <a href="https://wa.me/34644794412" style="color:#C9A84C;text-decoration:none;">644 794 412</a>
+              &nbsp;&middot;&nbsp;
               <a href="mailto:${CONTACT_EMAIL}" style="color:#C9A84C;text-decoration:none;">${CONTACT_EMAIL}</a>
             </p>
 
@@ -203,6 +209,11 @@ const handler: Handler = async (event: HandlerEvent) => {
         <!-- Footer -->
         <tr>
           <td style="background:#0B0B0F;padding:20px 40px;border-top:1px solid #2a2a2a;text-align:center;">
+            <p style="margin:0 0 6px;font-size:12px;color:#666;">
+              WhatsApp <a href="https://wa.me/34644794412" style="color:#888;text-decoration:none;">644 794 412</a>
+              &nbsp;&middot;&nbsp;
+              <a href="mailto:${CONTACT_EMAIL}" style="color:#888;text-decoration:none;">${CONTACT_EMAIL}</a>
+            </p>
             <p style="margin:0;font-size:11px;color:#444;letter-spacing:1px;text-transform:uppercase;">
               LayerVault &middot; Barcelona &middot; layervault.es
             </p>
