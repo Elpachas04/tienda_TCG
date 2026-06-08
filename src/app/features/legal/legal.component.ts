@@ -59,7 +59,7 @@ import { CONTACT_EMAIL } from '../../shared/constants';
             <section class="space-y-3">
               <h2 class="font-display text-xl text-lv-gold uppercase">Objeto y uso del sitio</h2>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
-                LayerVault es una tienda de venta directa de accesorios fabricados bajo demanda mediante impresión 3D. Todos los productos se fabrican por encargo y de forma artesanal. Los pedidos se gestionan mediante correo electrónico; el pago se realiza por Bizum o transferencia bancaria una vez confirmado el pedido.
+                LayerVault es una tienda de venta directa de accesorios fabricados bajo demanda mediante impresión 3D. Todos los productos se fabrican por encargo y de forma artesanal. Los pedidos se gestionan mediante correo electrónico; el pago se realiza por Bizum una vez confirmado el pedido.
               </p>
             </section>
 

@@ -408,7 +408,7 @@ export class CheckoutComponent implements OnInit {
 
   readonly steps = [
     { n: '01', text: 'Te contactamos por email para confirmar detalles y coordinar el pago' },
-    { n: '02', text: 'Abona el total por Bizum o transferencia bancaria' },
+    { n: '02', text: 'Abona el total por Bizum' },
     { n: '03', text: 'Fabricamos en 3–7 días laborables' },
     { n: '04', text: 'Entrega o recogida acordada contigo' },
   ];
