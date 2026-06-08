@@ -156,7 +156,7 @@ const handler: Handler = async (event: HandlerEvent) => {
                   <tr>
                     <td style="padding:12px 16px;background:#1a1a1a;border-radius:8px;border:1px solid #332b15;">
                       <p style="margin:0 0 3px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#888;">Concepto obligatorio</p>
-                      <p style="margin:0;font-family:Impact,Arial,sans-serif;font-size:20px;letter-spacing:3px;color:#C9A84C;">${esc(orderId)}</p>
+                      <a href="${trackingUrl}" style="font-family:Impact,Arial,sans-serif;font-size:20px;letter-spacing:3px;color:#C9A84C;text-decoration:none;">${esc(orderId)}</a>
                     </td>
                   </tr>
                 </table>
@@ -169,7 +169,7 @@ const handler: Handler = async (event: HandlerEvent) => {
             <table width="100%" cellpadding="0" cellspacing="0" style="background:#111118;border-radius:12px;margin-bottom:20px;">
               <tr><td style="padding:16px 24px;">
                 <p style="margin:0 0 4px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#888;">N&uacute;mero de pedido</p>
-                <p style="margin:0;font-family:Impact,Arial,sans-serif;font-size:22px;letter-spacing:2px;color:#C9A84C;">${esc(orderId)}</p>
+                <a href="${trackingUrl}" style="font-family:Impact,Arial,sans-serif;font-size:22px;letter-spacing:2px;color:#C9A84C;text-decoration:none;">${esc(orderId)}</a>
               </td></tr>
             </table>
 
