@@ -14,15 +14,15 @@ import { LvFooterComponent } from './lv-footer.component';
     <!-- Hero: pinta inmediatamente (LCP) -->
     <app-lv-hero />
 
-    <!-- Sección de colores: se renderiza al entrar en viewport -->
-    @defer (on viewport) {
+    <!-- Sección de colores: on idle para que el layout esté estable antes de cualquier anchor scroll -->
+    @defer (on idle) {
       <app-lv-colors-process />
     } @placeholder {
       <div id="colores" class="min-h-[500px]"></div>
     }
 
-    <!-- CTA: se renderiza al entrar en viewport -->
-    @defer (on viewport) {
+    <!-- CTA/contacto: on idle por el mismo motivo -->
+    @defer (on idle) {
       <app-lv-cta />
     } @placeholder {
       <div id="contacto" class="min-h-[360px]"></div>
