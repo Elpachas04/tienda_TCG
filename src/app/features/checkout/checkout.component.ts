@@ -8,8 +8,8 @@ import { OficinaCorreos } from '../../core/models/oficina.model';
 import { NOTES_MAX, CONTACT_EMAIL } from '../../shared/constants';
 
 const NAME_MAX  = 100;
-const EMAIL_MAX = 100;
-const PHONE_MAX = 20;
+const EMAIL_MAX = 80;
+const PHONE_MAX = 9;
 const INPUT = 'w-full bg-white/[0.03] border rounded-xl px-4 py-3 font-body text-base text-lv-cream placeholder-lv-cream/20 focus:outline-none transition-colors';
 
 function isSpanishPhone(v: string): boolean {
@@ -158,7 +158,8 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                   placeholder="tu@email.com"
                   [attr.maxlength]="EMAIL_MAX"
                   autocomplete="email"
-                  [(ngModel)]="form.customerEmail"
+                  [value]="form.customerEmail"
+                  (input)="onEmailInput($event)"
                   (blur)="touched.email = true" />
                 @if (touched.email && !isEmailValid()) {
                   <p class="text-red-400/80 font-mono text-[10px] uppercase tracking-wider mt-1.5">
@@ -174,9 +175,9 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                 <input type="tel"
                   [class]="inputClass(touched.phone && !isPhoneValid())"
                   placeholder="612 345 678"
-                  [attr.maxlength]="PHONE_MAX"
                   autocomplete="tel"
-                  [(ngModel)]="form.customerPhone"
+                  [value]="form.customerPhone"
+                  (input)="onPhoneInput($event)"
                   (blur)="touched.phone = true" />
                 @if (touched.phone && !isPhoneValid()) {
                   <p class="text-red-400/80 font-mono text-[10px] uppercase tracking-wider mt-1.5">
@@ -295,6 +296,11 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
               </div>
             </div>
 
+            <!-- Honeypot: trap para bots — invisible para humanos -->
+            <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
+              <input type="text" name="website" tabindex="-1" autocomplete="off" [(ngModel)]="form._hp" />
+            </div>
+
             <button
               type="button"
               class="w-full font-mono text-xs uppercase tracking-widest font-semibold rounded-full py-3.5 sm:py-4 transition-all duration-200 flex items-center justify-center gap-2"
@@ -377,6 +383,7 @@ export class CheckoutComponent implements OnInit {
     deliveryMethod: 'pickup' as 'pickup' | 'shipping',
     postalCode:    '',
     notes:         '',
+    _hp:           '', // honeypot: hidden field, bots fill it
   };
 
   touched = { name: false, email: false, phone: false, cp: false, oficina: false };
@@ -419,6 +426,23 @@ export class CheckoutComponent implements OnInit {
 
   isEmailValid():      boolean { return isValidEmail(this.form.customerEmail.trim()); }
   isPhoneValid():      boolean { return isSpanishPhone(this.form.customerPhone.trim()); }
+
+  onEmailInput(event: Event): void {
+    const el = event.target as HTMLInputElement;
+    // RFC 5321: alfanumérico + caracteres especiales válidos en email
+    const filtered = el.value.replace(/[^a-zA-Z0-9.@\-_+]/g, '').slice(0, EMAIL_MAX);
+    this.form.customerEmail = filtered;
+    el.value = filtered;
+  }
+
+  onPhoneInput(event: Event): void {
+    const el = event.target as HTMLInputElement;
+    const digits = el.value.replace(/\D/g, '').slice(0, PHONE_MAX);
+    const formatted = [digits.slice(0, 3), digits.slice(3, 6), digits.slice(6, 9)]
+      .filter(s => s.length > 0).join(' ');
+    this.form.customerPhone = formatted;
+    el.value = formatted;
+  }
   isPostalCodeValid(): boolean { return /^\d{5}$/.test(this.form.postalCode); }
 
   selectPickup(): void {
@@ -470,6 +494,7 @@ export class CheckoutComponent implements OnInit {
   }
 
   isFormValid(): boolean {
+    if (this.form._hp) return false; // bot detected
     if (!this.form.customerName.trim() || !this.isEmailValid()) return false;
     if (!this.isPhoneValid()) return false;
     if (this.cartService.cartItems().length === 0) return false;
@@ -569,6 +594,7 @@ export class CheckoutComponent implements OnInit {
       } : undefined,
       notes:       this.form.notes.trim() || undefined,
       totalAmount: this.grandTotal(),
+      _hp:         this.form._hp,
       items: items.map(i => ({
         productId:   i.productId,
         productSku:  i.productSku,

@@ -1,4 +1,5 @@
 import type { Handler, HandlerEvent } from "@netlify/functions";
+import { originOk, MAX_BODY } from "./_guard";
 
 const BREVO_API    = "https://api.brevo.com/v3/smtp/email";
 const FROM_EMAIL   = "hola@layervault.es";
@@ -19,6 +20,14 @@ function esc(s: string): string {
 const handler: Handler = async (event: HandlerEvent) => {
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method Not Allowed" };
+  }
+
+  if (!originOk(event.headers)) {
+    return { statusCode: 403, body: "Forbidden" };
+  }
+
+  if ((event.body?.length ?? 0) > MAX_BODY) {
+    return { statusCode: 413, body: "Payload Too Large" };
   }
 
   const apiKey = process.env["BREVO_API_KEY"];
