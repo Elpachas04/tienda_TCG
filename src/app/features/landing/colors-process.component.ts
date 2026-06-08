@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { NgClass } from '@angular/common';
 import { CatalogService } from '../../core/services/catalog.service';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 
@@ -14,62 +13,81 @@ const STEPS = [
   selector: 'app-lv-colors-process',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RevealDirective, NgClass],
+  imports: [RevealDirective],
   host: { class: 'block' },
   template: `
-    <section id="colores" class="bg-lv-black border-t border-lv-gold/[0.08] py-20 sm:py-28 lg:py-36 px-4 sm:px-6">
-      <div class="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
+    <div id="colores">
 
-        <!-- LEFT: Paleta -->
-        <div>
-          <p lvReveal class="font-mono text-xs uppercase tracking-wider text-lv-gold/70 mb-3">— Colores disponibles</p>
-          <h2 lvReveal class="font-display uppercase text-3xl sm:text-4xl md:text-7xl text-lv-cream leading-none mb-10">
-            TU COLOR,<br>TU PIEZA
-          </h2>
-          <p lvReveal class="font-mono text-xs uppercase tracking-wide text-lv-cream/40 mb-10 max-w-sm leading-relaxed">
-            Todos los productos personalizables están disponibles en 7 colores de PLA Basic sin coste extra.
+      <!-- ── COLORES ── -->
+      <section class="bg-lv-black border-t border-lv-gold/[0.08] py-20 sm:py-28 px-4 sm:px-6">
+        <div class="max-w-[1400px] mx-auto">
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-end">
+
+            <!-- Heading -->
+            <div>
+              <p lvReveal class="font-mono text-xs uppercase tracking-wider text-lv-gold/60 mb-4">
+                — Colores disponibles
+              </p>
+              <h2 lvReveal class="font-display uppercase text-lv-cream leading-[0.88]"
+                  style="font-size: clamp(2.8rem, 6vw, 5rem);">
+                TU COLOR,<br>TU PIEZA
+              </h2>
+              <p lvReveal class="font-mono text-xs uppercase tracking-wide text-lv-cream/40 mt-6 max-w-xs leading-relaxed">
+                7 colores de PLA Basic en todos los productos personalizables. Sin coste extra.
+              </p>
+            </div>
+
+            <!-- Swatches -->
+            <div lvReveal class="flex flex-wrap gap-5 sm:gap-8">
+              @for (color of colors; track color.id) {
+                <div class="flex flex-col items-center gap-2.5 w-[52px] sm:w-[60px]">
+                  <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-white/[0.07] flex-shrink-0"
+                       [style.background]="color.hex"></div>
+                  <span class="font-mono text-[8px] uppercase tracking-wider text-lv-cream/40 text-center leading-tight">
+                    {{ color.name }}
+                  </span>
+                </div>
+              }
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ── PASOS ── -->
+      <section class="bg-lv-black border-t border-lv-gold/[0.08] py-20 sm:py-28 px-4 sm:px-6">
+        <div class="max-w-[1400px] mx-auto">
+
+          <p lvReveal class="font-mono text-xs uppercase tracking-wider text-lv-gold/60 mb-12 sm:mb-16">
+            — Proceso de pedido
           </p>
 
-          <div class="space-y-1">
-            @for (color of colors; track color.id) {
-              <div lvReveal class="flex items-center gap-4 py-3 border-b border-white/[0.05] last:border-0">
-                <span class="w-7 h-7 rounded-full flex-shrink-0 border border-white/[0.08]"
-                      [style.background]="color.hex">
-                </span>
-                <p class="font-display text-lg text-lv-cream leading-none flex-1">{{ color.name }}</p>
-                <span class="font-mono text-[9px] uppercase tracking-wider text-lv-cream/25">{{ color.type }}</span>
-              </div>
-            }
-          </div>
-        </div>
-
-        <!-- RIGHT: Proceso -->
-        <div>
-          <p lvReveal class="font-mono text-xs uppercase tracking-wider text-lv-gold/70 mb-3">— Proceso de pedido</p>
-          <h2 lvReveal class="font-display uppercase text-3xl sm:text-4xl md:text-7xl text-lv-cream leading-none mb-10">
-            EN 4<br>PASOS
-          </h2>
-
-          <div class="space-y-0">
+          <div class="grid grid-cols-1 lg:grid-cols-4">
             @for (step of steps; track step.n) {
-              <div lvReveal class="flex items-start gap-5 py-6 border-t border-white/[0.05] first:border-0">
-                <span class="font-display text-6xl sm:text-7xl text-lv-gold/[0.12] leading-none flex-shrink-0 select-none w-14 text-right">{{ step.n }}</span>
-                <div class="pt-1">
-                  <p class="font-display text-xl text-lv-cream mb-1">{{ step.title }}</p>
-                  <p class="font-mono text-[11px] uppercase tracking-wide text-lv-cream/35 leading-relaxed">{{ step.desc }}</p>
-                </div>
+              <div lvReveal
+                   class="py-8 lg:py-0 lg:px-8
+                          border-b border-lv-gold/[0.08] last:border-b-0
+                          lg:border-b-0 lg:border-r lg:border-lv-gold/[0.08]
+                          lg:last:border-r-0 lg:first:pl-0 lg:last:pr-0">
+                <p class="font-display text-[5rem] sm:text-[6rem] lg:text-[5rem] xl:text-[6rem]
+                           text-lv-gold/[0.12] leading-none mb-5 select-none">
+                  {{ step.n }}
+                </p>
+                <p class="font-display text-xl sm:text-2xl text-lv-cream mb-2 leading-tight">{{ step.title }}</p>
+                <p class="font-mono text-[11px] uppercase tracking-wide text-lv-cream/35 leading-relaxed">{{ step.desc }}</p>
               </div>
             }
           </div>
-        </div>
 
-      </div>
-    </section>
+        </div>
+      </section>
+
+    </div>
   `,
 })
 export class ColorsProcessComponent {
   private readonly catalogService = inject(CatalogService);
-
   protected readonly colors = this.catalogService.colors;
   protected readonly steps  = STEPS;
 }
