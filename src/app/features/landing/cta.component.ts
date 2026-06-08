@@ -38,8 +38,9 @@ import { WHATSAPP_URL, CONTACT_EMAIL } from '../../shared/constants';
           <span class="text-lv-gold block">SIN COMPROMISO</span>
         </h2>
 
+
         <p lvReveal class="font-mono text-xs uppercase tracking-wide text-lv-cream/40 max-w-md leading-relaxed">
-          Te respondemos en menos de 1 hora.<br>
+          Te respondemos lo antes posible.<br>
           Cada pieza impresa cuando la pides, como la quieres.
         </p>
 
@@ -60,9 +61,6 @@ import { WHATSAPP_URL, CONTACT_EMAIL } from '../../shared/constants';
           </a>
         </div>
 
-        <p lvReveal class="font-mono text-[10px] uppercase tracking-widest text-lv-cream/30">
-          Respuesta en menos de 1 hora · Lunes a sábado
-        </p>
 
       </div>
     </section>

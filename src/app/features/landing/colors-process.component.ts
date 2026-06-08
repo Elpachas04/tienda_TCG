@@ -64,12 +64,6 @@ const STEPS = [
             </div>
           }
 
-          <div lvReveal class="liquid-glass rounded-[20px] p-5 mt-6 border border-lv-gold/20">
-            <p class="font-mono text-[11px] uppercase tracking-wide text-lv-cream/60 leading-relaxed">
-              Sin pasarela de pago · Sin registro · Sin comisiones<br>
-              Trato directo con el creador en menos de 1 hora
-            </p>
-          </div>
         </div>
 
       </div>

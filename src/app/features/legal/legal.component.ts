@@ -49,7 +49,7 @@ import { CONTACT_EMAIL } from '../../shared/constants';
                 En cumplimiento de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y del Comercio Electrónico (LSSICE), se facilitan los siguientes datos:
               </p>
               <ul class="space-y-1.5 font-body text-sm text-lv-cream/60">
-                <li><span class="text-lv-cream/40 font-mono text-[11px] uppercase tracking-wider">Titular:</span> Antony Pachas</li>
+                <li><span class="text-lv-cream/40 font-mono text-[11px] uppercase tracking-wider">Titular:</span> LayerVault</li>
                 <li><span class="text-lv-cream/40 font-mono text-[11px] uppercase tracking-wider">Actividad:</span> Fabricación y venta de accesorios impresos en 3D para juegos de cartas coleccionables</li>
                 <li><span class="text-lv-cream/40 font-mono text-[11px] uppercase tracking-wider">Domicilio:</span> Barcelona, España</li>
                 <li><span class="text-lv-cream/40 font-mono text-[11px] uppercase tracking-wider">Email:</span> {{ email }}</li>
@@ -96,7 +96,7 @@ import { CONTACT_EMAIL } from '../../shared/constants';
             <section class="space-y-3">
               <h2 class="font-display text-xl text-lv-gold uppercase">Responsable del tratamiento</h2>
               <ul class="space-y-1.5 font-body text-sm text-lv-cream/60">
-                <li><span class="text-lv-cream/40 font-mono text-[11px] uppercase tracking-wider">Responsable:</span> Antony Pachas</li>
+                <li><span class="text-lv-cream/40 font-mono text-[11px] uppercase tracking-wider">Responsable:</span> LayerVault</li>
                 <li><span class="text-lv-cream/40 font-mono text-[11px] uppercase tracking-wider">Email:</span> {{ email }}</li>
               </ul>
             </section>
