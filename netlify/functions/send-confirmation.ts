@@ -66,7 +66,7 @@ const handler: Handler = async (event: HandlerEvent) => {
     }).join("");
 
   const step03 = deliveryMethod === "shipping"
-    ? "Enviamos tu pedido por Correos. Recibir&aacute;s el n&uacute;mero de seguimiento cuando est&eacute; en camino"
+    ? "Enviamos tu pedido por correo. Recibir&aacute;s el n&uacute;mero de seguimiento cuando est&eacute; en camino"
     : "Te contactamos por WhatsApp para coordinar lugar y hora de recogida";
 
   const steps = [
