@@ -262,13 +262,13 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                             [class]="selectedOficina()?.codigo === o.codigo
                               ? 'border-lv-gold bg-lv-gold/[0.08]'
                               : 'border-white/[0.06] hover:border-lv-gold/30 bg-white/[0.02]'"
-                            (click)="selectedOficina.set(selectedOficina()?.codigo === o.codigo ? null : o)">
+                            (click)="onOficinaClick(o)">
                             <p class="font-display text-sm text-lv-cream tracking-wide leading-tight">{{ o.nombre }}</p>
                             <p class="font-mono text-[10px] text-lv-cream/40 mt-0.5 leading-snug">{{ o.direccion }} · {{ o.telefono }}</p>
                           </button>
                         }
                       </div>
-                      @if (touched.oficina && oficinas().length > 1 && !selectedOficina()) {
+                      @if (touched.oficina && oficinas().length > 0 && !selectedOficina()) {
                         <p class="text-red-400/80 font-mono text-[10px] uppercase tracking-wider mt-2">Selecciona una Oficina de Correos</p>
                       }
                       @if (selectedOficina() && oficinas().length > 1) {
@@ -485,9 +485,15 @@ export class CheckoutComponent implements OnInit {
     if (this.cartService.cartItems().length === 0) return false;
     if (this.form.deliveryMethod === 'shipping') {
       if (!this.isPostalCodeValid() || this.shippingBlocked() || !this.shippingInfo()) return false;
-      if (this.oficinas().length > 1 && !this.selectedOficina()) return false;
+      if (this.oficinas().length > 0 && !this.selectedOficina()) return false;
     }
     return true;
+  }
+
+  onOficinaClick(o: OficinaCorreos): void {
+    // Single office is auto-selected and cannot be deselected
+    if (this.oficinas().length === 1) return;
+    this.selectedOficina.set(this.selectedOficina()?.codigo === o.codigo ? null : o);
   }
 
   finishOrder(): void {
