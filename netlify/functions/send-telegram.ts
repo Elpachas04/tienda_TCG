@@ -90,7 +90,7 @@ function validateOrder(body: unknown, orderId: string): ValidatedOrder {
   const raw = body as Record<string, unknown>;
 
   const customerName  = sanitizeStr(raw["customerName"],  100, "Nombre");
-  const customerEmail = sanitizeStr(raw["customerEmail"], 100, "Email");
+  const customerEmail = sanitizeStr(raw["customerEmail"], 80, "Email");
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(customerEmail)) {
     throw new ValidationError("Email no válido");
   }
