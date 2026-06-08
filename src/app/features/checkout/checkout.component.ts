@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { CartService } from '../../core/services/cart.service';
 import { OficinaService } from '../../core/services/oficina.service';
 import { OficinaCorreos } from '../../core/models/oficina.model';
-import { NOTES_MAX, TELEGRAM_USERNAME } from '../../shared/constants';
+import { NOTES_MAX, CONTACT_EMAIL } from '../../shared/constants';
 
 const NAME_MAX  = 100;
 const EMAIL_MAX = 100;
@@ -55,7 +55,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
               <span class="block text-lv-gold"  style="font-size:clamp(1rem,4.5vw,3rem)">LÍNEA DIRECTA CON EL TALLER</span>
             </h1>
             <p class="font-mono text-xs text-lv-cream/30 mt-4 leading-relaxed max-w-lg">
-              Rellena los datos y pulsa confirmar. Se abrirá Telegram con tu pedido listo para enviar.
+              Rellena los datos y pulsa confirmar. Recibirás un email de confirmación con tu número de pedido.
             </p>
           </div>
 
@@ -67,7 +67,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                 @if (fallbackUrl()) {
                   <a [href]="fallbackUrl()" target="_blank" rel="noopener noreferrer"
                      class="block mt-2 font-mono text-[10px] uppercase tracking-wider text-lv-gold hover:underline">
-                    Enviar manualmente por Telegram →
+                    Enviar pedido por email →
                   </a>
                 }
               </div>
@@ -227,7 +227,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                       <span class="text-red-400 flex-shrink-0 mt-0.5">✕</span>
                       <div>
                         <p class="font-mono text-[11px] uppercase tracking-wider text-red-400">Zona no disponible</p>
-                        <p class="font-mono text-[10px] text-lv-cream/30 mt-0.5 leading-relaxed">De momento solo enviamos a Península. Escríbenos por Telegram si necesitas otro destino.</p>
+                        <p class="font-mono text-[10px] text-lv-cream/30 mt-0.5 leading-relaxed">De momento solo enviamos a Península. Escríbenos a hola@layervault.es si necesitas otro destino.</p>
                       </div>
                     </div>
                   } @else if (shippingInfo()) {
@@ -293,13 +293,13 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
               </div>
             </div>
 
-            <!-- Info Telegram -->
+            <!-- Info email -->
             <div class="liquid-glass rounded-[16px] p-4 border border-lv-gold/10 flex items-start gap-3">
-              <svg class="w-5 h-5 text-lv-gold/50 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.04 9.61c-.15.67-.54.835-1.095.52l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.914.599z"/>
+              <svg class="w-5 h-5 text-lv-gold/50 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/>
               </svg>
               <p class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/30 leading-relaxed">
-                Al confirmar, el bot nos envía tu pedido automáticamente. Te contactamos en menos de 1 hora.
+                Al confirmar, recibirás un email con tu número de pedido. Te contactamos en menos de 24 horas para coordinar el pago.
               </p>
             </div>
 
@@ -407,7 +407,7 @@ export class CheckoutComponent implements OnInit {
   );
 
   readonly steps = [
-    { n: '01', text: 'Recibirás respuesta por Telegram para confirmar detalles' },
+    { n: '01', text: 'Te contactamos por email para confirmar detalles y coordinar el pago' },
     { n: '02', text: 'Abona el total por Bizum o transferencia bancaria' },
     { n: '03', text: 'Fabricamos en 3–7 días laborables' },
     { n: '04', text: 'Entrega o recogida acordada contigo' },
@@ -607,7 +607,7 @@ export class CheckoutComponent implements OnInit {
       this.cartService.clearCart();
       this.sendConfirmationEmail(items, info, oficina, orderId);
     } catch {
-      this.fallbackUrl.set(this.buildTelegramFallbackUrl());
+      this.fallbackUrl.set(this.buildEmailFallbackUrl());
       this.errorMsg.set('No se pudo enviar el pedido. Inténtalo de nuevo o usa el enlace de abajo.');
       if (isPlatformBrowser(this.platformId)) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -617,7 +617,7 @@ export class CheckoutComponent implements OnInit {
     }
   }
 
-  private buildTelegramFallbackUrl(): string {
+  private buildEmailFallbackUrl(): string {
     const items   = this.cartService.cartItems();
     const info    = this.shippingInfo();
     const oficina = this.selectedOficina();
@@ -627,7 +627,7 @@ export class CheckoutComponent implements OnInit {
       if (i.variant) line += ` (${i.variant})`;
       if (i.color)   line += ` — color ${i.color}`;
       line += ` — ${(i.unitPrice * i.quantity).toFixed(2)}€`;
-      if (i.notes)   line += `\n   📝 ${i.notes}`;
+      if (i.notes)   line += `\n   Nota: ${i.notes}`;
       return line;
     }).join('\n');
 
@@ -636,26 +636,26 @@ export class CheckoutComponent implements OnInit {
       : `Envío Correos a CP ${this.form.postalCode} (${info?.zone}) — ${info?.price.toFixed(2)}€`;
 
     const oficinaLines = oficina ? [
-      `🏣 Oficina: ${oficina.nombre}`,
-      `   📍 ${oficina.direccion}, ${oficina.codigoPostal} ${oficina.localidad}`,
-      `   📞 ${oficina.telefono}`,
+      `Oficina: ${oficina.nombre}`,
+      `  ${oficina.direccion}, ${oficina.codigoPostal} ${oficina.localidad}`,
     ] : [];
 
     const lines = [
-      '🏴‍☠️ PEDIDO — LayerVault',
+      'PEDIDO — LayerVault',
       '',
-      `👤 ${this.form.customerName}`,
-      `📧 ${this.form.customerEmail}`,
-      ...(this.form.customerPhone.trim() ? [`📞 ${this.form.customerPhone.trim()}`] : []),
-      `🚚 ${deliveryLine}`,
+      `Nombre: ${this.form.customerName}`,
+      `Email: ${this.form.customerEmail}`,
+      ...(this.form.customerPhone.trim() ? [`Teléfono: ${this.form.customerPhone.trim()}`] : []),
+      `Entrega: ${deliveryLine}`,
       ...oficinaLines,
       '',
       itemLines,
       '',
-      `💰 Total: ${this.grandTotal().toFixed(2)}€`,
-      ...(this.form.notes.trim() ? [`📝 ${this.form.notes.trim()}`] : []),
+      `Total: ${this.grandTotal().toFixed(2)}€`,
+      ...(this.form.notes.trim() ? [`Notas: ${this.form.notes.trim()}`] : []),
     ];
 
-    return `https://t.me/${TELEGRAM_USERNAME}?text=${encodeURIComponent(lines.join('\n'))}`;
+    const subject = `Pedido LayerVault — ${this.form.customerName}`;
+    return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n'))}`;
   }
 }

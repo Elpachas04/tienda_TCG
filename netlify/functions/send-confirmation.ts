@@ -65,7 +65,7 @@ const handler: Handler = async (event: HandlerEvent) => {
     }).join("");
 
   const steps = [
-    ["01", "Te contactamos por Telegram para confirmar detalles"],
+    ["01", "Te contactamos por email para confirmar detalles y coordinar el pago"],
     ["02", "Abonas el total por Bizum o transferencia"],
     ["03", "Fabricamos en 3&ndash;7 d&iacute;as laborables"],
     ["04", "Entrega o recogida acordada contigo"],
@@ -106,7 +106,7 @@ const handler: Handler = async (event: HandlerEvent) => {
 
             <p style="margin:0 0 24px;font-size:14px;color:#aaa;line-height:1.6;">
               Hola <strong style="color:#f0f0f0;">${esc(customerName)}</strong>,<br>
-              hemos recibido tu pedido. Te respondemos por Telegram en menos de 1 hora para coordinar el pago y los detalles.
+              hemos recibido tu pedido. Te contactamos por email en menos de 24 horas para coordinar el pago y los detalles.
             </p>
 
             <!-- Items -->
