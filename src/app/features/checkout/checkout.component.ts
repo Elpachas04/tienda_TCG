@@ -502,6 +502,7 @@ export class CheckoutComponent implements OnInit {
   private sendConfirmationEmail(
     items:   ReturnType<typeof this.cartService.cartItems>,
     info:    { zone: string; price: number } | null,
+    oficina: OficinaCorreos | null,
     orderId: string
   ): void {
     const email = this.form.customerEmail.trim();
@@ -509,7 +510,7 @@ export class CheckoutComponent implements OnInit {
 
     const deliveryLine = this.form.deliveryMethod === 'pickup'
       ? 'En mano (sin coste)'
-      : `Correos &middot; CP ${this.form.postalCode} &mdash; ${info?.price.toFixed(2) ?? '?'} &euro;`;
+      : `Correos · CP ${this.form.postalCode} — ${info?.price.toFixed(2) ?? '?'} €`;
 
     fetch('/api/confirmation', {
       method:  'POST',
@@ -518,6 +519,12 @@ export class CheckoutComponent implements OnInit {
         customerName:  this.form.customerName,
         customerEmail: email,
         deliveryLine,
+        oficina: oficina ? {
+          nombre:       oficina.nombre,
+          direccion:    oficina.direccion,
+          codigoPostal: oficina.codigoPostal,
+          localidad:    oficina.localidad,
+        } : undefined,
         orderId,
         total: this.grandTotal(),
         items: items.map(i => ({
@@ -598,7 +605,7 @@ export class CheckoutComponent implements OnInit {
       this.orderId.set(orderId);
       this.orderConfirmed.set(true);
       this.cartService.clearCart();
-      this.sendConfirmationEmail(items, info, orderId);
+      this.sendConfirmationEmail(items, info, oficina, orderId);
     } catch {
       this.fallbackUrl.set(this.buildTelegramFallbackUrl());
       this.errorMsg.set('No se pudo enviar el pedido. Inténtalo de nuevo o usa el enlace de abajo.');

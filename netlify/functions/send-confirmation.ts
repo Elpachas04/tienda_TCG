@@ -33,11 +33,12 @@ const handler: Handler = async (event: HandlerEvent) => {
     return { statusCode: 400, body: JSON.stringify({ error: "JSON invalido" }) };
   }
 
-  const { customerName, customerEmail, items, deliveryLine, total, orderId } = body as {
+  const { customerName, customerEmail, items, deliveryLine, oficina, total, orderId } = body as {
     customerName:  string;
     customerEmail: string;
     items:         { name: string; qty: number; variant?: string; color?: string; price: number }[];
     deliveryLine:  string;
+    oficina?:      { nombre: string; direccion: string; codigoPostal: string; localidad: string };
     total:         number;
     orderId:       string;
   };
@@ -113,12 +114,20 @@ const handler: Handler = async (event: HandlerEvent) => {
               ${itemRows}
             </table>
 
-            <!-- Entrega + Total -->
+            <!-- Entrega + Oficina + Total -->
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
               <tr>
                 <td style="padding:8px 0;font-size:12px;color:#888;text-transform:uppercase;letter-spacing:1px;">Entrega</td>
                 <td style="padding:8px 0;font-size:13px;color:#f0f0f0;text-align:right;">${esc(deliveryLine)}</td>
               </tr>
+              ${oficina ? `
+              <tr>
+                <td colspan="2" style="padding:8px 12px;border-radius:8px;background:#111118;border-left:2px solid #C9A84C;">
+                  <p style="margin:0;font-size:12px;color:#C9A84C;font-family:'Barlow',Arial,sans-serif;text-transform:uppercase;letter-spacing:1px;">🏣 Oficina de Correos</p>
+                  <p style="margin:4px 0 0;font-size:13px;color:#f0f0f0;font-family:'Barlow',Arial,sans-serif;">${esc(oficina.nombre)}</p>
+                  <p style="margin:2px 0 0;font-size:12px;color:#888;font-family:'Barlow',Arial,sans-serif;">${esc(oficina.direccion)}, ${esc(oficina.codigoPostal)} ${esc(oficina.localidad)}</p>
+                </td>
+              </tr>` : ""}
               <tr>
                 <td style="padding:12px 0;font-size:13px;color:#888;text-transform:uppercase;letter-spacing:1px;border-top:1px solid #2a2a2a;"><strong>Total</strong></td>
                 <td style="padding:12px 0;font-size:22px;color:#C9A84C;text-align:right;font-family:Impact,Arial,sans-serif;border-top:1px solid #2a2a2a;">
