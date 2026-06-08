@@ -11,21 +11,19 @@ import { CloudinaryService } from '../../core/services/cloudinary.service';
   selector: 'app-lv-product-card',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, CardGlowDirective, RevealDirective],
+  imports: [RouterLink, RevealDirective],
   host: { class: 'block h-full' },
   template: `
-    <div lvCardGlow lvReveal
+    <div lvReveal
          [style.transition-delay]="delay"
-         class="relative h-full card-glow liquid-glass rounded-[28px] flex flex-col group
-                before:absolute before:inset-0 before:rounded-[28px] before:opacity-0
-                before:transition-opacity before:duration-500 before:pointer-events-none
-                hover:before:opacity-100
-                before:bg-[radial-gradient(300px_circle_at_var(--mouse-x,50%)_var(--mouse-y,50%),rgba(201,168,76,0.08),transparent_80%)]"
+         class="relative h-full flex flex-col group rounded-card border border-lv-border
+                transition-all duration-300 hover:border-lv-gold cursor-pointer bg-lv-surface"
          style="overflow:visible;">
 
       <!-- Image area -->
       <a [routerLink]="['/product', product.id]"
-         class="relative m-3 aspect-square bg-lv-surface rounded-[20px] overflow-hidden block flex-shrink-0">
+         class="relative aspect-[4/3] rounded-t-card overflow-hidden block flex-shrink-0
+                bg-gradient-to-br from-[#201e1a] to-[#2a2820]">
         @if (product.video) {
           <video class="w-full h-full object-cover"
                  autoplay muted loop playsinline preload="metadata">
@@ -43,7 +41,7 @@ import { CloudinaryService } from '../../core/services/cloudinary.service';
           />
         }
         @if (product.badge) {
-          <span class="absolute top-2 left-2 liquid-glass rounded-full px-2.5 py-1 font-mono text-[9px] uppercase tracking-wider text-lv-gold border border-lv-gold/30">
+          <span class="absolute top-2 left-2 bg-lv-black/80 rounded-full px-2.5 py-1 font-mono text-[9px] uppercase tracking-wider text-lv-gold border border-lv-gold/30">
             {{ product.badge }}
           </span>
         }
@@ -59,15 +57,21 @@ import { CloudinaryService } from '../../core/services/cloudinary.service';
       </a>
 
       <!-- Body -->
-      <div class="px-4 pb-4 flex flex-col flex-1">
-        <a [routerLink]="['/product', product.id]" class="block hover:text-lv-gold transition-colors duration-200">
-          <h3 class="font-display text-xl text-lv-cream leading-tight">{{ product.name }}</h3>
-          <p class="font-body text-[11px] italic text-lv-cream/35 mt-0.5 mb-2 leading-snug">{{ product.tagline }}</p>
+      <div class="px-4 pt-4 pb-5 flex flex-col flex-1 border-t border-lv-border">
+
+        <a [routerLink]="['/product', product.id]" class="block mb-1">
+          <p class="font-mono text-[9px] uppercase tracking-[0.25em] text-lv-gold mb-1">
+            {{ product.category }}
+          </p>
+          <h3 class="font-display text-xl text-lv-cream leading-tight group-hover:text-lv-gold transition-colors duration-200">
+            {{ product.name }}
+          </h3>
+          <p class="font-body text-[11px] text-lv-cream/35 mt-1 mb-3 leading-snug">{{ product.tagline }}</p>
         </a>
 
         <!-- Variantes -->
         @if (product.variants && product.variants.length > 0) {
-          <div class="flex gap-1 flex-wrap mb-2">
+          <div class="flex gap-1 flex-wrap mb-3">
             @for (v of product.variants; track v.label) {
               <button
                 class="rounded-full px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-wider border transition-all duration-150"
@@ -81,36 +85,14 @@ import { CloudinaryService } from '../../core/services/cloudinary.service';
           </div>
         }
 
-        <p class="font-display text-2xl text-lv-gold leading-none mb-3">
-          {{ currentPrice() }}€
-          <span class="font-mono text-[10px] uppercase text-lv-cream/40 ml-1">/ unidad</span>
-        </p>
-
-        <!-- Color dots + add button -->
-        <div class="flex justify-between items-center mt-auto">
-          @if (product.colorPickerEnabled && colors.length > 0) {
-            <div class="flex gap-1.5 flex-wrap items-center">
-              @for (color of colors; track color.id) {
-                <button
-                  type="button"
-                  class="rounded-full transition-all duration-150 cursor-pointer flex-shrink-0"
-                  [title]="color.name"
-                  [style.width]="selectedColor()?.id === color.id ? '14px' : '10px'"
-                  [style.height]="selectedColor()?.id === color.id ? '14px' : '10px'"
-                  [style.background]="color.hex"
-                  [style.outline]="selectedColor()?.id === color.id ? '2px solid #C9A84C' : '1px solid rgba(255,255,255,0.15)'"
-                  [style.outline-offset]="'2px'"
-                  (click)="selectColor(color, $event)">
-                </button>
-              }
-            </div>
-          } @else {
-            <span class="font-mono text-[9px] uppercase tracking-wider text-lv-cream/30">Color fijo</span>
-          }
-
+        <!-- Precio + botón añadir -->
+        <div class="flex items-center justify-between mt-auto">
+          <p class="font-display text-2xl text-lv-gold leading-none">
+            {{ currentPrice() }}€
+          </p>
           <button
             type="button"
-            class="w-8 h-8 rounded-full flex items-center justify-center font-mono font-bold text-lg flex-shrink-0 ml-2 transition-all duration-200 disabled:opacity-30"
+            class="w-9 h-9 rounded-full flex items-center justify-center font-mono font-bold text-lg flex-shrink-0 transition-all duration-200 disabled:opacity-30"
             [class]="justAdded()
               ? 'bg-green-600 text-white scale-90'
               : 'bg-lv-gold hover:scale-110 hover:brightness-110 text-black'"
@@ -124,10 +106,28 @@ import { CloudinaryService } from '../../core/services/cloudinary.service';
           </button>
         </div>
 
-        @if (product.colorPickerEnabled && selectedColor()) {
-          <p class="font-mono text-[9px] uppercase tracking-wider text-lv-gold/60 mt-2">
-            Color: {{ selectedColor()!.name }}
-          </p>
+        <!-- Color dots -->
+        @if (product.colorPickerEnabled && colors.length > 0) {
+          <div class="flex gap-1.5 flex-wrap items-center mt-3">
+            @for (color of colors; track color.id) {
+              <button
+                type="button"
+                class="rounded-full transition-all duration-150 cursor-pointer flex-shrink-0"
+                [title]="color.name"
+                [style.width]="selectedColor()?.id === color.id ? '14px' : '10px'"
+                [style.height]="selectedColor()?.id === color.id ? '14px' : '10px'"
+                [style.background]="color.hex"
+                [style.outline]="selectedColor()?.id === color.id ? '2px solid #C9A84C' : '1px solid rgba(255,255,255,0.15)'"
+                [style.outline-offset]="'2px'"
+                (click)="selectColor(color, $event)">
+              </button>
+            }
+          </div>
+          @if (selectedColor()) {
+            <p class="font-mono text-[9px] uppercase tracking-wider text-lv-gold/60 mt-1.5">
+              Color: {{ selectedColor()!.name }}
+            </p>
+          }
         }
       </div>
     </div>
