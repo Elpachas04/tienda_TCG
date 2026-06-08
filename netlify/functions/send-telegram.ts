@@ -1,4 +1,5 @@
 import type { Handler, HandlerEvent } from "@netlify/functions";
+import { originOk } from "./_guard";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -88,6 +89,11 @@ function validateOrder(body: unknown, orderId: string): ValidatedOrder {
   }
 
   const raw = body as Record<string, unknown>;
+
+  // Honeypot: bots fill hidden fields, humans never see them
+  if (typeof raw["_hp"] === "string" && raw["_hp"].length > 0) {
+    throw new ValidationError("Bad request");
+  }
 
   const customerName  = sanitizeStr(raw["customerName"],  100, "Nombre");
   const customerEmail = sanitizeStr(raw["customerEmail"], 80, "Email");
@@ -290,6 +296,10 @@ async function writeOrderToNotion(order: ValidatedOrder, token: string, dbId: st
 const handler: Handler = async (event: HandlerEvent) => {
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method Not Allowed" };
+  }
+
+  if (!originOk(event.headers)) {
+    return { statusCode: 403, body: "Forbidden" };
   }
 
   if (event.body && event.body.length > 16_384) {

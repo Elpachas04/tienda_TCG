@@ -1,4 +1,5 @@
 import type { Handler, HandlerEvent } from "@netlify/functions";
+import { requestOk } from "./_guard";
 
 // Solo enviamos a Península — sin islas, Ceuta ni Melilla
 const NO_SHIP = new Set(["07", "35", "38", "51", "52"]);
@@ -12,6 +13,10 @@ const CACHED_HEADERS: Record<string, string> = {
 const handler: Handler = async (event: HandlerEvent) => {
   if (event.httpMethod !== "GET") {
     return { statusCode: 405, body: "Method Not Allowed" };
+  }
+
+  if (!requestOk(event.headers)) {
+    return { statusCode: 403, body: "Forbidden" };
   }
 
   const cp = (event.queryStringParameters?.["cp"] ?? "").trim();

@@ -296,6 +296,11 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
               </div>
             </div>
 
+            <!-- Honeypot: trap para bots — invisible para humanos -->
+            <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
+              <input type="text" name="website" tabindex="-1" autocomplete="off" [(ngModel)]="form._hp" />
+            </div>
+
             <button
               type="button"
               class="w-full font-mono text-xs uppercase tracking-widest font-semibold rounded-full py-3.5 sm:py-4 transition-all duration-200 flex items-center justify-center gap-2"
@@ -378,6 +383,7 @@ export class CheckoutComponent implements OnInit {
     deliveryMethod: 'pickup' as 'pickup' | 'shipping',
     postalCode:    '',
     notes:         '',
+    _hp:           '', // honeypot: hidden field, bots fill it
   };
 
   touched = { name: false, email: false, phone: false, cp: false, oficina: false };
@@ -488,6 +494,7 @@ export class CheckoutComponent implements OnInit {
   }
 
   isFormValid(): boolean {
+    if (this.form._hp) return false; // bot detected
     if (!this.form.customerName.trim() || !this.isEmailValid()) return false;
     if (!this.isPhoneValid()) return false;
     if (this.cartService.cartItems().length === 0) return false;
@@ -587,6 +594,7 @@ export class CheckoutComponent implements OnInit {
       } : undefined,
       notes:       this.form.notes.trim() || undefined,
       totalAmount: this.grandTotal(),
+      _hp:         this.form._hp,
       items: items.map(i => ({
         productId:   i.productId,
         productSku:  i.productSku,

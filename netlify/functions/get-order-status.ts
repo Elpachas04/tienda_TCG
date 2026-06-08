@@ -1,4 +1,5 @@
 import type { Handler } from "@netlify/functions";
+import { requestOk } from "./_guard";
 
 export type OrderStatus =
   | "pending_payment"
@@ -52,12 +53,16 @@ function dateField(prop: unknown): string | undefined {
 
 const handler: Handler = async (event) => {
   const headers = {
-    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Origin": "https://layervault.es",
     "Content-Type": "application/json",
   };
 
   if (event.httpMethod !== "GET") {
     return { statusCode: 405, headers, body: JSON.stringify({ error: "method_not_allowed" }) };
+  }
+
+  if (!requestOk(event.headers)) {
+    return { statusCode: 403, headers, body: JSON.stringify({ error: "forbidden" }) };
   }
 
   const id = (event.queryStringParameters?.["id"] ?? "").trim().toUpperCase();
