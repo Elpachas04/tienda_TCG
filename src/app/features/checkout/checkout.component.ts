@@ -516,9 +516,10 @@ export class CheckoutComponent implements OnInit {
       method:  'POST',
       headers: { 'Content-Type': 'application/json; charset=utf-8' },
       body: JSON.stringify({
-        customerName:  this.form.customerName,
-        customerEmail: email,
+        customerName:   this.form.customerName,
+        customerEmail:  email,
         deliveryLine,
+        deliveryMethod: this.form.deliveryMethod,
         oficina: oficina ? {
           nombre:       oficina.nombre,
           direccion:    oficina.direccion,
