@@ -65,15 +65,14 @@ const handler: Handler = async (event: HandlerEvent) => {
         </tr>`;
     }).join("");
 
-  const step04 = deliveryMethod === "shipping"
-    ? "Enviamos tu pedido por Correos a tu direcci&oacute;n. Recibir&aacute;s el n&uacute;mero de seguimiento cuando est&eacute; en camino"
-    : "Nos pondremos en contacto por WhatsApp o tel&eacute;fono para coordinar lugar y hora de recogida";
+  const step03 = deliveryMethod === "shipping"
+    ? "Enviamos tu pedido por Correos. Recibir&aacute;s el n&uacute;mero de seguimiento cuando est&eacute; en camino"
+    : "Te contactamos por WhatsApp para coordinar lugar y hora de recogida";
 
   const steps = [
-    ["01", "Te contactamos para confirmar detalles"],
-    ["02", "Abonas el total por Bizum"],
-    ["03", "Fabricamos en 3&ndash;7 d&iacute;as laborables"],
-    ["04", step04],
+    ["01", "Abonas el total por Bizum"],
+    ["02", "Fabricamos tu pedido en 3&ndash;7 d&iacute;as laborables"],
+    ["03", step03],
   ].map(([n, t]) => `
     <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:10px;">
       <tr>
@@ -197,10 +196,11 @@ const handler: Handler = async (event: HandlerEvent) => {
               </td></tr>
             </table>
 
-            <p style="margin:0;font-size:13px;color:#666;line-height:1.8;">
-              &iquest;Dudas? WhatsApp <a href="https://wa.me/34644794412" style="color:#C9A84C;text-decoration:none;">644 794 412</a>
+            <p style="margin:0;font-size:12px;color:#555;line-height:1.8;">
+              &iquest;Tienes alguna pregunta? Estamos en WhatsApp
+              <a href="https://wa.me/34644794412" style="color:#C9A84C;text-decoration:none;">644 794 412</a>
               &nbsp;&middot;&nbsp;
-              <a href="mailto:${CONTACT_EMAIL}" style="color:#C9A84C;text-decoration:none;">${CONTACT_EMAIL}</a>
+              <a href="mailto:${CONTACT_EMAIL}" style="color:#666;text-decoration:none;">${CONTACT_EMAIL}</a>
             </p>
 
           </td>
@@ -209,8 +209,11 @@ const handler: Handler = async (event: HandlerEvent) => {
         <!-- Footer -->
         <tr>
           <td style="background:#0B0B0F;padding:20px 40px;border-top:1px solid #2a2a2a;text-align:center;">
-            <p style="margin:0 0 6px;font-size:12px;color:#666;">
-              WhatsApp <a href="https://wa.me/34644794412" style="color:#888;text-decoration:none;">644 794 412</a>
+            <p style="margin:0 0 4px;font-size:11px;color:#555;">
+              &iquest;Tienes alguna pregunta? Estamos en WhatsApp
+            </p>
+            <p style="margin:0 0 10px;font-size:12px;color:#666;">
+              <a href="https://wa.me/34644794412" style="color:#888;text-decoration:none;">644 794 412</a>
               &nbsp;&middot;&nbsp;
               <a href="mailto:${CONTACT_EMAIL}" style="color:#888;text-decoration:none;">${CONTACT_EMAIL}</a>
             </p>
