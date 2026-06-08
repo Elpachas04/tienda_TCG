@@ -66,10 +66,11 @@ interface ValidatedOficina {
 }
 
 interface ValidatedOrder {
-  orderId:         string;
-  customerName:    string;
-  customerContact: string;
-  deliveryMethod:  "pickup" | "shipping";
+  orderId:        string;
+  customerName:   string;
+  customerEmail:  string;
+  customerPhone?: string;
+  deliveryMethod: "pickup" | "shipping";
   postalCode?:     string;
   shippingZone?:   string;
   shippingCost?:   number;
@@ -88,8 +89,12 @@ function validateOrder(body: unknown, orderId: string): ValidatedOrder {
 
   const raw = body as Record<string, unknown>;
 
-  const customerName    = sanitizeStr(raw["customerName"],    100, "Nombre");
-  const customerContact = sanitizeStr(raw["customerContact"], 200, "Contacto");
+  const customerName  = sanitizeStr(raw["customerName"],  100, "Nombre");
+  const customerEmail = sanitizeStr(raw["customerEmail"], 100, "Email");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(customerEmail)) {
+    throw new ValidationError("Email no válido");
+  }
+  const customerPhone = sanitizeOptionalStr(raw["customerPhone"], 20);
 
   if (raw["deliveryMethod"] !== "pickup" && raw["deliveryMethod"] !== "shipping") {
     throw new ValidationError("Método de entrega inválido");
@@ -163,7 +168,8 @@ function validateOrder(body: unknown, orderId: string): ValidatedOrder {
   return {
     orderId,
     customerName,
-    customerContact,
+    customerEmail,
+    customerPhone,
     deliveryMethod,
     postalCode,
     shippingZone,
@@ -200,7 +206,8 @@ function buildMessage(order: ValidatedOrder): string {
     `🔑 <b>ID Pedido:</b> <code>${escapeHtml(order.orderId)}</code>`,
     ``,
     `👤 <b>Cliente:</b> ${escapeHtml(order.customerName)}`,
-    `📞 <b>Contacto:</b> ${escapeHtml(order.customerContact)}`,
+    `📧 <b>Email:</b> ${escapeHtml(order.customerEmail)}`,
+    ...(order.customerPhone ? [`📞 <b>Teléfono:</b> ${escapeHtml(order.customerPhone)}`] : []),
     `🚚 <b>Entrega:</b> ${deliveryLabel}`,
   ];
 
@@ -262,7 +269,7 @@ async function writeOrderToNotion(order: ValidatedOrder, token: string, dbId: st
         "ID Pedido": { title: [{ text: { content: order.orderId } }] },
         "Estado":    { select: { name: "Pendiente de pago" } },
         "Cliente":   { rich_text: [{ text: { content: order.customerName } }] },
-        "Contacto":  { rich_text: [{ text: { content: order.customerContact } }] },
+        "Contacto":  { rich_text: [{ text: { content: order.customerPhone ? `${order.customerEmail} / ${order.customerPhone}` : order.customerEmail } }] },
         "Total":     { number: order.totalAmount },
         "Entrega":   { select: { name: order.deliveryMethod === "pickup" ? "En mano" : "Envío" } },
         "Productos": { rich_text: [{ text: { content: productosSummary } }] },

@@ -7,8 +7,9 @@ import { OficinaService } from '../../core/services/oficina.service';
 import { OficinaCorreos } from '../../core/models/oficina.model';
 import { NOTES_MAX, TELEGRAM_USERNAME } from '../../shared/constants';
 
-const NAME_MAX    = 100;
-const CONTACT_MAX = 100;
+const NAME_MAX  = 100;
+const EMAIL_MAX = 100;
+const PHONE_MAX = 20;
 const INPUT = 'w-full bg-white/[0.03] border rounded-xl px-4 py-3 font-body text-base text-lv-cream placeholder-lv-cream/20 focus:outline-none transition-colors';
 
 function isSpanishPhone(v: string): boolean {
@@ -16,28 +17,6 @@ function isSpanishPhone(v: string): boolean {
 }
 function isValidEmail(v: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
-}
-function contactType(v: string): 'phone' | 'email' | 'unknown' {
-  const c = v.trim();
-  if (/^\d/.test(c.replace(/[\s\-\.\(\)]/g, ''))) return 'phone';
-  if (c.includes('@')) return 'email';
-  return 'unknown';
-}
-function isValidContact(v: string): boolean {
-  const c = v.trim();
-  if (!c) return false;
-  const t = contactType(c);
-  if (t === 'phone') return isSpanishPhone(c);
-  if (t === 'email') return isValidEmail(c);
-  return false;
-}
-function contactError(v: string): string {
-  const c = v.trim();
-  if (!c) return 'Obligatorio';
-  const t = contactType(c);
-  if (t === 'phone') return 'Teléfono español no válido (ej: 612 345 678)';
-  if (t === 'email') return 'Email no válido (ej: tu@email.com)';
-  return 'Introduce un email válido o teléfono español';
 }
 
 // Solo Península — no enviamos a islas, Ceuta ni Melilla
@@ -173,18 +152,34 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
               </div>
 
               <div>
-                <label class="block font-mono text-[10px] uppercase tracking-widest text-lv-cream/40 mb-2">Email o teléfono español *</label>
-                <input type="text"
-                  [class]="inputClass(touched.contact && !isContactValid())"
-                  placeholder="tu@email.com  ó  612 345 678"
-                  [attr.maxlength]="CONTACT_MAX"
+                <label class="block font-mono text-[10px] uppercase tracking-widest text-lv-cream/40 mb-2">Email *</label>
+                <input type="email"
+                  [class]="inputClass(touched.email && !isEmailValid())"
+                  placeholder="tu@email.com"
+                  [attr.maxlength]="EMAIL_MAX"
                   autocomplete="email"
-                  [(ngModel)]="form.customerContact"
-                  (blur)="touched.contact = true" />
-                @if (touched.contact && !isContactValid()) {
+                  [(ngModel)]="form.customerEmail"
+                  (blur)="touched.email = true" />
+                @if (touched.email && !isEmailValid()) {
                   <p class="text-red-400/80 font-mono text-[10px] uppercase tracking-wider mt-1.5">
-                    {{ contactErrorMsg() }}
+                    {{ form.customerEmail.trim() ? 'Email no válido' : 'Obligatorio' }}
                   </p>
+                }
+              </div>
+
+              <div>
+                <label class="block font-mono text-[10px] uppercase tracking-widest text-lv-cream/40 mb-2">
+                  Teléfono <span class="normal-case opacity-50">(opcional)</span>
+                </label>
+                <input type="tel"
+                  [class]="inputClass(touched.phone && !!form.customerPhone.trim() && !isPhoneValid())"
+                  placeholder="612 345 678"
+                  [attr.maxlength]="PHONE_MAX"
+                  autocomplete="tel"
+                  [(ngModel)]="form.customerPhone"
+                  (blur)="touched.phone = true" />
+                @if (touched.phone && form.customerPhone.trim() && !isPhoneValid()) {
+                  <p class="text-red-400/80 font-mono text-[10px] uppercase tracking-wider mt-1.5">Teléfono español no válido (ej: 612 345 678)</p>
                 }
               </div>
 
@@ -373,9 +368,10 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
   `
 })
 export class CheckoutComponent implements OnInit {
-  protected readonly NAME_MAX    = NAME_MAX;
-  protected readonly CONTACT_MAX = CONTACT_MAX;
-  protected readonly NOTES_MAX   = NOTES_MAX;
+  protected readonly NAME_MAX  = NAME_MAX;
+  protected readonly EMAIL_MAX = EMAIL_MAX;
+  protected readonly PHONE_MAX = PHONE_MAX;
+  protected readonly NOTES_MAX = NOTES_MAX;
 
   protected readonly cartService = inject(CartService);
   private router = inject(Router);
@@ -383,14 +379,15 @@ export class CheckoutComponent implements OnInit {
   private platformId = inject(PLATFORM_ID);
 
   form = {
-    customerName:    '',
-    customerContact: '',
-    deliveryMethod:  'pickup' as 'pickup' | 'shipping',
-    postalCode:      '',
-    notes:           '',
+    customerName:  '',
+    customerEmail: '',
+    customerPhone: '',
+    deliveryMethod: 'pickup' as 'pickup' | 'shipping',
+    postalCode:    '',
+    notes:         '',
   };
 
-  touched = { name: false, contact: false, cp: false, oficina: false };
+  touched = { name: false, email: false, phone: false, cp: false, oficina: false };
 
   orderConfirmed   = signal(false);
   orderId          = signal('');
@@ -428,8 +425,8 @@ export class CheckoutComponent implements OnInit {
       : ' border-white/[0.07] focus:border-lv-gold/40');
   }
 
-  isContactValid():    boolean { return isValidContact(this.form.customerContact.trim()); }
-  contactErrorMsg():   string  { return contactError(this.form.customerContact); }
+  isEmailValid():      boolean { return isValidEmail(this.form.customerEmail.trim()); }
+  isPhoneValid():      boolean { return isSpanishPhone(this.form.customerPhone.trim()); }
   isPostalCodeValid(): boolean { return /^\d{5}$/.test(this.form.postalCode); }
 
   selectPickup(): void {
@@ -481,7 +478,8 @@ export class CheckoutComponent implements OnInit {
   }
 
   isFormValid(): boolean {
-    if (!this.form.customerName.trim() || !this.isContactValid()) return false;
+    if (!this.form.customerName.trim() || !this.isEmailValid()) return false;
+    if (this.form.customerPhone.trim() && !this.isPhoneValid()) return false;
     if (this.cartService.cartItems().length === 0) return false;
     if (this.form.deliveryMethod === 'shipping') {
       if (!this.isPostalCodeValid() || this.shippingBlocked() || !this.shippingInfo()) return false;
@@ -506,8 +504,8 @@ export class CheckoutComponent implements OnInit {
     info:    { zone: string; price: number } | null,
     orderId: string
   ): void {
-    const contact = this.form.customerContact.trim();
-    if (contactType(contact) !== 'email') return;
+    const email = this.form.customerEmail.trim();
+    if (!email) return;
 
     const deliveryLine = this.form.deliveryMethod === 'pickup'
       ? 'En mano (sin coste)'
@@ -518,7 +516,7 @@ export class CheckoutComponent implements OnInit {
       headers: { 'Content-Type': 'application/json; charset=utf-8' },
       body: JSON.stringify({
         customerName:  this.form.customerName,
-        customerEmail: contact,
+        customerEmail: email,
         deliveryLine,
         orderId,
         total: this.grandTotal(),
@@ -534,7 +532,7 @@ export class CheckoutComponent implements OnInit {
   }
 
   async submitOrder(): Promise<void> {
-    this.touched = { name: true, contact: true, cp: true, oficina: true };
+    this.touched = { name: true, email: true, phone: true, cp: true, oficina: true };
     if (!this.isFormValid()) {
       if (this.form.deliveryMethod === 'shipping' && this.oficinas().length > 1 && !this.selectedOficina()) {
         if (isPlatformBrowser(this.platformId)) {
@@ -555,9 +553,10 @@ export class CheckoutComponent implements OnInit {
     const oficina = this.selectedOficina();
 
     const payload = {
-      customerName:    this.form.customerName,
-      customerContact: this.form.customerContact,
-      deliveryMethod:  this.form.deliveryMethod,
+      customerName:  this.form.customerName,
+      customerEmail: this.form.customerEmail,
+      customerPhone: this.form.customerPhone.trim() || undefined,
+      deliveryMethod: this.form.deliveryMethod,
       postalCode:      this.form.deliveryMethod === 'shipping' ? this.form.postalCode : undefined,
       shippingZone:    info?.zone,
       shippingCost:    info?.price,
@@ -639,7 +638,8 @@ export class CheckoutComponent implements OnInit {
       '🏴‍☠️ PEDIDO — LayerVault',
       '',
       `👤 ${this.form.customerName}`,
-      `📞 ${this.form.customerContact}`,
+      `📧 ${this.form.customerEmail}`,
+      ...(this.form.customerPhone.trim() ? [`📞 ${this.form.customerPhone.trim()}`] : []),
       `🚚 ${deliveryLine}`,
       ...oficinaLines,
       '',
