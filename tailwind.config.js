@@ -7,6 +7,8 @@ module.exports = {
     extend: {
       colors: {
         'lv-black':   '#121212',
+        'lv-void':    '#0B0B0F',
+        'lv-deep':    '#0e0e0e',
         'lv-surface': '#1a1a1a',
         'lv-border':  '#2a2a2a',
         'lv-gold':    '#C9A84C',

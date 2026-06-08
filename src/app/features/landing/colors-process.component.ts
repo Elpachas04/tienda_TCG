@@ -17,7 +17,7 @@ const STEPS = [
   imports: [RevealDirective, NgClass],
   host: { class: 'block' },
   template: `
-    <section id="colores" class="bg-[#0e0e0e] py-14 sm:py-20 lg:py-24 px-4 sm:px-6">
+    <section id="colores" class="bg-lv-deep py-14 sm:py-20 lg:py-24 px-4 sm:px-6">
       <div class="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-10 sm:gap-14 lg:gap-16">
 
         <!-- LEFT: Paleta -->

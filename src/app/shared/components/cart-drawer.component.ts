@@ -23,8 +23,7 @@ import { NOTES_MAX } from '../constants';
       </div>
 
       <!-- Panel -->
-      <div class="relative w-full max-w-sm h-full flex flex-col shadow-2xl transition-transform duration-300 ease-in-out border-l border-white/[0.07]"
-           style="background: #0B0B0F;"
+      <div class="relative w-full max-w-sm h-full flex flex-col shadow-2xl transition-transform duration-300 ease-in-out border-l border-white/[0.07] bg-lv-void"
            [class.translate-x-full]="!cart.drawerOpen()"
            [class.translate-x-0]="cart.drawerOpen()">
 
@@ -39,6 +38,7 @@ import { NOTES_MAX } from '../constants';
             }
           </div>
           <button
+            aria-label="Cerrar cesta"
             class="w-8 h-8 flex items-center justify-center text-lv-cream/30 hover:text-lv-cream rounded-full hover:bg-white/[0.06] transition-all"
             (click)="cart.closeDrawer()">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -123,7 +123,7 @@ import { NOTES_MAX } from '../constants';
 
         <!-- Footer -->
         @if (cart.cartItems().length > 0) {
-          <div class="flex-shrink-0 border-t border-white/[0.07] px-4 sm:px-6 py-4 sm:py-5 space-y-3 sm:space-y-4" style="background: #0B0B0F;">
+          <div class="flex-shrink-0 border-t border-white/[0.07] px-4 sm:px-6 py-4 sm:py-5 space-y-3 sm:space-y-4 bg-lv-void">
             <div class="flex justify-between items-center">
               <div>
                 <span class="font-display text-xl sm:text-2xl text-lv-cream tracking-wide">TOTAL</span>

@@ -57,7 +57,7 @@
   66%       { transform: translate(-20px, 20px) scale(0.95); }
 }
 
-.animate-aurora { animation: aurora 15s infinite ease-in-out; }
+.animate-aurora { animation: aurora 15s infinite ease-in-out; will-change: transform; }
 
 /* Scroll reveal — class added by RevealDirective host binding */
 .lv-reveal {
@@ -88,6 +88,15 @@
 .animate-badge-pop   { animation: badge-pop   0.35s ease-out; }
 .animate-fade-up     { animation: fade-up     0.25s ease-out both; }
 .animate-dropdown-in { animation: dropdown-in 0.15s ease-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-aurora      { animation: none; }
+  .lv-reveal           { opacity: 1; transform: none; transition: none; }
+  .animate-fade-up     { animation: none; opacity: 1; }
+  .animate-toast-in    { animation: none; opacity: 1; }
+  .animate-badge-pop   { animation: none; }
+  .animate-dropdown-in { animation: none; opacity: 1; }
+}
 
 @keyframes dropdown-in {
   from { opacity: 0; transform: translateY(-0.4rem); }
