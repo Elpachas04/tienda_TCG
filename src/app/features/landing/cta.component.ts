@@ -61,7 +61,7 @@ import { WHATSAPP_URL, CONTACT_EMAIL } from '../../shared/constants';
         </div>
 
         <p lvReveal class="font-mono text-[10px] uppercase tracking-widest text-lv-cream/30">
-          Respuesta en menos de 1 hora · Lunes a sábado
+          Te respondemos lo antes posible
         </p>
 
       </div>
