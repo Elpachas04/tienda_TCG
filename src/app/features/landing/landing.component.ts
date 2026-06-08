@@ -18,14 +18,14 @@ import { LvFooterComponent } from './lv-footer.component';
     @defer (on viewport) {
       <app-lv-colors-process />
     } @placeholder {
-      <div class="min-h-[500px]"></div>
+      <div id="colores" class="min-h-[500px]"></div>
     }
 
     <!-- CTA: se renderiza al entrar en viewport -->
     @defer (on viewport) {
       <app-lv-cta />
     } @placeholder {
-      <div class="min-h-[360px]"></div>
+      <div id="contacto" class="min-h-[360px]"></div>
     }
 
     <!-- Footer: se renderiza al entrar en viewport -->
