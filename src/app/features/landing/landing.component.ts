@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { HeroComponent } from './hero.component';
+import { LandingProductsComponent } from './landing-products.component';
 import { ColorsProcessComponent } from './colors-process.component';
 import { CtaComponent } from './cta.component';
 import { LvFooterComponent } from './lv-footer.component';
@@ -8,11 +9,18 @@ import { LvFooterComponent } from './lv-footer.component';
   selector: 'app-landing',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [HeroComponent, ColorsProcessComponent, CtaComponent, LvFooterComponent],
+  imports: [HeroComponent, LandingProductsComponent, ColorsProcessComponent, CtaComponent, LvFooterComponent],
   host: { class: 'block bg-lv-black text-lv-cream min-h-screen' },
   template: `
     <!-- Hero: pinta inmediatamente (LCP) -->
     <app-lv-hero />
+
+    <!-- Productos destacados: on viewport para no bloquear el hero -->
+    @defer (on viewport) {
+      <app-landing-products />
+    } @placeholder {
+      <div class="min-h-[400px]"></div>
+    }
 
     <!-- Sección de colores: on idle para que el layout esté estable antes de cualquier anchor scroll -->
     @defer (on idle) {
