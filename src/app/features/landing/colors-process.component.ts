@@ -16,32 +16,28 @@ const STEPS = [
   imports: [RevealDirective],
   host: { class: 'block' },
   template: `
-    <div id="colores">
+    <section id="colores" class="bg-lv-black border-t border-lv-gold/[0.08] py-20 sm:py-28 px-4 sm:px-6">
+      <div class="max-w-[1400px] mx-auto">
 
-      <!-- ── COLORES ── -->
-      <section class="bg-lv-black border-t border-lv-gold/[0.08] py-20 sm:py-28 px-4 sm:px-6">
-        <div class="max-w-[1400px] mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20">
 
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-end">
+          <!-- ── IZQUIERDA: Colores ── -->
+          <div>
+            <p lvReveal class="font-mono text-xs uppercase tracking-wider text-lv-gold/60 mb-4">
+              — Colores disponibles
+            </p>
+            <h2 lvReveal class="font-display uppercase text-lv-cream leading-[0.88]"
+                style="font-size: clamp(2.8rem, 6vw, 5rem);">
+              TU COLOR,<br>TU PIEZA
+            </h2>
+            <p lvReveal class="font-mono text-xs uppercase tracking-wide text-lv-cream/40 mt-5 mb-8 max-w-xs leading-relaxed">
+              7 colores de PLA Basic en todos los productos personalizables. Sin coste extra.
+            </p>
 
-            <!-- Heading -->
-            <div>
-              <p lvReveal class="font-mono text-xs uppercase tracking-wider text-lv-gold/60 mb-4">
-                — Colores disponibles
-              </p>
-              <h2 lvReveal class="font-display uppercase text-lv-cream leading-[0.88]"
-                  style="font-size: clamp(2.8rem, 6vw, 5rem);">
-                TU COLOR,<br>TU PIEZA
-              </h2>
-              <p lvReveal class="font-mono text-xs uppercase tracking-wide text-lv-cream/40 mt-6 max-w-xs leading-relaxed">
-                7 colores de PLA Basic en todos los productos personalizables. Sin coste extra.
-              </p>
-            </div>
-
-            <!-- Swatches -->
-            <div lvReveal class="flex flex-wrap gap-5 sm:gap-8">
+            <!-- Swatches: 4+3 centrado en móvil, fila única en sm+ -->
+            <div lvReveal class="flex flex-wrap justify-center lg:justify-start gap-4 sm:gap-5">
               @for (color of colors; track color.id) {
-                <div class="flex flex-col items-center gap-2.5 w-[52px] sm:w-[60px]">
+                <div class="flex flex-col items-center gap-2 w-[56px] sm:w-[64px]">
                   <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-white/[0.07] flex-shrink-0"
                        [style.background]="color.hex"></div>
                   <span class="font-mono text-[8px] uppercase tracking-wider text-lv-cream/40 text-center leading-tight">
@@ -50,40 +46,33 @@ const STEPS = [
                 </div>
               }
             </div>
-
           </div>
-        </div>
-      </section>
 
-      <!-- ── PASOS ── -->
-      <section class="bg-lv-black border-t border-lv-gold/[0.08] py-20 sm:py-28 px-4 sm:px-6">
-        <div class="max-w-[1400px] mx-auto">
+          <!-- ── DERECHA: Pasos ── -->
+          <div>
+            <p lvReveal class="font-mono text-xs uppercase tracking-wider text-lv-gold/60 mb-4 lg:mb-6">
+              — Proceso de pedido
+            </p>
 
-          <p lvReveal class="font-mono text-xs uppercase tracking-wider text-lv-gold/60 mb-12 sm:mb-16">
-            — Proceso de pedido
-          </p>
-
-          <div class="grid grid-cols-1 lg:grid-cols-4">
-            @for (step of steps; track step.n) {
-              <div lvReveal
-                   class="py-8 lg:py-0 lg:px-8
-                          border-b border-lv-gold/[0.08] last:border-b-0
-                          lg:border-b-0 lg:border-r lg:border-lv-gold/[0.08]
-                          lg:last:border-r-0 lg:first:pl-0 lg:last:pr-0">
-                <p class="font-display text-[5rem] sm:text-[6rem] lg:text-[5rem] xl:text-[6rem]
-                           text-lv-gold/[0.12] leading-none mb-5 select-none">
-                  {{ step.n }}
-                </p>
-                <p class="font-display text-xl sm:text-2xl text-lv-cream mb-2 leading-tight">{{ step.title }}</p>
-                <p class="font-mono text-[11px] uppercase tracking-wide text-lv-cream/35 leading-relaxed">{{ step.desc }}</p>
-              </div>
-            }
+            <div class="divide-y divide-lv-gold/[0.08]">
+              @for (step of steps; track step.n) {
+                <div lvReveal class="flex items-start gap-4 py-4 sm:py-5 first:pt-0">
+                  <span class="font-display text-[2.5rem] sm:text-[3rem] text-lv-gold/[0.15] leading-none
+                               flex-shrink-0 w-9 sm:w-11 text-right select-none">
+                    {{ step.n }}
+                  </span>
+                  <div class="pt-1">
+                    <p class="font-display text-lg sm:text-xl text-lv-cream leading-tight mb-1">{{ step.title }}</p>
+                    <p class="font-mono text-[11px] uppercase tracking-wide text-lv-cream/35 leading-relaxed">{{ step.desc }}</p>
+                  </div>
+                </div>
+              }
+            </div>
           </div>
 
         </div>
-      </section>
-
-    </div>
+      </div>
+    </section>
   `,
 })
 export class ColorsProcessComponent {
