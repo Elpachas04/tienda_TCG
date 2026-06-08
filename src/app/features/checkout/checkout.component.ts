@@ -424,7 +424,7 @@ export class CheckoutComponent implements OnInit {
   onEmailInput(event: Event): void {
     const el = event.target as HTMLInputElement;
     // RFC 5321: alfanumérico + caracteres especiales válidos en email
-    const filtered = el.value.replace(/[^a-zA-Z0-9.@\-_+!#$%&'*/=?^{|}~]/g, '').slice(0, EMAIL_MAX);
+    const filtered = el.value.replace(/[^a-zA-Z0-9.@\-_+]/g, '').slice(0, EMAIL_MAX);
     this.form.customerEmail = filtered;
     el.value = filtered;
   }
