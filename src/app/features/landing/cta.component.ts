@@ -39,6 +39,11 @@ import { WHATSAPP_URL, CONTACT_EMAIL } from '../../shared/constants';
         </h2>
 
 
+        <p lvReveal class="font-mono text-xs uppercase tracking-wide text-lv-cream/40 max-w-md leading-relaxed">
+          Te respondemos lo antes posible.<br>
+          Cada pieza impresa cuando la pides, como la quieres.
+        </p>
+
         <div lvReveal class="flex gap-4 flex-wrap justify-center">
           <a [href]="whatsappUrl" target="_blank" rel="noopener noreferrer"
              class="flex items-center gap-2 bg-lv-gold text-black rounded-full px-7 sm:px-10 py-3 sm:py-4 font-mono text-xs uppercase tracking-wider font-semibold hover:brightness-110 transition-all duration-200">
