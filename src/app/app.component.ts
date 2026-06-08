@@ -3,22 +3,22 @@ import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs';
 import { LvNavbarComponent } from './features/landing/lv-navbar.component';
-import { TelegramFabComponent } from './shared/components/telegram-fab.component';
+import { WhatsappFabComponent } from './shared/components/whatsapp-fab.component';
 import { CartDrawerComponent } from './shared/components/cart-drawer.component';
-import { TELEGRAM_URL } from './shared/constants';
+import { WHATSAPP_URL } from './shared/constants';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet, LvNavbarComponent, TelegramFabComponent, CartDrawerComponent],
+  imports: [RouterOutlet, LvNavbarComponent, WhatsappFabComponent, CartDrawerComponent],
   template: `
     <app-lv-navbar />
     <main [class.min-h-screen]="!isLanding()" [class.pt-20]="!isLanding()">
       <router-outlet />
     </main>
     @if (!isLanding() && !isCheckout()) {
-      <app-telegram-fab [telegramUrl]="telegramUrl" />
+      <app-whatsapp-fab [whatsappUrl]="whatsappUrl" />
     }
     @if (!isCheckout()) {
       <app-cart-drawer />
@@ -26,7 +26,7 @@ import { TELEGRAM_URL } from './shared/constants';
   `
 })
 export class AppComponent {
-  protected readonly telegramUrl = TELEGRAM_URL;
+  protected readonly whatsappUrl = WHATSAPP_URL;
   private router = inject(Router);
 
   private currentUrl = toSignal(

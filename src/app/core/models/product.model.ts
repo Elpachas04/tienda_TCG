@@ -43,7 +43,7 @@ export interface Color {
 export interface ShopSettings {
   shopName: string;
   city: string;
-  telegramUsername: string;
+  whatsappPhone: string;
   paymentMethods: string[];
   deliveryDays: string;
 }

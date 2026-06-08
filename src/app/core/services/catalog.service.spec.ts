@@ -46,7 +46,7 @@ const mockCatalog: ProductCatalog = {
   settings: {
     shopName: 'LayerVault',
     city: '',
-    telegramUsername: 'test',
+    whatsappPhone: 'test',
     paymentMethods: ['Bizum'],
     deliveryDays: '3-7 días',
   },
