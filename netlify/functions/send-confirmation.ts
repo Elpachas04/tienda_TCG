@@ -47,7 +47,7 @@ const handler: Handler = async (event: HandlerEvent) => {
     return { statusCode: 400, body: JSON.stringify({ error: "Datos incompletos" }) };
   }
 
-  const trackingUrl = orderId ? `${SITE_URL}/seguimiento?ref=${encodeURIComponent(orderId)}` : `${SITE_URL}/seguimiento`;
+  const trackingUrl = orderId ? `${SITE_URL}/seguimiento?id=${encodeURIComponent(orderId)}` : `${SITE_URL}/seguimiento`;
 
   const itemRows = (items as { name: string; qty: number; variant?: string; color?: string; price: number }[])
     .map(i => {
@@ -137,6 +137,34 @@ const handler: Handler = async (event: HandlerEvent) => {
             </table>
 
             ${orderId ? `
+            <!-- Bloque Bizum -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#111118;border-radius:12px;margin-bottom:28px;border:1px solid #332b15;">
+              <tr><td style="padding:20px 24px;">
+                <p style="margin:0 0 12px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#C9A84C;">Pago</p>
+                <p style="margin:0 0 14px;font-size:14px;color:#aaa;line-height:1.5;">Realiza el pago para confirmar tu pedido</p>
+
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:10px;">
+                  <tr>
+                    <td style="padding:12px 16px;background:#1a1a1a;border-radius:8px;border:1px solid #2a2a2a;">
+                      <p style="margin:0 0 3px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#888;">Bizum al</p>
+                      <p style="margin:0;font-family:Impact,Arial,sans-serif;font-size:26px;letter-spacing:4px;color:#f0f0f0;">674 012 922</p>
+                    </td>
+                  </tr>
+                </table>
+
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;">
+                  <tr>
+                    <td style="padding:12px 16px;background:#1a1a1a;border-radius:8px;border:1px solid #332b15;">
+                      <p style="margin:0 0 3px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#888;">Concepto obligatorio</p>
+                      <p style="margin:0;font-family:Impact,Arial,sans-serif;font-size:20px;letter-spacing:3px;color:#C9A84C;">${esc(orderId)}</p>
+                    </td>
+                  </tr>
+                </table>
+
+                <p style="margin:0;font-size:11px;color:#555;font-style:italic;">Confirmo recepci&oacute;n en menos de 1 hora, lunes a s&aacute;bado</p>
+              </td></tr>
+            </table>
+
             <!-- Referencia -->
             <table width="100%" cellpadding="0" cellspacing="0" style="background:#111118;border-radius:12px;margin-bottom:20px;">
               <tr><td style="padding:16px 24px;">
