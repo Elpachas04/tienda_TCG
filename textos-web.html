@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Textos LayerVault — Referencia completa</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #111;
+      color: #e0e0e0;
+      padding: 2rem;
+      line-height: 1.6;
+    }
+    h1 { font-size: 2rem; color: #C9A84C; margin-bottom: 0.25rem; }
+    .subtitle { color: #888; font-size: 0.85rem; margin-bottom: 3rem; }
+    h2 {
+      font-size: 1.2rem;
+      color: #C9A84C;
+      border-bottom: 1px solid #2a2a2a;
+      padding-bottom: 0.4rem;
+      margin: 2.5rem 0 1rem;
+    }
+    h3 {
+      font-size: 0.9rem;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 1.5rem 0 0.5rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      margin-bottom: 1rem;
+    }
+    th {
+      text-align: left;
+      padding: 0.4rem 0.75rem;
+      background: #1a1a1a;
+      color: #C9A84C;
+      font-weight: 600;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    td {
+      padding: 0.45rem 0.75rem;
+      border-bottom: 1px solid #1e1e1e;
+      vertical-align: top;
+    }
+    tr:hover td { background: #181818; }
+    .label { color: #888; font-size: 0.78rem; white-space: nowrap; }
+    .text  { color: #e0e0e0; }
+    .note  { color: #666; font-size: 0.76rem; font-style: italic; }
+    .badge { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 999px; font-size: 0.7rem; font-weight: 600; margin-right: 0.3rem; }
+    .badge-gold   { background: #C9A84C22; color: #C9A84C; border: 1px solid #C9A84C44; }
+    .badge-gray   { background: #ffffff11; color: #aaa;    border: 1px solid #ffffff22; }
+    .badge-red    { background: #ff444422; color: #f88;    border: 1px solid #ff444444; }
+    .toc { column-count: 2; column-gap: 2rem; margin-bottom: 3rem; }
+    .toc a { color: #C9A84C; text-decoration: none; font-size: 0.88rem; display: block; margin-bottom: 0.3rem; }
+    .toc a:hover { text-decoration: underline; }
+    section { margin-bottom: 2rem; }
+  </style>
+</head>
+<body>
+
+<h1>LayerVault — Todos los textos de la web</h1>
+<p class="subtitle">Referencia completa de textos, copies y etiquetas · Generado automáticamente desde el código fuente</p>
+
+<nav class="toc">
+  <a href="#navbar">1. Navegación (Navbar)</a>
+  <a href="#hero">2. Hero (Portada)</a>
+  <a href="#colores-proceso">3. Colores y Proceso de pedido</a>
+  <a href="#cta">4. CTA / Contacto</a>
+  <a href="#footer">5. Footer</a>
+  <a href="#catalogo">6. Catálogo</a>
+  <a href="#producto-tarjeta">7. Tarjeta de producto</a>
+  <a href="#producto-detalle">8. Detalle de producto</a>
+  <a href="#cesta">9. Cesta (Drawer)</a>
+  <a href="#checkout">10. Checkout / Confirmación de pedido</a>
+  <a href="#seguimiento">11. Seguimiento de pedido</a>
+  <a href="#legal">12. Aviso Legal</a>
+  <a href="#privacidad">13. Política de Privacidad</a>
+  <a href="#404">14. Página 404</a>
+  <a href="#productos">15. Productos del catálogo</a>
+  <a href="#colores-lista">16. Colores disponibles</a>
+  <a href="#categorias">17. Categorías</a>
+</nav>
+
+<!-- ─────────────────────────────────────────── -->
+<section id="navbar">
+<h2>1. Navegación (Navbar)</h2>
+<table>
+  <tr><th>Elemento</th><th>Texto</th><th>Notas</th></tr>
+  <tr><td class="label">Logo</td><td class="text">LayerVault</td><td class="note">Enlace a /</td></tr>
+  <tr><td class="label">Enlace (landing)</td><td class="text">Productos</td><td class="note">Solo visible en la landing</td></tr>
+  <tr><td class="label">Enlace (otras páginas)</td><td class="text">Catálogo</td><td class="note">Fuera de la landing</td></tr>
+  <tr><td class="label">Enlace (landing)</td><td class="text">Colores</td><td class="note">Ancla #colores</td></tr>
+  <tr><td class="label">Enlace (landing)</td><td class="text">Contacto</td><td class="note">Ancla #contacto</td></tr>
+  <tr><td class="label">Enlace</td><td class="text">Mis pedidos</td><td class="note">Desktop y móvil (icono 📦)</td></tr>
+  <tr><td class="label">Botón principal (desktop)</td><td class="text">Pedir ahora</td><td class="note">Visible cuando no está en checkout</td></tr>
+  <tr><td class="label">Botón principal (móvil)</td><td class="text">Pedir</td><td class="note">Versión compacta</td></tr>
+</table>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<section id="hero">
+<h2>2. Hero (Portada / Landing)</h2>
+<table>
+  <tr><th>Elemento</th><th>Texto</th><th>Notas</th></tr>
+  <tr><td class="label">Subetiqueta</td><td class="text">Ingeniería 3D · Alta precisión</td><td class="note">Monospace, uppercase</td></tr>
+  <tr><td class="label">Título — línea 1</td><td class="text">TU MAZO VALE</td><td class="note">Color crema</td></tr>
+  <tr><td class="label">Título — línea 2</td><td class="text">MÁS QUE UNA</td><td class="note">Color dorado</td></tr>
+  <tr><td class="label">Título — línea 3</td><td class="text">CAJA DE 2€</td><td class="note">Color crema</td></tr>
+  <tr><td class="label">Subtítulo</td><td class="text">tolerancia milimétrica en cada capa</td><td class="note">Font-display, uppercase</td></tr>
+  <tr><td class="label">Descripción línea 1</td><td class="text">Accesorios high-end para TCG con tolerancias mecánicas reales.</td><td class="note"></td></tr>
+  <tr><td class="label">Descripción línea 2</td><td class="text">Sin holguras ni cierres débiles. Fabricación exclusiva bajo demanda.</td><td class="note"></td></tr>
+  <tr><td class="label">Botón primario</td><td class="text">Asegurar mi mazo</td><td class="note">Enlace a /catalog</td></tr>
+  <tr><td class="label">Botón secundario</td><td class="text">Ingeniería Vault →</td><td class="note">Ancla #colores</td></tr>
+  <tr><td class="label">Pill 1</td><td class="text">Diseño paramétrico</td><td class="note"></td></tr>
+  <tr><td class="label">Pill 2</td><td class="text">Colores de facción</td><td class="note"></td></tr>
+  <tr><td class="label">Pill 3</td><td class="text">Cero stock masivo</td><td class="note"></td></tr>
+</table>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<section id="colores-proceso">
+<h2>3. Colores y Proceso de pedido</h2>
+
+<h3>Bloque colores (izquierda)</h3>
+<table>
+  <tr><th>Elemento</th><th>Texto</th></tr>
+  <tr><td class="label">Etiqueta sección</td><td class="text">— Colores disponibles</td></tr>
+  <tr><td class="label">Título línea 1</td><td class="text">TU COLOR,</td></tr>
+  <tr><td class="label">Título línea 2</td><td class="text">TU PIEZA</td></tr>
+  <tr><td class="label">Descripción</td><td class="text">Todos los productos personalizables están disponibles en 7 colores de PLA Basic sin coste extra.</td></tr>
+</table>
+
+<h3>Bloque proceso (derecha)</h3>
+<table>
+  <tr><th>Elemento</th><th>Texto</th></tr>
+  <tr><td class="label">Etiqueta sección</td><td class="text">— Proceso de pedido</td></tr>
+  <tr><td class="label">Título línea 1</td><td class="text">EN 4</td></tr>
+  <tr><td class="label">Título línea 2</td><td class="text">PASOS</td></tr>
+  <tr><td class="label">Paso 1 — Título</td><td class="text">Elige tu pieza</td></tr>
+  <tr><td class="label">Paso 1 — Descripción</td><td class="text">Navega el catálogo, selecciona producto, variante y color.</td></tr>
+  <tr><td class="label">Paso 2 — Título</td><td class="text">Manda el pedido</td></tr>
+  <tr><td class="label">Paso 2 — Descripción</td><td class="text">Rellena nombre y contacto. Confirmación inmediata.</td></tr>
+  <tr><td class="label">Paso 3 — Título</td><td class="text">Abona el total</td></tr>
+  <tr><td class="label">Paso 3 — Descripción</td><td class="text">Pago por Bizum o transferencia para iniciar fabricación.</td></tr>
+  <tr><td class="label">Paso 4 — Título</td><td class="text">Recibe tu pieza</td></tr>
+  <tr><td class="label">Paso 4 — Descripción</td><td class="text">En 3–7 días laborables. Recogida en persona o envío acordado.</td></tr>
+  <tr><td class="label">Caja inferior línea 1</td><td class="text">Sin pasarela de pago · Sin registro · Sin comisiones</td></tr>
+  <tr><td class="label">Caja inferior línea 2</td><td class="text">Trato directo con el creador en menos de 1 hora</td></tr>
+</table>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<section id="cta">
+<h2>4. CTA / Sección de Contacto</h2>
+<table>
+  <tr><th>Elemento</th><th>Texto</th><th>Notas</th></tr>
+  <tr><td class="label">Pregunta intro</td><td class="text">¿tienes alguna pregunta?</td><td class="note">Cursiva, dorado</td></tr>
+  <tr><td class="label">Título línea 1</td><td class="text">ESCRÍBENOS</td><td class="note">Color crema</td></tr>
+  <tr><td class="label">Título línea 2</td><td class="text">SIN COMPROMISO</td><td class="note">Color dorado</td></tr>
+  <tr><td class="label">Descripción línea 1</td><td class="text">Te respondemos en menos de 1 hora.</td><td class="note"></td></tr>
+  <tr><td class="label">Descripción línea 2</td><td class="text">Cada pieza impresa cuando la pides, como la quieres.</td><td class="note"></td></tr>
+  <tr><td class="label">Botón Telegram</td><td class="text">Preguntar por Telegram</td><td class="note">Botón dorado primario</td></tr>
+  <tr><td class="label">Botón Email</td><td class="text">Preguntar por email</td><td class="note">Botón secundario</td></tr>
+  <tr><td class="label">Nota inferior</td><td class="text">Respuesta en menos de 1 hora · Lunes a sábado</td><td class="note"></td></tr>
+</table>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<section id="footer">
+<h2>5. Footer</h2>
+<table>
+  <tr><th>Elemento</th><th>Texto</th><th>Notas</th></tr>
+  <tr><td class="label">Logo</td><td class="text">LayerVault</td><td class="note"></td></tr>
+  <tr><td class="label">Año</td><td class="text">2026</td><td class="note"></td></tr>
+  <tr><td class="label">Tagline (solo desktop)</td><td class="text">Impresión 3D artesanal · PLA Basic · Por encargo</td><td class="note">Oculto en móvil</td></tr>
+  <tr><td class="label">Enlace</td><td class="text">Legal</td><td class="note">Enlace a /legal</td></tr>
+  <tr><td class="label">Enlace</td><td class="text">Privacidad</td><td class="note">Enlace a /privacidad</td></tr>
+  <tr><td class="label">Contacto Telegram</td><td class="text">https://t.me/Elpachas_04</td><td class="note">Icono SVG</td></tr>
+  <tr><td class="label">Contacto Email</td><td class="text">hola@layervault.es</td><td class="note">Icono SVG</td></tr>
+</table>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<section id="catalogo">
+<h2>6. Catálogo (/catalog)</h2>
+<table>
+  <tr><th>Elemento</th><th>Texto</th><th>Notas</th></tr>
+  <tr><td class="label">Etiqueta sección</td><td class="text">— Colección completa</td><td class="note"></td></tr>
+  <tr><td class="label">Título línea 1</td><td class="text">LO QUE</td><td class="note">Color crema</td></tr>
+  <tr><td class="label">Título línea 2</td><td class="text">FABRICAMOS</td><td class="note">Color dorado</td></tr>
+  <tr><td class="label">Descripción línea 1</td><td class="text">Accesorios para TCG impresos en 3D.</td><td class="note"></td></tr>
+  <tr><td class="label">Descripción línea 2</td><td class="text">Cada pieza, por encargo. Cada color, el tuyo.</td><td class="note"></td></tr>
+  <tr><td class="label">Estado vacío (filtro)</td><td class="text">Sin productos en esta categoría</td><td class="note"></td></tr>
+  <tr><td class="label">Error de conexión — título</td><td class="text">Sin conexión</td><td class="note"></td></tr>
+  <tr><td class="label">Error de conexión — descripción</td><td class="text">Comprueba tu conexión y recarga</td><td class="note"></td></tr>
+</table>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<section id="producto-tarjeta">
+<h2>7. Tarjeta de producto (Card)</h2>
+<table>
+  <tr><th>Elemento</th><th>Texto</th><th>Notas</th></tr>
+  <tr><td class="label">Overlay agotado</td><td class="text">Agotado</td><td class="note">Sobre la imagen</td></tr>
+  <tr><td class="label">Unidad precio</td><td class="text">/ unidad</td><td class="note">Junto al precio</td></tr>
+  <tr><td class="label">Sin color selector</td><td class="text">Color fijo</td><td class="note">Cuando no hay color picker</td></tr>
+  <tr><td class="label">Botón añadir (añadido)</td><td class="text">✓</td><td class="note">1,5 s tras añadir</td></tr>
+  <tr><td class="label">Label color seleccionado</td><td class="text">Color: {nombre}</td><td class="note">Ej: Color: Negro</td></tr>
+</table>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<section id="producto-detalle">
+<h2>8. Detalle de producto (/product/:id)</h2>
+<table>
+  <tr><th>Elemento</th><th>Texto</th><th>Notas</th></tr>
+  <tr><td class="label">Enlace volver</td><td class="text">Volver al catálogo</td><td class="note"></td></tr>
+  <tr><td class="label">Etiqueta variantes</td><td class="text">Variante</td><td class="note"></td></tr>
+  <tr><td class="label">Etiqueta color</td><td class="text">Color</td><td class="note"></td></tr>
+  <tr><td class="label">Botón — disponible</td><td class="text">Añadir a la cesta</td><td class="note">Estado normal</td></tr>
+  <tr><td class="label">Botón — añadido</td><td class="text">✓ Añadido</td><td class="note">1,5 s tras añadir</td></tr>
+  <tr><td class="label">Botón — agotado</td><td class="text">Agotado</td><td class="note">Deshabilitado</td></tr>
+  <tr><td class="label">Error — no encontrado</td><td class="text">Producto no encontrado</td><td class="note"></td></tr>
+  <tr><td class="label">Enlace error — volver</td><td class="text">Volver al catálogo</td><td class="note"></td></tr>
+</table>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<section id="cesta">
+<h2>9. Cesta (Drawer lateral)</h2>
+<table>
+  <tr><th>Elemento</th><th>Texto</th><th>Notas</th></tr>
+  <tr><td class="label">Título</td><td class="text">CESTA</td><td class="note"></td></tr>
+  <tr><td class="label">Estado vacío — título</td><td class="text">Cesta vacía</td><td class="note"></td></tr>
+  <tr><td class="label">Estado vacío — descripción</td><td class="text">Añade algo del catálogo</td><td class="note"></td></tr>
+  <tr><td class="label">Estado vacío — botón</td><td class="text">Ver catálogo</td><td class="note"></td></tr>
+  <tr><td class="label">Placeholder notas</td><td class="text">Notas (acabado, detalles...)</td><td class="note">Textarea por item</td></tr>
+  <tr><td class="label">Total — etiqueta</td><td class="text">TOTAL</td><td class="note"></td></tr>
+  <tr><td class="label">Artículo singular</td><td class="text">artículo</td><td class="note">Ej: 1 artículo</td></tr>
+  <tr><td class="label">Artículos plural</td><td class="text">artículos</td><td class="note">Ej: 3 artículos</td></tr>
+  <tr><td class="label">Botón checkout</td><td class="text">Hacer pedido →</td><td class="note"></td></tr>
+</table>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<section id="checkout">
+<h2>10. Checkout / Formulario de pedido (/checkout)</h2>
+
+<h3>Cabecera</h3>
+<table>
+  <tr><th>Elemento</th><th>Texto</th></tr>
+  <tr><td class="label">Enlace volver</td><td class="text">Volver al catálogo</td></tr>
+  <tr><td class="label">Etiqueta sección</td><td class="text">— Confirmación de pedido</td></tr>
+  <tr><td class="label">Título línea 1</td><td class="text">CONFIGURACIÓN INSTANTÁNEA</td></tr>
+  <tr><td class="label">Título línea 2</td><td class="text">LÍNEA DIRECTA CON EL TALLER</td></tr>
+  <tr><td class="label">Descripción</td><td class="text">Rellena los datos y pulsa confirmar. Se abrirá Telegram con tu pedido listo para enviar.</td></tr>
+</table>
+
+<h3>Resumen del pedido</h3>
+<table>
+  <tr><th>Elemento</th><th>Texto</th></tr>
+  <tr><td class="label">Título desplegable</td><td class="text">Resumen del pedido</td></tr>
+  <tr><td class="label">Envío — etiqueta</td><td class="text">Envío — {zona}</td></tr>
+</table>
+
+<h3>Formulario — Datos personales</h3>
+<table>
+  <tr><th>Elemento</th><th>Texto</th></tr>
+  <tr><td class="label">Sección título</td><td class="text">Tus datos</td></tr>
+  <tr><td class="label">Label nombre</td><td class="text">Nombre *</td></tr>
+  <tr><td class="label">Placeholder nombre</td><td class="text">Tu nombre completo</td></tr>
+  <tr><td class="label">Error nombre vacío</td><td class="text">Obligatorio</td></tr>
+  <tr><td class="label">Label contacto</td><td class="text">Email o teléfono español *</td></tr>
+  <tr><td class="label">Placeholder contacto</td><td class="text">tu@email.com  ó  612 345 678</td></tr>
+  <tr><td class="label">Error teléfono</td><td class="text">Teléfono español no válido (ej: 612 345 678)</td></tr>
+  <tr><td class="label">Error email</td><td class="text">Email no válido (ej: tu@email.com)</td></tr>
+  <tr><td class="label">Error genérico</td><td class="text">Introduce un email válido o teléfono español</td></tr>
+</table>
+
+<h3>Formulario — Método de entrega</h3>
+<table>
+  <tr><th>Elemento</th><th>Texto</th></tr>
+  <tr><td class="label">Label sección</td><td class="text">Método de entrega *</td></tr>
+  <tr><td class="label">Opción 1 — título</td><td class="text">EN MANO</td></tr>
+  <tr><td class="label">Opción 1 — descripción</td><td class="text">Sin coste</td></tr>
+  <tr><td class="label">Opción 1 — icono</td><td class="text">🤝</td></tr>
+  <tr><td class="label">Opción 2 — título</td><td class="text">ENVÍO</td></tr>
+  <tr><td class="label">Opción 2 — descripción</td><td class="text">Correos · Península</td></tr>
+  <tr><td class="label">Opción 2 — icono</td><td class="text">📦</td></tr>
+  <tr><td class="label">Label país</td><td class="text">País</td></tr>
+  <tr><td class="label">Campo país (readonly)</td><td class="text">España</td></tr>
+  <tr><td class="label">Label código postal</td><td class="text">Código postal *</td></tr>
+  <tr><td class="label">Placeholder CP</td><td class="text">28001</td></tr>
+  <tr><td class="label">Error zona no disponible — título</td><td class="text">Zona no disponible</td></tr>
+  <tr><td class="label">Error zona no disponible — desc</td><td class="text">De momento solo enviamos a Península. Escríbenos por Telegram si necesitas otro destino.</td></tr>
+  <tr><td class="label">Envío confirmado — zona</td><td class="text">Correos · {zona}</td></tr>
+</table>
+
+<h3>Formulario — Oficina Correos</h3>
+<table>
+  <tr><th>Elemento</th><th>Texto</th></tr>
+  <tr><td class="label">Label oficina</td><td class="text">Oficina de Correos</td></tr>
+  <tr><td class="label">Sufijo aproximada</td><td class="text">— zona aproximada</td></tr>
+  <tr><td class="label">Error sin selección</td><td class="text">Selecciona una Oficina de Correos</td></tr>
+  <tr><td class="label">Quitar selección</td><td class="text">× Quitar selección</td></tr>
+</table>
+
+<h3>Formulario — Notas y envío</h3>
+<table>
+  <tr><th>Elemento</th><th>Texto</th></tr>
+  <tr><td class="label">Label notas</td><td class="text">Notas (opcional)</td></tr>
+  <tr><td class="label">Placeholder notas</td><td class="text">Colores, detalles especiales, preferencias...</td></tr>
+  <tr><td class="label">Aviso Telegram</td><td class="text">Al confirmar, el bot nos envía tu pedido automáticamente. Te contactamos en menos de 1 hora.</td></tr>
+  <tr><td class="label">Botón confirmar</td><td class="text">Confirmar pedido →</td></tr>
+  <tr><td class="label">Botón enviando</td><td class="text">Enviando...</td></tr>
+  <tr><td class="label">Error envío</td><td class="text">No se pudo enviar el pedido. Inténtalo de nuevo o usa el enlace de abajo.</td></tr>
+  <tr><td class="label">Fallback Telegram</td><td class="text">Enviar manualmente por Telegram →</td></tr>
+</table>
+
+<h3>Confirmación de pedido enviado</h3>
+<table>
+  <tr><th>Elemento</th><th>Texto</th></tr>
+  <tr><td class="label">Emoji</td><td class="text">🏴‍☠️</td></tr>
+  <tr><td class="label">Título línea 1</td><td class="text">PEDIDO</td></tr>
+  <tr><td class="label">Título línea 2</td><td class="text">ENVIADO</td></tr>
+  <tr><td class="label">Subtítulo</td><td class="text">Te respondemos en menos de 1 hora</td></tr>
+  <tr><td class="label">Caja ID — etiqueta</td><td class="text">Tu número de pedido</td></tr>
+  <tr><td class="label">Caja ID — nota</td><td class="text">Guárdalo para consultar el estado en cualquier momento.</td></tr>
+  <tr><td class="label">Caja ID — enlace</td><td class="text">Ver estado del pedido →</td></tr>
+  <tr><td class="label">Próximos pasos — título</td><td class="text">Próximos pasos</td></tr>
+  <tr><td class="label">Próximos pasos — 01</td><td class="text">Recibirás respuesta por Telegram para confirmar detalles</td></tr>
+  <tr><td class="label">Próximos pasos — 02</td><td class="text">Abona el total por Bizum o transferencia bancaria</td></tr>
+  <tr><td class="label">Próximos pasos — 03</td><td class="text">Fabricamos en 3–7 días laborables</td></tr>
+  <tr><td class="label">Próximos pasos — 04</td><td class="text">Entrega o recogida acordada contigo</td></tr>
+  <tr><td class="label">Botón final</td><td class="text">Seguir explorando</td></tr>
+</table>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<section id="seguimiento">
+<h2>11. Seguimiento de pedido (/seguimiento)</h2>
+<table>
+  <tr><th>Elemento</th><th>Texto</th><th>Notas</th></tr>
+  <tr><td class="label">Enlace volver</td><td class="text">Volver al catálogo</td><td class="note"></td></tr>
+  <tr><td class="label">Etiqueta sección</td><td class="text">— Estado del pedido</td><td class="note"></td></tr>
+  <tr><td class="label">Título línea 1</td><td class="text">CONSULTA TU</td><td class="note">Color crema</td></tr>
+  <tr><td class="label">Título línea 2</td><td class="text">PEDIDO</td><td class="note">Color dorado</td></tr>
+  <tr><td class="label">Label número pedido</td><td class="text">Número de pedido</td><td class="note"></td></tr>
+  <tr><td class="label">Placeholder input</td><td class="text">LV-240604-A3K7</td><td class="note"></td></tr>
+  <tr><td class="label">Botón buscar</td><td class="text">Buscar</td><td class="note"></td></tr>
+  <tr><td class="label">Error formato</td><td class="text">Formato inválido — debe ser LV-YYMMDD-XXXX</td><td class="note"></td></tr>
+  <tr><td class="label">Estado: no encontrado — título</td><td class="text">Pedido no encontrado</td><td class="note"></td></tr>
+  <tr><td class="label">Estado: no encontrado — desc</td><td class="text">Comprueba que el ID es correcto. Si acabas de hacer el pedido, puede tardar unos minutos en aparecer.</td><td class="note"></td></tr>
+  <tr><td class="label">Estado: sistema no disponible — título</td><td class="text">Activando sistema</td><td class="note"></td></tr>
+  <tr><td class="label">Estado: sistema no disponible — desc</td><td class="text">El seguimiento de pedidos está siendo configurado. Escríbenos por Telegram para consultar el estado.</td><td class="note"></td></tr>
+  <tr><td class="label">Pedido — etiqueta ID</td><td class="text">Pedido</td><td class="note"></td></tr>
+  <tr><td class="label">Pedido — etiqueta fecha</td><td class="text">Realizado el</td><td class="note"></td></tr>
+  <tr><td class="label">Timeline — etiqueta</td><td class="text">Estado</td><td class="note"></td></tr>
+  <tr><td class="label">Estado 1</td><td class="text">💳 Pendiente de pago</td><td class="note"></td></tr>
+  <tr><td class="label">Estado 2</td><td class="text">✅ Pago recibido</td><td class="note"></td></tr>
+  <tr><td class="label">Estado 3</td><td class="text">🖨️ En producción</td><td class="note"></td></tr>
+  <tr><td class="label">Estado 4</td><td class="text">📦 Preparando envío</td><td class="note"></td></tr>
+  <tr><td class="label">Estado 5</td><td class="text">🚚 Enviado</td><td class="note"></td></tr>
+  <tr><td class="label">Estado 6</td><td class="text">🏠 Entregado</td><td class="note"></td></tr>
+  <tr><td class="label">Tracking number — etiqueta</td><td class="text">Tracking:</td><td class="note"></td></tr>
+  <tr><td class="label">Productos — etiqueta</td><td class="text">Productos</td><td class="note"></td></tr>
+</table>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<section id="legal">
+<h2>12. Aviso Legal (/legal)</h2>
+<table>
+  <tr><th>Elemento</th><th>Texto</th></tr>
+  <tr><td class="label">Enlace volver</td><td class="text">Volver</td></tr>
+  <tr><td class="label">Tab activo</td><td class="text">Aviso legal</td></tr>
+  <tr><td class="label">Tab inactivo</td><td class="text">Privacidad</td></tr>
+  <tr><td class="label">Etiqueta sección</td><td class="text">— Aviso Legal</td></tr>
+  <tr><td class="label">Título</td><td class="text">Información legal</td></tr>
+  <tr><td class="label">Sección 1 — título</td><td class="text">Titular</td></tr>
+  <tr><td class="label">Sección 1 — intro</td><td class="text">En cumplimiento de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y del Comercio Electrónico (LSSICE), se facilitan los siguientes datos:</td></tr>
+  <tr><td class="label">Titular</td><td class="text">Antony Pachas</td></tr>
+  <tr><td class="label">Actividad</td><td class="text">Fabricación y venta de accesorios impresos en 3D para juegos de cartas coleccionables</td></tr>
+  <tr><td class="label">Domicilio</td><td class="text">Barcelona, España</td></tr>
+  <tr><td class="label">Email</td><td class="text">hola@layervault.es</td></tr>
+  <tr><td class="label">Sección 2 — título</td><td class="text">Objeto y uso del sitio</td></tr>
+  <tr><td class="label">Sección 2 — texto</td><td class="text">LayerVault es una tienda de venta directa de accesorios fabricados bajo demanda mediante impresión 3D. Todos los productos se fabrican por encargo y de forma artesanal. Los pedidos se gestionan mediante Telegram y correo electrónico; el pago se realiza por Bizum o transferencia bancaria una vez confirmado el pedido.</td></tr>
+  <tr><td class="label">Sección 3 — título</td><td class="text">Propiedad intelectual</td></tr>
+  <tr><td class="label">Sección 3 — texto</td><td class="text">El diseño, imágenes, textos y modelos 3D publicados en este sitio son propiedad de LayerVault. Queda prohibida su reproducción, distribución o uso comercial sin autorización expresa.</td></tr>
+  <tr><td class="label">Sección 4 — título</td><td class="text">Envíos y devoluciones</td></tr>
+  <tr><td class="label">Sección 4 — texto</td><td class="text">Los envíos se realizan únicamente a Península mediante Correos iPaq domicilio. Dado que los productos se fabrican por encargo, no se admiten devoluciones salvo en caso de defecto de fabricación acreditado. En ese supuesto, contacta en los 7 días siguientes a la recepción a través de Telegram o email.</td></tr>
+  <tr><td class="label">Sección 5 — título</td><td class="text">Legislación aplicable</td></tr>
+  <tr><td class="label">Sección 5 — texto</td><td class="text">Las presentes condiciones se rigen por la legislación española. Para cualquier controversia, las partes se someten a los juzgados y tribunales de Barcelona.</td></tr>
+  <tr><td class="label">Última actualización</td><td class="text">Última actualización: junio 2026</td></tr>
+</table>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<section id="privacidad">
+<h2>13. Política de Privacidad (/privacidad)</h2>
+<table>
+  <tr><th>Elemento</th><th>Texto</th></tr>
+  <tr><td class="label">Etiqueta sección</td><td class="text">— Política de Privacidad</td></tr>
+  <tr><td class="label">Título</td><td class="text">Privacidad</td></tr>
+  <tr><td class="label">Sección 1 — título</td><td class="text">Responsable del tratamiento</td></tr>
+  <tr><td class="label">Responsable</td><td class="text">Antony Pachas</td></tr>
+  <tr><td class="label">Email</td><td class="text">hola@layervault.es</td></tr>
+  <tr><td class="label">Sección 2 — título</td><td class="text">Datos que recogemos</td></tr>
+  <tr><td class="label">Sección 2 — texto</td><td class="text">Únicamente los datos que tú proporcionas al realizar un pedido: nombre, dirección de email o teléfono, y código postal (cuando eliges envío). No se recogen datos de navegación, cookies propias ni se usa ningún sistema de analítica.</td></tr>
+  <tr><td class="label">Sección 3 — título</td><td class="text">Finalidad y base legitimadora</td></tr>
+  <tr><td class="label">Sección 3 — texto</td><td class="text">Tus datos se usan exclusivamente para gestionar y coordinar tu pedido. La base legal es la ejecución del contrato de compraventa (art. 6.1.b RGPD).</td></tr>
+  <tr><td class="label">Sección 4 — título</td><td class="text">Conservación</td></tr>
+  <tr><td class="label">Sección 4 — texto</td><td class="text">Los datos se conservan durante el tiempo necesario para gestionar el pedido y, en su caso, atender posibles reclamaciones (máximo 1 año desde la entrega).</td></tr>
+  <tr><td class="label">Sección 5 — título</td><td class="text">Cesión a terceros</td></tr>
+  <tr><td class="label">Sección 5 — texto</td><td class="text">No se ceden datos a terceros salvo a Correos España, exclusivamente para gestionar el envío cuando lo solicitas, y en cumplimiento de obligaciones legales. Los pedidos se comunican a través de Telegram; al usar ese canal, se aplica la política de privacidad de Telegram (telegram.org).</td></tr>
+  <tr><td class="label">Sección 6 — título</td><td class="text">Tus derechos</td></tr>
+  <tr><td class="label">Sección 6 — texto</td><td class="text">Puedes ejercer tus derechos de acceso, rectificación, supresión, oposición, limitación y portabilidad escribiendo a hola@layervault.es. Si consideras que el tratamiento no es conforme, puedes reclamar ante la Agencia Española de Protección de Datos (aepd.es).</td></tr>
+</table>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<section id="404">
+<h2>14. Página 404</h2>
+<table>
+  <tr><th>Elemento</th><th>Texto</th></tr>
+  <tr><td class="label">Etiqueta</td><td class="text">— Error 404</td></tr>
+  <tr><td class="label">Número grande</td><td class="text">404</td></tr>
+  <tr><td class="label">Título</td><td class="text">Pieza no encontrada</td></tr>
+  <tr><td class="label">Descripción</td><td class="text">Esta página no existe o se ha movido.</td></tr>
+  <tr><td class="label">Botón inicio</td><td class="text">Ir al inicio</td></tr>
+  <tr><td class="label">Botón catálogo</td><td class="text">Ver catálogo</td></tr>
+</table>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<section id="productos">
+<h2>15. Productos del catálogo</h2>
+<table>
+  <tr>
+    <th>SKU</th>
+    <th>Nombre</th>
+    <th>Tagline</th>
+    <th>Descripción</th>
+    <th>Características</th>
+    <th>Precio</th>
+    <th>Badge</th>
+  </tr>
+  <tr>
+    <td class="label">LDB</td>
+    <td class="text">Leader Display Box</td>
+    <td class="text">Haz que tu Líder imponga respeto.</td>
+    <td class="text">Haz que tu Líder imponga respeto antes de empezar la partida. Ventana frontal de ajuste perfecto con barra WANTED deslizante integrada en relieve.</td>
+    <td class="text">
+      • Ventana frontal para la carta Líder<br>
+      • Barra WANTED deslizante en relieve<br>
+      • Ajuste milimétrico con doble funda<br>
+      • Color a elegir sin coste extra
+    </td>
+    <td class="text">20€</td>
+    <td><span class="badge badge-gold">Más vendida</span></td>
+  </tr>
+  <tr>
+    <td class="label">SHV</td>
+    <td class="text">Shutter Vault</td>
+    <td class="text">Cero vuelcos. Cero tirones. Desliza y juega.</td>
+    <td class="text">Cero vuelcos. Cero tirones. Cierre técnico de persiana enrollable y eyector mecánico inferior para acceder a tus mejores cartas sin riesgo.</td>
+    <td class="text">
+      • Cierre de persiana enrollable anti-polvo<br>
+      • Eyector mecánico inferior integrado<br>
+      • Ventana de exhibición frontal<br>
+      • Laterales estriados antideslizantes
+    </td>
+    <td class="text">20€</td>
+    <td><span class="badge badge-gray">Toploader</span></td>
+  </tr>
+  <tr>
+    <td class="label">TCV</td>
+    <td class="text">Tactical Vault</td>
+    <td class="text">El búnker definitivo para colecciones de élite.</td>
+    <td class="text">Maletín de alta densidad para Mini Snaps y Toploaders: cero holguras, cero movimiento. Texturizado Fuzzy Skin antideslizante, logotipo integrado en la estructura y soporte de exposición trasero incluido.</td>
+    <td class="text">
+      • Fila completa de Mini Snaps o Toploaders<br>
+      • Texturizado Fuzzy Skin antideslizante<br>
+      • Logo integrado en la estructura (no pegatina)<br>
+      • Soporte de exposición trasero incluido
+    </td>
+    <td class="text">25€</td>
+    <td><span class="badge badge-gold">Premium</span></td>
+  </tr>
+  <tr>
+    <td class="label">ORF</td>
+    <td class="text">Organizador de fundas</td>
+    <td class="text">30 toploaders + 45 semirígidas + cientos de penny.</td>
+    <td class="text">30 toploaders + 45 semirígidas + cientos de penny. Todo clasificado, todo a mano.</td>
+    <td class="text">
+      • 3 compartimentos específicos TCG<br>
+      • 30 toploaders en vertical<br>
+      • 45 fundas semirígidas<br>
+      • Color a elegir sin coste extra
+    </td>
+    <td class="text">12€</td>
+    <td><span class="badge badge-gray">Único</span></td>
+  </tr>
+  <tr>
+    <td class="label">A60</td>
+    <td class="text">Aplastador 60 cartas</td>
+    <td class="text">Elimina el aire. Aplana deformaciones.</td>
+    <td class="text">Elimina el aire y aplana deformaciones. Compatible con doble enfundado. Para mazos estándar sin hardware adicional.</td>
+    <td class="text">
+      • Compatible con doble enfundado<br>
+      • Marco grueso y robusto<br>
+      • Sin hardware adicional
+    </td>
+    <td class="text">20€</td>
+    <td><span class="badge badge-gray">60 cartas</span></td>
+  </tr>
+  <tr>
+    <td class="label">A100</td>
+    <td class="text">Aplastador 100 cartas</td>
+    <td class="text">Para doble enfundado y cartas premium.</td>
+    <td class="text">Para doble enfundado y cartas premium que necesitan más espacio. Ideal para coleccionistas exigentes.</td>
+    <td class="text">
+      • Capacidad 100 cartas<br>
+      • Ideal para coleccionistas<br>
+      • Sin hardware adicional
+    </td>
+    <td class="text">25€</td>
+    <td><span class="badge badge-red">Pro 100</span></td>
+  </tr>
+  <tr>
+    <td class="label">SKV</td>
+    <td class="text">Stack Vault</td>
+    <td class="text">Organiza por colores. Apila sin límites.</td>
+    <td class="text">Dile adiós al cartón feo. Sistema modular apilable con paredes rígidas para pool, colecciones y cubos completos. Elige el tamaño que necesitas.</td>
+    <td class="text">
+      • Diseño apilable (stackable) estable<br>
+      • Paredes rígidas bajo carga continua<br>
+      • Código de color por facción disponible<br>
+      • Color a elegir sin coste extra
+    </td>
+    <td class="text">
+      Pequeña (~100 cartas): 10€<br>
+      Mediana (~200 cartas): 12€<br>
+      Grande (~350 cartas): 15€
+    </td>
+    <td><span class="badge badge-gray">—</span></td>
+  </tr>
+  <tr>
+    <td class="label">LLV</td>
+    <td class="text">Llaveros</td>
+    <td class="text">Diseños bicolor exclusivos One Piece.</td>
+    <td class="text">Diseños bicolor exclusivos con argolla metálica incluida. Personaliza con los colores de tu facción favorita.</td>
+    <td class="text">
+      • Diseños personalizables<br>
+      • Argolla metálica incluida<br>
+      • Bicolor sin coste extra
+    </td>
+    <td class="text">4€</td>
+    <td><span class="badge badge-gray">One Piece</span></td>
+  </tr>
+</table>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<section id="colores-lista">
+<h2>16. Colores disponibles (PLA Basic)</h2>
+<table>
+  <tr><th>ID</th><th>Nombre</th><th>Hex</th><th>Muestra</th><th>Material</th></tr>
+  <tr>
+    <td class="label">negro</td>
+    <td class="text">Negro</td>
+    <td class="text">#1A1A1A</td>
+    <td><span style="display:inline-block;width:24px;height:24px;border-radius:50%;background:#1A1A1A;border:1px solid #444;"></span></td>
+    <td class="text">PLA Basic</td>
+  </tr>
+  <tr>
+    <td class="label">blanco-jade</td>
+    <td class="text">Blanco jade</td>
+    <td class="text">#F0EFE8</td>
+    <td><span style="display:inline-block;width:24px;height:24px;border-radius:50%;background:#F0EFE8;border:1px solid #444;"></span></td>
+    <td class="text">PLA Basic</td>
+  </tr>
+  <tr>
+    <td class="label">rojo</td>
+    <td class="text">Rojo</td>
+    <td class="text">#CC2200</td>
+    <td><span style="display:inline-block;width:24px;height:24px;border-radius:50%;background:#CC2200;border:1px solid #444;"></span></td>
+    <td class="text">PLA Basic</td>
+  </tr>
+  <tr>
+    <td class="label">azul</td>
+    <td class="text">Azul</td>
+    <td class="text">#1E6FD9</td>
+    <td><span style="display:inline-block;width:24px;height:24px;border-radius:50%;background:#1E6FD9;border:1px solid #444;"></span></td>
+    <td class="text">PLA Basic</td>
+  </tr>
+  <tr>
+    <td class="label">purpura</td>
+    <td class="text">Púrpura</td>
+    <td class="text">#6B2D8B</td>
+    <td><span style="display:inline-block;width:24px;height:24px;border-radius:50%;background:#6B2D8B;border:1px solid #444;"></span></td>
+    <td class="text">PLA Basic</td>
+  </tr>
+  <tr>
+    <td class="label">verde-bambu</td>
+    <td class="text">Verde bambú</td>
+    <td class="text">#4A7C59</td>
+    <td><span style="display:inline-block;width:24px;height:24px;border-radius:50%;background:#4A7C59;border:1px solid #444;"></span></td>
+    <td class="text">PLA Basic</td>
+  </tr>
+  <tr>
+    <td class="label">amarillo</td>
+    <td class="text">Amarillo</td>
+    <td class="text">#F5C800</td>
+    <td><span style="display:inline-block;width:24px;height:24px;border-radius:50%;background:#F5C800;border:1px solid #444;"></span></td>
+    <td class="text">PLA Basic</td>
+  </tr>
+</table>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<section id="categorias">
+<h2>17. Categorías del catálogo</h2>
+<table>
+  <tr><th>ID</th><th>Emoji</th><th>Label (texto visible)</th></tr>
+  <tr><td class="label">all</td>        <td>🏴‍☠️</td> <td class="text">Todo</td></tr>
+  <tr><td class="label">deckbox</td>    <td>🃏</td>   <td class="text">Deckboxes</td></tr>
+  <tr><td class="label">storage</td>    <td>📦</td>   <td class="text">Almacenaje</td></tr>
+  <tr><td class="label">tools</td>      <td>🔨</td>   <td class="text">Herramientas</td></tr>
+  <tr><td class="label">accessories</td><td>🗝️</td>  <td class="text">Accesorios</td></tr>
+</table>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<section>
+<h2>Datos de contacto globales</h2>
+<table>
+  <tr><th>Variable</th><th>Valor</th></tr>
+  <tr><td class="label">Telegram username</td><td class="text">Elpachas_04</td></tr>
+  <tr><td class="label">Telegram URL</td><td class="text">https://t.me/Elpachas_04</td></tr>
+  <tr><td class="label">Email de contacto</td><td class="text">hola@layervault.es</td></tr>
+  <tr><td class="label">Métodos de pago</td><td class="text">Bizum · Transferencia bancaria</td></tr>
+  <tr><td class="label">Plazo de entrega</td><td class="text">3–7 días laborables</td></tr>
+  <tr><td class="label">Horario respuesta</td><td class="text">Lunes a sábado · Menos de 1 hora</td></tr>
+</table>
+</section>
+
+</body>
+</html>
