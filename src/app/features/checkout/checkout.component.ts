@@ -169,17 +169,19 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
 
               <div>
                 <label class="block font-mono text-[10px] uppercase tracking-widest text-lv-cream/40 mb-2">
-                  Teléfono <span class="normal-case opacity-50">(opcional)</span>
+                  Teléfono *
                 </label>
                 <input type="tel"
-                  [class]="inputClass(touched.phone && !!form.customerPhone.trim() && !isPhoneValid())"
+                  [class]="inputClass(touched.phone && !isPhoneValid())"
                   placeholder="612 345 678"
                   [attr.maxlength]="PHONE_MAX"
                   autocomplete="tel"
                   [(ngModel)]="form.customerPhone"
                   (blur)="touched.phone = true" />
-                @if (touched.phone && form.customerPhone.trim() && !isPhoneValid()) {
-                  <p class="text-red-400/80 font-mono text-[10px] uppercase tracking-wider mt-1.5">Teléfono español no válido (ej: 612 345 678)</p>
+                @if (touched.phone && !isPhoneValid()) {
+                  <p class="text-red-400/80 font-mono text-[10px] uppercase tracking-wider mt-1.5">
+                    {{ form.customerPhone.trim() ? 'Teléfono español no válido (ej: 612 345 678)' : 'Obligatorio' }}
+                  </p>
                 }
               </div>
 
@@ -408,7 +410,7 @@ export class CheckoutComponent implements OnInit {
 
   readonly steps = [
     { n: '01', text: 'Te contactamos por email para confirmar detalles y coordinar el pago' },
-    { n: '02', text: 'Abona el total por Bizum o transferencia bancaria' },
+    { n: '02', text: 'Abona el total por Bizum' },
     { n: '03', text: 'Fabricamos en 3–7 días laborables' },
     { n: '04', text: 'Entrega o recogida acordada contigo' },
   ];
@@ -479,7 +481,7 @@ export class CheckoutComponent implements OnInit {
 
   isFormValid(): boolean {
     if (!this.form.customerName.trim() || !this.isEmailValid()) return false;
-    if (this.form.customerPhone.trim() && !this.isPhoneValid()) return false;
+    if (!this.isPhoneValid()) return false;
     if (this.cartService.cartItems().length === 0) return false;
     if (this.form.deliveryMethod === 'shipping') {
       if (!this.isPostalCodeValid() || this.shippingBlocked() || !this.shippingInfo()) return false;
@@ -563,7 +565,7 @@ export class CheckoutComponent implements OnInit {
     const payload = {
       customerName:  this.form.customerName,
       customerEmail: this.form.customerEmail,
-      customerPhone: this.form.customerPhone.trim() || undefined,
+      customerPhone: this.form.customerPhone.trim(),
       deliveryMethod: this.form.deliveryMethod,
       postalCode:      this.form.deliveryMethod === 'shipping' ? this.form.postalCode : undefined,
       shippingZone:    info?.zone,

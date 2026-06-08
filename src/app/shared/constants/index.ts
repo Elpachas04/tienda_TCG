@@ -6,6 +6,6 @@ export const NOTES_MAX = 500;
 
 export const BASE_PILL = 'font-mono text-xs uppercase tracking-wider rounded-full px-5 py-2 transition-all duration-200 cursor-pointer';
 
-export const TELEGRAM_USERNAME = 'Elpachas_04';
-export const TELEGRAM_URL      = `https://t.me/${TELEGRAM_USERNAME}`;
-export const CONTACT_EMAIL     = 'hola@layervault.es';
+export const WHATSAPP_PHONE = '644794412';
+export const WHATSAPP_URL   = `https://wa.me/34${WHATSAPP_PHONE}`;
+export const CONTACT_EMAIL  = 'hola@layervault.es';

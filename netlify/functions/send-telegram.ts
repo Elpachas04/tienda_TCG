@@ -69,7 +69,7 @@ interface ValidatedOrder {
   orderId:        string;
   customerName:   string;
   customerEmail:  string;
-  customerPhone?: string;
+  customerPhone: string;
   deliveryMethod: "pickup" | "shipping";
   postalCode?:     string;
   shippingZone?:   string;
@@ -94,7 +94,7 @@ function validateOrder(body: unknown, orderId: string): ValidatedOrder {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(customerEmail)) {
     throw new ValidationError("Email no válido");
   }
-  const customerPhone = sanitizeOptionalStr(raw["customerPhone"], 20);
+  const customerPhone = sanitizeStr(raw["customerPhone"], 20, "Teléfono");
 
   if (raw["deliveryMethod"] !== "pickup" && raw["deliveryMethod"] !== "shipping") {
     throw new ValidationError("Método de entrega inválido");
@@ -207,7 +207,7 @@ function buildMessage(order: ValidatedOrder): string {
     ``,
     `👤 <b>Cliente:</b> ${escapeHtml(order.customerName)}`,
     `📧 <b>Email:</b> ${escapeHtml(order.customerEmail)}`,
-    ...(order.customerPhone ? [`📞 <b>Teléfono:</b> ${escapeHtml(order.customerPhone)}`] : []),
+    `📞 <b>Teléfono:</b> ${escapeHtml(order.customerPhone)}`,
     `🚚 <b>Entrega:</b> ${deliveryLabel}`,
   ];
 
@@ -269,7 +269,7 @@ async function writeOrderToNotion(order: ValidatedOrder, token: string, dbId: st
         "ID Pedido": { title: [{ text: { content: order.orderId } }] },
         "Estado":    { select: { name: "Pendiente de pago" } },
         "Cliente":   { rich_text: [{ text: { content: order.customerName } }] },
-        "Contacto":  { rich_text: [{ text: { content: order.customerPhone ? `${order.customerEmail} / ${order.customerPhone}` : order.customerEmail } }] },
+        "Contacto":  { rich_text: [{ text: { content: `${order.customerEmail} / ${order.customerPhone}` } }] },
         "Total":     { number: order.totalAmount },
         "Entrega":   { select: { name: order.deliveryMethod === "pickup" ? "En mano" : "Envío" } },
         "Productos": { rich_text: [{ text: { content: productosSummary } }] },

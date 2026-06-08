@@ -183,8 +183,8 @@
   "settings": {
     "shopName": "LayerVault",
     "city": "",
-    "telegramUsername": "Elpachas_04",
-    "paymentMethods": ["Bizum", "Transferencia bancaria"],
+    "whatsappPhone": "644794412",
+    "paymentMethods": ["Bizum"],
     "deliveryDays": "3-7 días laborables"
   }
 }
