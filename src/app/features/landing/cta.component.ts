@@ -38,10 +38,6 @@ import { WHATSAPP_URL, CONTACT_EMAIL } from '../../shared/constants';
           <span class="text-lv-gold block">SIN COMPROMISO</span>
         </h2>
 
-        <p lvReveal class="font-mono text-xs uppercase tracking-wide text-lv-cream/40 max-w-md leading-relaxed">
-          Te respondemos en menos de 1 hora.<br>
-          Cada pieza impresa cuando la pides, como la quieres.
-        </p>
 
         <div lvReveal class="flex gap-4 flex-wrap justify-center">
           <a [href]="whatsappUrl" target="_blank" rel="noopener noreferrer"
