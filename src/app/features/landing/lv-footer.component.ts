@@ -8,7 +8,7 @@ import { RouterLink } from '@angular/router';
   imports: [RouterLink],
   host: { class: 'block' },
   template: `
-    <footer class="border-t border-lv-gold/10 py-6 px-4 sm:px-6 pb-24 sm:pb-8">
+    <footer class="border-t border-lv-gold/10 py-6 px-4 sm:px-6">
       <div class="max-w-[1600px] mx-auto flex flex-wrap items-center gap-x-6 gap-y-2">
 
         <span class="font-display text-lv-gold text-base">LayerVault</span>

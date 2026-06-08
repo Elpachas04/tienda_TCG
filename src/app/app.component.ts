@@ -34,7 +34,7 @@ export class AppComponent {
 
   readonly isLanding = computed(() => {
     const url = this.currentUrl();
-    return url === '/' || url === '';
+    return url === '/' || url === '' || url.startsWith('/#');
   });
 
   readonly isCheckout = computed(() => this.currentUrl().startsWith('/checkout'));
