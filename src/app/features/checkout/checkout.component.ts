@@ -9,7 +9,7 @@ import { NOTES_MAX, CONTACT_EMAIL } from '../../shared/constants';
 
 const NAME_MAX  = 100;
 const EMAIL_MAX = 100;
-const PHONE_MAX = 20;
+const PHONE_MAX = 12;
 const INPUT = 'w-full bg-white/[0.03] border rounded-xl px-4 py-3 font-body text-base text-lv-cream placeholder-lv-cream/20 focus:outline-none transition-colors';
 
 function isSpanishPhone(v: string): boolean {
