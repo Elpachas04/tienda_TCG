@@ -7,7 +7,8 @@
   NPM_FLAGS = "--include=dev"
 
 [functions]
-  directory = "netlify/functions"
+  directory      = "netlify/functions"
+  node_bundler   = "esbuild"
 
 # ── Security headers ────────────────────────────────────────────────────────
 [[headers]]

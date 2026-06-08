@@ -1,27 +1,69 @@
-# Tcg3dShop
+# LayerVault — Tienda TCG 3D · Barcelona
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.21.
+Tienda web de accesorios impresos en 3D para One Piece TCG. Vendedor único. Los pedidos llegan por Telegram y email de confirmación automático.
 
-## Development server
+## Stack
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+- **Angular 18** — standalone components + signals
+- **TailwindCSS 3** — tokens `lv-*` (lv-gold, lv-cream, lv-black…)
+- **Netlify** — hosting, Functions, SSR
+- **Brevo** — email de confirmación al cliente
+- **Notion** — base de datos de pedidos
+- **Telegram Bot** — notificación instantánea al vendedor
+- **Cloudinary** — imágenes de producto
 
-## Code scaffolding
+## Desarrollo local
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+```bash
+npm install
+npm start          # http://localhost:4200
+```
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+```bash
+ng build --configuration production
+```
 
-## Running unit tests
+## Variables de entorno
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Ver `.env.example` en la raíz. Necesarias en Netlify:
 
-## Running end-to-end tests
+```
+TELEGRAM_BOT_TOKEN
+TELEGRAM_CHAT_ID
+NOTION_TOKEN
+NOTION_DATABASE_ID
+BREVO_API_KEY
+```
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+## Flujo de pedido
 
-## Further help
+1. Cliente rellena checkout → email (obligatorio) + teléfono (opcional)
+2. `POST /api/order` → Netlify Function `send-telegram.ts`
+   - Notifica por Telegram al vendedor
+   - Escribe entrada en Notion
+3. `POST /api/confirmation` → Netlify Function `send-confirmation.ts`
+   - Envía email de confirmación al cliente via Brevo
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## Estructura
+
+```
+src/app/
+├── core/
+│   ├── models/       product · cart-item · order · oficina
+│   └── services/     catalog · cart · oficina · cloudinary
+├── features/
+│   ├── landing/      hero · colors-process · cta · footer · navbar · product-card
+│   ├── catalog/      catalog · product-detail
+│   ├── checkout/     checkout
+│   ├── tracking/     tracking
+│   └── legal/        legal
+└── shared/
+    ├── components/   cart-drawer · color-picker · telegram-fab
+    ├── directives/   card-glow · reveal
+    └── constants/    index
+netlify/
+└── functions/        send-telegram · send-confirmation · shipping-price · get-order-status
+load-tests/           Artillery — escenarios y reportes de rendimiento
+```
