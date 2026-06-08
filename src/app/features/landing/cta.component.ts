@@ -60,9 +60,6 @@ import { WHATSAPP_URL, CONTACT_EMAIL } from '../../shared/constants';
           </a>
         </div>
 
-        <p lvReveal class="font-mono text-[10px] uppercase tracking-widest text-lv-cream/30">
-          Te respondemos lo antes posible
-        </p>
 
       </div>
     </section>
