@@ -124,7 +124,7 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
             <div class="text-4xl">⚙️</div>
             <p class="font-display text-xl text-lv-cream uppercase tracking-wide">Activando sistema</p>
             <p class="font-mono text-xs text-lv-cream/30 leading-relaxed">
-              El seguimiento de pedidos está siendo configurado. Escríbenos por Telegram para consultar el estado.
+              El seguimiento de pedidos está siendo configurado. Escríbenos a hola@layervault.es para consultar el estado.
             </p>
           </div>
         }

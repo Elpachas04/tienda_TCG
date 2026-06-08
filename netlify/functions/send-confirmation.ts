@@ -33,11 +33,12 @@ const handler: Handler = async (event: HandlerEvent) => {
     return { statusCode: 400, body: JSON.stringify({ error: "JSON invalido" }) };
   }
 
-  const { customerName, customerEmail, items, deliveryLine, total, orderId } = body as {
+  const { customerName, customerEmail, items, deliveryLine, oficina, total, orderId } = body as {
     customerName:  string;
     customerEmail: string;
     items:         { name: string; qty: number; variant?: string; color?: string; price: number }[];
     deliveryLine:  string;
+    oficina?:      { nombre: string; direccion: string; codigoPostal: string; localidad: string };
     total:         number;
     orderId:       string;
   };
@@ -46,7 +47,7 @@ const handler: Handler = async (event: HandlerEvent) => {
     return { statusCode: 400, body: JSON.stringify({ error: "Datos incompletos" }) };
   }
 
-  const trackingUrl = orderId ? `${SITE_URL}/seguimiento?ref=${encodeURIComponent(orderId)}` : `${SITE_URL}/seguimiento`;
+  const trackingUrl = orderId ? `${SITE_URL}/seguimiento?id=${encodeURIComponent(orderId)}` : `${SITE_URL}/seguimiento`;
 
   const itemRows = (items as { name: string; qty: number; variant?: string; color?: string; price: number }[])
     .map(i => {
@@ -64,7 +65,7 @@ const handler: Handler = async (event: HandlerEvent) => {
     }).join("");
 
   const steps = [
-    ["01", "Te contactamos por Telegram para confirmar detalles"],
+    ["01", "Te contactamos por email para confirmar detalles y coordinar el pago"],
     ["02", "Abonas el total por Bizum o transferencia"],
     ["03", "Fabricamos en 3&ndash;7 d&iacute;as laborables"],
     ["04", "Entrega o recogida acordada contigo"],
@@ -105,7 +106,7 @@ const handler: Handler = async (event: HandlerEvent) => {
 
             <p style="margin:0 0 24px;font-size:14px;color:#aaa;line-height:1.6;">
               Hola <strong style="color:#f0f0f0;">${esc(customerName)}</strong>,<br>
-              hemos recibido tu pedido. Te respondemos por Telegram en menos de 1 hora para coordinar el pago y los detalles.
+              hemos recibido tu pedido. Te contactamos por email en menos de 24 horas para coordinar el pago y los detalles.
             </p>
 
             <!-- Items -->
@@ -113,12 +114,20 @@ const handler: Handler = async (event: HandlerEvent) => {
               ${itemRows}
             </table>
 
-            <!-- Entrega + Total -->
+            <!-- Entrega + Oficina + Total -->
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
               <tr>
                 <td style="padding:8px 0;font-size:12px;color:#888;text-transform:uppercase;letter-spacing:1px;">Entrega</td>
                 <td style="padding:8px 0;font-size:13px;color:#f0f0f0;text-align:right;">${esc(deliveryLine)}</td>
               </tr>
+              ${oficina ? `
+              <tr>
+                <td colspan="2" style="padding:8px 12px;border-radius:8px;background:#111118;border-left:2px solid #C9A84C;">
+                  <p style="margin:0;font-size:12px;color:#C9A84C;font-family:'Barlow',Arial,sans-serif;text-transform:uppercase;letter-spacing:1px;">🏣 Oficina de Correos</p>
+                  <p style="margin:4px 0 0;font-size:13px;color:#f0f0f0;font-family:'Barlow',Arial,sans-serif;">${esc(oficina.nombre)}</p>
+                  <p style="margin:2px 0 0;font-size:12px;color:#888;font-family:'Barlow',Arial,sans-serif;">${esc(oficina.direccion)}, ${esc(oficina.codigoPostal)} ${esc(oficina.localidad)}</p>
+                </td>
+              </tr>` : ""}
               <tr>
                 <td style="padding:12px 0;font-size:13px;color:#888;text-transform:uppercase;letter-spacing:1px;border-top:1px solid #2a2a2a;"><strong>Total</strong></td>
                 <td style="padding:12px 0;font-size:22px;color:#C9A84C;text-align:right;font-family:Impact,Arial,sans-serif;border-top:1px solid #2a2a2a;">
@@ -128,11 +137,39 @@ const handler: Handler = async (event: HandlerEvent) => {
             </table>
 
             ${orderId ? `
+            <!-- Bloque Bizum -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#111118;border-radius:12px;margin-bottom:28px;border:1px solid #332b15;">
+              <tr><td style="padding:20px 24px;">
+                <p style="margin:0 0 12px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#C9A84C;">Pago</p>
+                <p style="margin:0 0 14px;font-size:14px;color:#aaa;line-height:1.5;">Realiza el pago para confirmar tu pedido</p>
+
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:10px;">
+                  <tr>
+                    <td style="padding:12px 16px;background:#1a1a1a;border-radius:8px;border:1px solid #2a2a2a;">
+                      <p style="margin:0 0 3px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#888;">Bizum al</p>
+                      <p style="margin:0;font-family:Impact,Arial,sans-serif;font-size:26px;letter-spacing:4px;color:#f0f0f0;">674 012 922</p>
+                    </td>
+                  </tr>
+                </table>
+
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;">
+                  <tr>
+                    <td style="padding:12px 16px;background:#1a1a1a;border-radius:8px;border:1px solid #332b15;">
+                      <p style="margin:0 0 3px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#888;">Concepto obligatorio</p>
+                      <a href="${trackingUrl}" style="font-family:Impact,Arial,sans-serif;font-size:20px;letter-spacing:3px;color:#C9A84C;text-decoration:none;">${esc(orderId)}</a>
+                    </td>
+                  </tr>
+                </table>
+
+                <p style="margin:0;font-size:11px;color:#555;font-style:italic;">Confirmo recepci&oacute;n en menos de 1 hora, lunes a s&aacute;bado</p>
+              </td></tr>
+            </table>
+
             <!-- Referencia -->
             <table width="100%" cellpadding="0" cellspacing="0" style="background:#111118;border-radius:12px;margin-bottom:20px;">
               <tr><td style="padding:16px 24px;">
                 <p style="margin:0 0 4px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#888;">N&uacute;mero de pedido</p>
-                <p style="margin:0;font-family:Impact,Arial,sans-serif;font-size:22px;letter-spacing:2px;color:#C9A84C;">${esc(orderId)}</p>
+                <a href="${trackingUrl}" style="font-family:Impact,Arial,sans-serif;font-size:22px;letter-spacing:2px;color:#C9A84C;text-decoration:none;">${esc(orderId)}</a>
               </td></tr>
             </table>
 

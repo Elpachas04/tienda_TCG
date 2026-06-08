@@ -59,7 +59,7 @@ import { CONTACT_EMAIL } from '../../shared/constants';
             <section class="space-y-3">
               <h2 class="font-display text-xl text-lv-gold uppercase">Objeto y uso del sitio</h2>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
-                LayerVault es una tienda de venta directa de accesorios fabricados bajo demanda mediante impresión 3D. Todos los productos se fabrican por encargo y de forma artesanal. Los pedidos se gestionan mediante Telegram y correo electrónico; el pago se realiza por Bizum o transferencia bancaria una vez confirmado el pedido.
+                LayerVault es una tienda de venta directa de accesorios fabricados bajo demanda mediante impresión 3D. Todos los productos se fabrican por encargo y de forma artesanal. Los pedidos se gestionan mediante correo electrónico; el pago se realiza por Bizum o transferencia bancaria una vez confirmado el pedido.
               </p>
             </section>
 
@@ -73,7 +73,7 @@ import { CONTACT_EMAIL } from '../../shared/constants';
             <section class="space-y-3">
               <h2 class="font-display text-xl text-lv-gold uppercase">Envíos y devoluciones</h2>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
-                Los envíos se realizan únicamente a Península mediante Correos iPaq domicilio. Dado que los productos se fabrican por encargo, no se admiten devoluciones salvo en caso de defecto de fabricación acreditado. En ese supuesto, contacta en los 7 días siguientes a la recepción a través de Telegram o email.
+                Los envíos se realizan únicamente a Península mediante Correos iPaq domicilio. Dado que los productos se fabrican por encargo, no se admiten devoluciones salvo en caso de defecto de fabricación acreditado. En ese supuesto, contacta en los 7 días siguientes a la recepción por email a hola@layervault.es.
               </p>
             </section>
 
@@ -104,7 +104,7 @@ import { CONTACT_EMAIL } from '../../shared/constants';
             <section class="space-y-3">
               <h2 class="font-display text-xl text-lv-gold uppercase">Datos que recogemos</h2>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
-                Únicamente los datos que tú proporcionas al realizar un pedido: nombre, dirección de email o teléfono, y código postal (cuando eliges envío). No se recogen datos de navegación, cookies propias ni se usa ningún sistema de analítica.
+                Únicamente los datos que tú proporcionas al realizar un pedido: nombre, dirección de email (obligatorio), teléfono (opcional) y código postal (cuando eliges envío). No se recogen datos de navegación, cookies propias ni se usa ningún sistema de analítica.
               </p>
             </section>
 
@@ -125,7 +125,7 @@ import { CONTACT_EMAIL } from '../../shared/constants';
             <section class="space-y-3">
               <h2 class="font-display text-xl text-lv-gold uppercase">Cesión a terceros</h2>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
-                No se ceden datos a terceros salvo a Correos España, exclusivamente para gestionar el envío cuando lo solicitas, y en cumplimiento de obligaciones legales. Los pedidos se comunican a través de Telegram; al usar ese canal, se aplica la política de privacidad de Telegram (telegram.org).
+                No se ceden datos a terceros salvo a Correos España, exclusivamente para gestionar el envío cuando lo solicitas, y en cumplimiento de obligaciones legales.
               </p>
             </section>
 
