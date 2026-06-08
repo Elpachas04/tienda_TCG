@@ -9,7 +9,7 @@ import { NOTES_MAX, CONTACT_EMAIL } from '../../shared/constants';
 
 const NAME_MAX  = 100;
 const EMAIL_MAX = 100;
-const PHONE_MAX = 12;
+const PHONE_MAX = 9;
 const INPUT = 'w-full bg-white/[0.03] border rounded-xl px-4 py-3 font-body text-base text-lv-cream placeholder-lv-cream/20 focus:outline-none transition-colors';
 
 function isSpanishPhone(v: string): boolean {
@@ -174,9 +174,9 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                 <input type="tel"
                   [class]="inputClass(touched.phone && !isPhoneValid())"
                   placeholder="612 345 678"
-                  [attr.maxlength]="PHONE_MAX"
                   autocomplete="tel"
-                  [(ngModel)]="form.customerPhone"
+                  [value]="form.customerPhone"
+                  (input)="onPhoneInput($event)"
                   (blur)="touched.phone = true" />
                 @if (touched.phone && !isPhoneValid()) {
                   <p class="text-red-400/80 font-mono text-[10px] uppercase tracking-wider mt-1.5">
@@ -419,6 +419,15 @@ export class CheckoutComponent implements OnInit {
 
   isEmailValid():      boolean { return isValidEmail(this.form.customerEmail.trim()); }
   isPhoneValid():      boolean { return isSpanishPhone(this.form.customerPhone.trim()); }
+
+  onPhoneInput(event: Event): void {
+    const el = event.target as HTMLInputElement;
+    const digits = el.value.replace(/\D/g, '').slice(0, PHONE_MAX);
+    const formatted = [digits.slice(0, 3), digits.slice(3, 6), digits.slice(6, 9)]
+      .filter(s => s.length > 0).join(' ');
+    this.form.customerPhone = formatted;
+    el.value = formatted;
+  }
   isPostalCodeValid(): boolean { return /^\d{5}$/.test(this.form.postalCode); }
 
   selectPickup(): void {
