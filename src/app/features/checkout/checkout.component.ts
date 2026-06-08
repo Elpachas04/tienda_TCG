@@ -158,7 +158,8 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                   placeholder="tu@email.com"
                   [attr.maxlength]="EMAIL_MAX"
                   autocomplete="email"
-                  [(ngModel)]="form.customerEmail"
+                  [value]="form.customerEmail"
+                  (input)="onEmailInput($event)"
                   (blur)="touched.email = true" />
                 @if (touched.email && !isEmailValid()) {
                   <p class="text-red-400/80 font-mono text-[10px] uppercase tracking-wider mt-1.5">
@@ -419,6 +420,14 @@ export class CheckoutComponent implements OnInit {
 
   isEmailValid():      boolean { return isValidEmail(this.form.customerEmail.trim()); }
   isPhoneValid():      boolean { return isSpanishPhone(this.form.customerPhone.trim()); }
+
+  onEmailInput(event: Event): void {
+    const el = event.target as HTMLInputElement;
+    // RFC 5321: alfanumérico + caracteres especiales válidos en email
+    const filtered = el.value.replace(/[^a-zA-Z0-9.@\-_+!#$%&'*/=?^{|}~]/g, '').slice(0, EMAIL_MAX);
+    this.form.customerEmail = filtered;
+    el.value = filtered;
+  }
 
   onPhoneInput(event: Event): void {
     const el = event.target as HTMLInputElement;
