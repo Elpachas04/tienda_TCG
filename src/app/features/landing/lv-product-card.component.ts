@@ -1,5 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, AfterViewInit, signal, inject, DestroyRef, viewChild, ElementRef, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, signal, inject, DestroyRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Product, ProductVariant, Color } from '../../core/models/product.model';
 import { CartItem } from '../../core/models/cart-item.model';
@@ -26,10 +25,9 @@ import { CloudinaryService } from '../../core/services/cloudinary.service';
          class="relative aspect-square rounded-t-card overflow-hidden block flex-shrink-0
                 bg-gradient-to-br from-[#201e1a] to-[#2a2820]">
         @if (product.video) {
-          <video #videoRef
-                 class="w-full h-full object-cover scale-[1.18] bg-lv-black"
-                 muted loop playsinline preload="none"
-                 [src]="cloudinary.cardVideo(product.video!)"
+          <video class="w-full h-full object-cover scale-[1.18] bg-lv-black"
+                 autoplay muted loop playsinline preload="metadata"
+                 [src]="cloudinary.video(product.video!)"
                  [poster]="product.images.length ? cloudinary.card(product.images[0]) : ''">
           </video>
         } @else {
@@ -136,7 +134,7 @@ import { CloudinaryService } from '../../core/services/cloudinary.service';
     </div>
   `,
 })
-export class LvProductCardComponent implements OnChanges, AfterViewInit {
+export class LvProductCardComponent implements OnChanges {
   @Input({ required: true }) product!: Product;
   @Input() colors: Color[] = [];
   @Input() delay = '0ms';
@@ -144,9 +142,6 @@ export class LvProductCardComponent implements OnChanges, AfterViewInit {
 
   protected readonly cloudinary = inject(CloudinaryService);
   private destroyRef   = inject(DestroyRef);
-  private platformId   = inject(PLATFORM_ID);
-  private videoRef     = viewChild<ElementRef<HTMLVideoElement>>('videoRef');
-  private videoObserver?: IntersectionObserver;
   private addTimer: ReturnType<typeof setTimeout> | null = null;
 
   readonly currentImageIndex = signal(0);
@@ -159,34 +154,6 @@ export class LvProductCardComponent implements OnChanges, AfterViewInit {
     this.destroyRef.onDestroy(() => {
       if (this.addTimer) clearTimeout(this.addTimer);
     });
-  }
-
-  ngAfterViewInit() {
-    if (!isPlatformBrowser(this.platformId)) return;
-    const video = this.videoRef()?.nativeElement;
-    if (!video) return;
-
-    const startPlay = () => {
-      // readyState >= 3 → HAVE_FUTURE_DATA: ya hay datos en caché, reproduce directo
-      if (video.readyState >= 3) {
-        video.play().catch(() => {});
-      } else {
-        video.addEventListener('canplay', () => video.play().catch(() => {}), { once: true });
-        video.load();
-      }
-    };
-
-    this.videoObserver = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          startPlay();
-          this.videoObserver?.disconnect();
-        }
-      },
-      { threshold: 0.1 }
-    );
-    this.videoObserver.observe(video);
-    this.destroyRef.onDestroy(() => this.videoObserver?.disconnect());
   }
 
   ngOnChanges(changes: SimpleChanges) {

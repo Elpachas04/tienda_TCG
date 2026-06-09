@@ -26,9 +26,9 @@ export class CloudinaryService {
   }
 
   /** Video optimizado para tarjeta: 480px, calidad baja, formato auto */
-  cardVideo(url: string): string {
-    if (!url) return '';
-    return url.replace(/\/upload\/.*?\/([^/]+)$/, '/upload/w_480,q_auto:low,f_auto/$1');
+  video(publicId: string): string {
+    if (!publicId) return '';
+    return `https://res.cloudinary.com/dew1whfdu/video/upload/w_480,q_auto:low,f_auto/${publicId}`;
   }
 
   private build(publicId: string, transforms: string): string {
