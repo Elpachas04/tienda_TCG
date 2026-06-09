@@ -48,7 +48,7 @@ type DetailData = { product: Product | null; colors: Color[] };
                 @if (data.product.video && showVideo()) {
                   <video class="w-full h-full object-cover"
                          autoplay muted loop playsinline preload="metadata">
-                    <source [src]="data.product.video">
+                    <source [src]="cloudinary.video(data.product.video!)">
                   </video>
                 } @else {
                   <img [src]="currentImage(data.product)" [alt]="data.product.name"

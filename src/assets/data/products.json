@@ -15,7 +15,7 @@
         "Ajuste milimétrico con doble funda",
         "Color a elegir sin coste extra"
       ],
-      "video": "/assets/videos/deckBox_video.mp4",
+      "video": "deckBox_video",
       "images": ["deckbox-ventana-01", "deckbox-ventana-02", "deckbox-ventana-03", "deckbox-ventana-04", "deckbox-ventana-05"],
       "price": 20,
       "colorPickerEnabled": true,
@@ -56,7 +56,7 @@
         "Logo integrado en la estructura (no pegatina)",
         "Soporte de exposición trasero incluido"
       ],
-      "video": "/assets/videos/layerVault_video_minsnap.mp4",
+      "video": "layerVault_video_minsnap",
       "images": ["caja-minisnap-01", "caja-minisnap-02", "caja-minisnap-03", "caja-minisnap-04", "caja-minisnap-05"],
       "price": 25,
       "colorPickerEnabled": false,
