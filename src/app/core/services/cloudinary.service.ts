@@ -25,6 +25,12 @@ export class CloudinaryService {
     return this.build(publicId, 'f_auto,q_auto,c_pad,b_rgb:111111,w_160,h_160');
   }
 
+  /** Video optimizado para tarjeta: 480px, calidad baja, formato auto */
+  cardVideo(url: string): string {
+    if (!url) return '';
+    return url.replace(/\/upload\/.*?\/([^/]+)$/, '/upload/w_480,q_auto:low,f_auto/$1');
+  }
+
   private build(publicId: string, transforms: string): string {
     if (!publicId) return '';
     return `${BASE}/${transforms}/${publicId}`;

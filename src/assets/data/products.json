@@ -55,7 +55,7 @@
         "Logo integrado en la estructura (no pegatina)",
         "Soporte de exposición trasero incluido"
       ],
-      "video": "https://res.cloudinary.com/dew1whfdu/video/upload/f_auto,q_auto/layerVault_video_minsnap",
+      "video": "/assets/videos/layerVault_video_minsnap.mp4",
       "images": ["caja-minisnap-01", "caja-minisnap-02", "caja-minisnap-03", "caja-minisnap-04", "caja-minisnap-05"],
       "price": 25,
       "colorPickerEnabled": false,
