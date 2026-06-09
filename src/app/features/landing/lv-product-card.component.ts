@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, signal, inject, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, AfterViewInit, signal, inject, DestroyRef, viewChild, ElementRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Product, ProductVariant, Color } from '../../core/models/product.model';
 import { CartItem } from '../../core/models/cart-item.model';
@@ -22,12 +22,15 @@ import { CloudinaryService } from '../../core/services/cloudinary.service';
 
       <!-- Image area -->
       <a [routerLink]="['/product', product.id]"
-         class="relative aspect-[4/3] rounded-t-card overflow-hidden block flex-shrink-0
+         class="relative aspect-square rounded-t-card overflow-hidden block flex-shrink-0
                 bg-gradient-to-br from-[#201e1a] to-[#2a2820]">
         @if (product.video) {
-          <video class="w-full h-full object-cover"
-                 autoplay muted loop playsinline preload="metadata">
-            <source [src]="product.video">
+          <video #videoRef
+                 class="w-full h-full object-cover scale-[1.18] bg-lv-black"
+                 autoplay muted loop playsinline preload="auto"
+                 [src]="cloudinary.cardVideo(product.video!)"
+                 [poster]="product.images.length ? cloudinary.card(product.images[0]) : ''"
+                 (canplay)="videoRef.play()">
           </video>
         } @else {
           <img
@@ -133,7 +136,7 @@ import { CloudinaryService } from '../../core/services/cloudinary.service';
     </div>
   `,
 })
-export class LvProductCardComponent implements OnChanges {
+export class LvProductCardComponent implements OnChanges, AfterViewInit {
   @Input({ required: true }) product!: Product;
   @Input() colors: Color[] = [];
   @Input() delay = '0ms';
@@ -141,6 +144,7 @@ export class LvProductCardComponent implements OnChanges {
 
   protected readonly cloudinary = inject(CloudinaryService);
   private destroyRef = inject(DestroyRef);
+  private videoRef = viewChild<ElementRef<HTMLVideoElement>>('videoRef');
   private addTimer: ReturnType<typeof setTimeout> | null = null;
 
   readonly currentImageIndex = signal(0);
@@ -153,6 +157,10 @@ export class LvProductCardComponent implements OnChanges {
     this.destroyRef.onDestroy(() => {
       if (this.addTimer) clearTimeout(this.addTimer);
     });
+  }
+
+  ngAfterViewInit() {
+    this.videoRef()?.nativeElement?.play().catch(() => {});
   }
 
   ngOnChanges(changes: SimpleChanges) {

@@ -3,7 +3,10 @@
 @tailwind utilities;
 
 @layer base {
-  html { scroll-behavior: smooth; }
+  html {
+    scroll-behavior: smooth;
+    @apply bg-lv-black;
+  }
   body {
     @apply bg-lv-black text-lv-cream font-body;
   }
