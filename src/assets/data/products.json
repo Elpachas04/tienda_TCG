@@ -15,6 +15,7 @@
         "Ajuste milimétrico con doble funda",
         "Color a elegir sin coste extra"
       ],
+      "video": "/assets/videos/deckBox_video.mp4",
       "images": ["deckbox-ventana-01", "deckbox-ventana-02", "deckbox-ventana-03", "deckbox-ventana-04", "deckbox-ventana-05"],
       "price": 20,
       "colorPickerEnabled": true,
