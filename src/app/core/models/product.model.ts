@@ -1,6 +1,28 @@
+export interface VariantSpecs {
+  capacity: number;
+  width_cm: number;
+  length_cm: number;
+}
+
+export interface VariantCopy {
+  tagline: string;
+  description: string;
+  uses: string[];
+}
+
 export interface ProductVariant {
   label: string;
   price: number;
+  default?: boolean;
+  specs?: VariantSpecs;
+  copy?: VariantCopy;
+}
+
+export interface ProductAddon {
+  id: string;
+  name: string;
+  price: number;
+  default: boolean;
 }
 
 export type BadgeStyle = 'gold' | 'teal' | 'purple' | 'coral' | null;
@@ -20,6 +42,7 @@ export interface Product {
   images: string[];
   price: number;
   variants?: ProductVariant[];
+  available_addons?: string[];
   colorPickerEnabled: boolean;
   available: boolean;
 }
@@ -52,5 +75,6 @@ export interface ProductCatalog {
   products: Product[];
   categories: CategoryItem[];
   colors: Color[];
+  addons: ProductAddon[];
   settings: ShopSettings;
 }

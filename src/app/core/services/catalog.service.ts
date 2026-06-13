@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Product, ProductCatalog, CategoryItem, Color, ShopSettings } from '../models/product.model';
+import { Product, ProductCatalog, CategoryItem, Color, ShopSettings, ProductAddon } from '../models/product.model';
 import productsData from '../../../assets/data/products.json';
 
 @Injectable({ providedIn: 'root' })
@@ -10,6 +10,7 @@ export class CatalogService {
   readonly products:   readonly Product[]        = this.catalog.products;
   readonly categories: readonly CategoryItem[]   = this.catalog.categories;
   readonly colors:     readonly Color[]          = this.catalog.colors;
+  readonly addons:     readonly ProductAddon[]   = this.catalog.addons ?? [];
   readonly settings:   Readonly<ShopSettings>    = this.catalog.settings;
 
   getProductById(id: string): Product | undefined {

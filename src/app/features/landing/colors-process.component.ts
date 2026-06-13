@@ -3,10 +3,10 @@ import { CatalogService } from '../../core/services/catalog.service';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 
 const STEPS = [
-  { n: '1', title: 'Elige tu pieza',  desc: 'Navega el catálogo, selecciona producto, variante y color.' },
-  { n: '2', title: 'Manda el pedido', desc: 'Rellena nombre y contacto. Confirmación inmediata.' },
-  { n: '3', title: 'Abona el total',  desc: 'Pago por Bizum para iniciar fabricación.' },
-  { n: '4', title: 'Recibe tu pieza', desc: 'En 3–7 días laborables. Recogida en persona o envío acordado.' },
+  { n: '1', title: 'Elige tu pieza',     desc: 'Navega el catálogo. Elige producto, tamaño y color.' },
+  { n: '2', title: 'Mándanos el pedido', desc: 'Solo tu nombre y contacto. Te confirmamos al momento.' },
+  { n: '3', title: 'Paga por Bizum',     desc: 'Rápido y sin rodeos. Empezamos a fabricar en el momento.' },
+  { n: '4', title: 'Recíbela en casa',   desc: '3–7 días laborables. Envío acordado o recogida en persona.' },
 ];
 
 @Component({
@@ -24,14 +24,14 @@ const STEPS = [
           <!-- ── IZQUIERDA: Colores ── -->
           <div>
             <p lvReveal class="font-mono text-xs uppercase tracking-wider text-lv-gold/60 mb-4">
-              — Colores disponibles
+              — Elige tu facción
             </p>
             <h2 lvReveal class="font-display uppercase text-lv-cream leading-[0.88]"
                 style="font-size: clamp(2.8rem, 6vw, 5rem);">
               TU COLOR,<br>TU PIEZA
             </h2>
             <p lvReveal class="font-mono text-xs uppercase tracking-wide text-lv-cream/40 mt-5 mb-8 max-w-xs leading-relaxed">
-              7 colores de PLA Basic en todos los productos personalizables. Sin coste extra.
+              Los 7 colores oficiales de One Piece TCG. En todos los productos sin coste extra.
             </p>
 
             <!-- Swatches: 4+3 centrado en móvil, fila única en sm+ -->
@@ -51,7 +51,7 @@ const STEPS = [
           <!-- ── DERECHA: Pasos ── -->
           <div>
             <p lvReveal class="font-mono text-xs uppercase tracking-wider text-lv-gold/60 mb-4 lg:mb-6">
-              — Proceso de pedido
+              — Así funciona
             </p>
 
             <div class="divide-y divide-lv-gold/[0.08]">

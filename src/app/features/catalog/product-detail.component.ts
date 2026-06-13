@@ -4,8 +4,7 @@ import { toSignal, toObservable, takeUntilDestroyed } from '@angular/core/rxjs-i
 import { map, tap } from 'rxjs';
 import { CatalogService } from '../../core/services/catalog.service';
 import { CartService } from '../../core/services/cart.service';
-import { Product, ProductVariant, Color } from '../../core/models/product.model';
-import { ColorPickerComponent } from '../../shared/components/color-picker.component';
+import { Product, ProductVariant, ProductAddon, Color } from '../../core/models/product.model';
 import { PLACEHOLDER } from '../../shared/constants';
 import { CloudinaryService } from '../../core/services/cloudinary.service';
 
@@ -15,7 +14,7 @@ type DetailData = { product: Product | null; colors: Color[] };
   selector: 'app-product-detail',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, ColorPickerComponent],
+  imports: [RouterLink],
   host: { class: 'block animate-fade-up' },
   template: `
     @let data = productData();
@@ -88,57 +87,151 @@ type DetailData = { product: Product | null; colors: Color[] };
             </div>
 
             <!-- Info -->
-            <div class="space-y-6 flex flex-col">
-              @if (data.product.badge) {
-                <span class="liquid-glass inline-block w-fit rounded-full px-3 py-1 font-mono text-xs uppercase tracking-wider text-lv-gold border border-lv-gold/30">
-                  {{ data.product.badge }}
-                </span>
-              }
+            <div class="flex flex-col gap-0">
 
-              <div>
-                <p class="font-mono text-xs uppercase tracking-[0.3em] text-lv-gold/60 mb-2">{{ data.product.category }}</p>
-                <h1 class="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-lv-cream leading-none uppercase">{{ data.product.name }}</h1>
+              <!-- Tagline -->
+              <div class="border-l-2 border-lv-gold pl-4 mb-6">
+                <p class="font-body italic text-lv-cream/80 text-base sm:text-lg leading-snug">
+                  {{ variantTagline(data.product) }}
+                </p>
               </div>
 
-              <p class="text-lv-cream/50 font-body leading-relaxed text-sm">{{ data.product.description }}</p>
+              <!-- Badge + nombre -->
+              <div class="mb-5">
+                <div class="flex items-center gap-3 mb-2">
+                  <p class="font-mono text-[10px] uppercase tracking-[0.3em] text-lv-gold/50">{{ data.product.category }}</p>
+                  @if (data.product.badge && !selectedVariant()?.copy) {
+                    <span class="rounded-full px-2 py-0.5 font-mono text-[9px] uppercase tracking-wider text-lv-gold border border-lv-gold/30">
+                      {{ data.product.badge }}
+                    </span>
+                  }
+                </div>
+                <h1 class="font-display text-4xl sm:text-5xl md:text-6xl text-lv-cream leading-none uppercase">{{ data.product.name }}</h1>
+              </div>
 
-              <ul class="space-y-2">
-                @for (feature of data.product.features; track feature) {
-                  <li class="flex items-start gap-2 text-lv-cream/40 text-sm font-body">
-                    <span class="text-lv-gold mt-0.5 flex-shrink-0">✓</span>
-                    {{ feature }}
-                  </li>
-                }
-              </ul>
-
-              <!-- Variantes -->
+              <!-- Selector de tamaño tipo card -->
               @if (data.product.variants && data.product.variants.length > 0) {
-                <div>
-                  <p class="font-mono text-xs uppercase tracking-widest text-lv-cream/40 mb-3">Variante</p>
-                  <div class="flex flex-wrap gap-2">
+                <div class="mb-5">
+                  <p class="font-mono text-[10px] uppercase tracking-widest text-lv-cream/30 mb-3">Tamaño</p>
+                  <div class="grid grid-cols-3 gap-2">
                     @for (variant of data.product.variants; track variant.label) {
                       <button
-                        class="rounded-full px-4 py-2 font-mono text-xs uppercase tracking-wider border transition-all duration-200"
+                        class="flex flex-col items-center text-center px-2 py-3 rounded-card border transition-all duration-200"
                         [class]="selectedVariant()?.label === variant.label
-                          ? 'border-lv-gold bg-lv-gold/10 text-lv-gold'
-                          : 'border-white/10 text-lv-cream/50 hover:border-lv-gold/40'"
+                          ? 'border-lv-gold bg-lv-gold/8 text-lv-gold'
+                          : 'border-white/10 text-lv-cream/50 hover:border-lv-gold/40 hover:text-lv-cream/80'"
                         (click)="selectVariant(variant)">
-                        {{ variant.label }} — {{ variant.price }}€
+                        <span class="font-display text-2xl leading-none mb-1"
+                              [class]="selectedVariant()?.label === variant.label ? 'text-lv-gold' : 'text-lv-cream'">
+                          {{ variant.label }}
+                        </span>
+                        @if (variant.specs?.capacity) {
+                          <span class="font-mono text-[9px] text-lv-muted leading-none mb-1">{{ variant.specs!.capacity }} cartas</span>
+                        }
+                        <span class="font-mono text-xs font-semibold"
+                              [class]="selectedVariant()?.label === variant.label ? 'text-lv-gold' : 'text-lv-muted'">
+                          {{ variant.price }}€
+                        </span>
                       </button>
                     }
                   </div>
                 </div>
               }
 
-              <!-- Color -->
+              <!-- Specs de variante — fila compacta -->
+              @if (selectedVariant()?.specs; as specs) {
+                <div class="flex items-center justify-around bg-lv-surface border border-lv-border rounded-card px-4 py-3 mb-5">
+                  @for (stat of [
+                    { label: 'Capacidad', value: specs.capacity,  unit: 'cartas' },
+                    { label: 'Largo',     value: specs.length_cm, unit: 'cm' },
+                    { label: 'Ancho',     value: specs.width_cm,  unit: 'cm' }
+                  ]; track stat.label) {
+                    <div class="text-center">
+                      <p class="font-display text-2xl text-lv-cream leading-none">{{ stat.value }}</p>
+                      <p class="font-mono text-[9px] text-lv-muted mt-0.5">{{ stat.unit }}</p>
+                      <p class="font-mono text-[8px] uppercase tracking-widest text-lv-gold/50 mt-0.5">{{ stat.label }}</p>
+                    </div>
+                  }
+                </div>
+              }
+
+              <!-- Descripción -->
+              <p class="text-lv-cream/55 font-body leading-relaxed text-sm mb-5">
+                {{ variantDescription(data.product) }}
+              </p>
+
+              <!-- Ideal para (chips) o Features (checkmarks) -->
+              @if (variantUses(data.product); as uses) {
+                <div class="mb-5">
+                  <p class="font-mono text-[10px] uppercase tracking-widest text-lv-cream/30 mb-2.5">Ideal para</p>
+                  <div class="flex flex-wrap gap-2">
+                    @for (use of uses; track use) {
+                      <span class="rounded-full px-3 py-1.5 font-mono text-[11px] border border-lv-gold/20 text-lv-gold/70 bg-lv-gold/5">
+                        {{ use }}
+                      </span>
+                    }
+                  </div>
+                </div>
+              } @else {
+                <ul class="space-y-2 mb-5">
+                  @for (feature of data.product.features; track feature) {
+                    <li class="flex items-start gap-2 text-lv-cream/40 text-sm font-body">
+                      <span class="text-lv-gold mt-0.5 flex-shrink-0">✓</span>
+                      {{ feature }}
+                    </li>
+                  }
+                </ul>
+              }
+
+              <!-- Color — swatches directos One Piece -->
               @if (data.product.colorPickerEnabled && data.colors.length > 0) {
-                <div>
-                  <p class="font-mono text-xs uppercase tracking-widest text-lv-cream/40 mb-3">Color</p>
-                  <app-color-picker
-                    [colors]="data.colors"
-                    [selected]="selectedColor()"
-                    (selectedChange)="selectedColor.set($event)">
-                  </app-color-picker>
+                <div class="border-t border-white/[0.06] pt-5 mb-5">
+                  <p class="font-mono text-[10px] uppercase tracking-widest text-lv-cream/30 mb-3">Color</p>
+                  <div class="flex flex-wrap gap-2.5">
+                    @for (color of data.colors; track color.id) {
+                      <button
+                        type="button"
+                        [title]="color.name"
+                        class="w-8 h-8 rounded-full border-2 transition-all duration-150 flex-shrink-0"
+                        [style.background-color]="color.hex"
+                        [class]="selectedColor()?.id === color.id
+                          ? 'border-lv-gold scale-110 ring-2 ring-lv-gold/30 ring-offset-2 ring-offset-lv-black'
+                          : 'border-white/20 hover:border-white/50 hover:scale-105'"
+                        (click)="selectedColor.set(color)">
+                      </button>
+                    }
+                  </div>
+                  @if (selectedColor()) {
+                    <p class="font-mono text-xs text-lv-muted mt-2.5">{{ selectedColor()!.name }}</p>
+                  }
+                </div>
+              }
+
+              <!-- Addons -->
+              @if (productAddons(data.product).length > 0) {
+                <div class="border-t border-white/[0.06] pt-5 mb-5">
+                  @for (addon of productAddons(data.product); track addon.id) {
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                      <button
+                        type="button"
+                        class="w-5 h-5 rounded flex-shrink-0 border transition-all duration-150 flex items-center justify-center"
+                        [class]="selectedAddonIds().has(addon.id)
+                          ? 'border-lv-gold bg-lv-gold/15'
+                          : 'border-white/20 hover:border-lv-gold/50'"
+                        (click)="toggleAddon(addon.id)">
+                        @if (selectedAddonIds().has(addon.id)) {
+                          <svg class="w-3 h-3 text-lv-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                          </svg>
+                        }
+                      </button>
+                      <span class="font-body text-sm text-lv-cream/60 group-hover:text-lv-cream/90 transition-colors flex-1"
+                            (click)="toggleAddon(addon.id)">
+                        {{ addon.name }}
+                      </span>
+                      <span class="font-mono text-sm text-lv-gold">+{{ addon.price }}€</span>
+                    </label>
+                  }
                 </div>
               }
 
@@ -182,14 +275,15 @@ export class ProductDetailComponent {
   private destroyRef     = inject(DestroyRef);
   protected readonly cloudinary = inject(CloudinaryService);
 
-  readonly currentImageIndex = signal(0);
-  readonly failedIds         = signal<Set<string>>(new Set());
-  readonly selectedVariant   = signal<ProductVariant | null>(null);
-  readonly selectedColor     = signal<Color | null>(null);
-  readonly justAdded         = signal(false);
-  readonly showVideo         = signal(true);
-  readonly mainImageLoaded   = signal(false);
-  readonly readyThumbs       = signal<string[]>([]);
+  readonly currentImageIndex  = signal(0);
+  readonly failedIds          = signal<Set<string>>(new Set());
+  readonly selectedVariant    = signal<ProductVariant | null>(null);
+  readonly selectedColor      = signal<Color | null>(null);
+  readonly selectedAddonIds   = signal<Set<string>>(new Set());
+  readonly justAdded          = signal(false);
+  readonly showVideo          = signal(true);
+  readonly mainImageLoaded    = signal(false);
+  readonly readyThumbs        = signal<string[]>([]);
 
   private addTimer: ReturnType<typeof setTimeout> | null = null;
   private thumbProbes: HTMLImageElement[] = [];
@@ -201,6 +295,7 @@ export class ProductDetailComponent {
         this.failedIds.set(new Set());
         this.selectedVariant.set(null);
         this.selectedColor.set(null);
+        this.selectedAddonIds.set(new Set());
         this.showVideo.set(true);
         this.mainImageLoaded.set(false);
         this.readyThumbs.set([]);
@@ -222,6 +317,10 @@ export class ProductDetailComponent {
         }
         if (data?.product) {
           this.preloadThumbs(data.product.images);
+          const variants = data.product.variants;
+          if (variants?.length) {
+            this.selectedVariant.set(variants.find(v => v.default) ?? variants[0]);
+          }
         }
       });
     this.destroyRef.onDestroy(() => {
@@ -260,8 +359,37 @@ export class ProductDetailComponent {
     return id ? this.cloudinary.detail(id) : PLACEHOLDER;
   }
 
+  protected productAddons(product: Product): ProductAddon[] {
+    if (!product.available_addons?.length) return [];
+    return this.catalogService.addons.filter(a => product.available_addons!.includes(a.id)) as ProductAddon[];
+  }
+
+  protected toggleAddon(id: string): void {
+    this.selectedAddonIds.update(set => {
+      const next = new Set(set);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }
+
+  protected variantTagline(product: Product): string {
+    return this.selectedVariant()?.copy?.tagline ?? product.tagline;
+  }
+
+  protected variantDescription(product: Product): string {
+    return this.selectedVariant()?.copy?.description ?? product.description;
+  }
+
+  protected variantUses(product: Product): string[] | null {
+    return this.selectedVariant()?.copy?.uses ?? null;
+  }
+
   currentPrice(product: Product): number {
-    return this.selectedVariant()?.price ?? product.price;
+    const base = this.selectedVariant()?.price ?? product.price;
+    const addonTotal = this.productAddons(product)
+      .filter(a => this.selectedAddonIds().has(a.id))
+      .reduce((sum, a) => sum + a.price, 0);
+    return base + addonTotal;
   }
 
   selectVariant(variant: ProductVariant): void {
@@ -275,11 +403,13 @@ export class ProductDetailComponent {
       color = colors.find(c => c.id === 'negro') ?? colors[0];
       this.selectedColor.set(color);
     }
+    const addons = this.productAddons(product).filter(a => this.selectedAddonIds().has(a.id));
+    const addonLabel = addons.map(a => a.name).join(', ');
     this.cartService.addItem({
       productId:   product.id,
       productSku:  product.sku,
       productName: product.name,
-      variant:     this.selectedVariant()?.label,
+      variant:     [this.selectedVariant()?.label, addonLabel].filter(Boolean).join(' + '),
       color:       color?.name,
       quantity:    1,
       unitPrice:   this.currentPrice(product)

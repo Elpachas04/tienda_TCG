@@ -163,7 +163,8 @@ export class LvProductCardComponent implements OnChanges {
     if (changes['product']) {
       this.failedIds.set(new Set());
       this.currentImageIndex.set(0);
-      this.selectedVariant.set(this.product.variants?.length ? this.product.variants[0] : null);
+      const variants = this.product.variants;
+      this.selectedVariant.set(variants?.length ? (variants.find(v => v.default) ?? variants[0]) : null);
     }
   }
 
