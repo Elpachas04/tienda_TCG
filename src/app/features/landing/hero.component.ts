@@ -25,38 +25,38 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
       <div class="relative z-10 flex flex-col items-center gap-6 max-w-3xl mx-auto">
 
         <p lvReveal class="font-mono text-xs uppercase tracking-[0.3em] text-lv-gold">
-          Ingeniería 3D · Alta precisión
+          Bajo demanda · One Piece TCG
         </p>
 
         <h1 lvReveal
             class="font-display leading-[0.95] uppercase text-[36px] sm:text-[56px] md:text-[84px] lg:text-[112px] xl:text-[140px]">
-          <span class="text-lv-cream block">TU MAZO VALE</span>
-          <span class="text-lv-gold block">MÁS QUE UNA</span>
-          <span class="text-lv-cream block">CAJA DE 2€</span>
+          <span class="text-lv-cream block">LA PRIMERA CARTA</span>
+          <span class="text-lv-cream block">QUE VEN ES</span>
+          <span class="text-lv-gold block">TU CAJA.</span>
         </h1>
 
-        <p lvReveal class="font-display text-lv-gold/70 text-xl sm:text-2xl md:text-4xl tracking-wide uppercase">
-          tolerancia milimétrica en cada capa
+        <p lvReveal class="font-display text-lv-cream/70 text-xl sm:text-2xl md:text-4xl tracking-wide uppercase mt-4">
+          No les decepciones.
         </p>
 
-        <p lvReveal class="font-mono text-xs uppercase tracking-wide text-lv-cream/50 max-w-md leading-relaxed">
-          Accesorios high-end para TCG con tolerancias mecánicas reales.<br>
-          Sin holguras ni cierres débiles. Fabricación exclusiva bajo demanda.
+        <p lvReveal class="font-mono text-xs tracking-wide text-lv-cream/50 max-w-md leading-relaxed">
+          Accesorios TCG hechos a medida, en el color de tu facción.<br>
+          Sin stock masivo.
         </p>
 
         <div lvReveal class="flex gap-4 flex-wrap justify-center">
           <a routerLink="/catalog"
              class="bg-lv-gold text-black rounded-full px-6 sm:px-8 py-3 sm:py-4 font-mono text-xs uppercase tracking-wider font-semibold hover:brightness-110 transition-all duration-200">
-            Asegurar mi mazo
+            Quiero el mío
           </a>
           <a href="#colores"
              class="border border-lv-gold/30 text-lv-cream rounded-full px-6 sm:px-8 py-3 sm:py-4 font-mono text-xs uppercase tracking-wider hover:border-lv-gold transition-all duration-200">
-            Ingeniería Vault →
+            Ver colores →
           </a>
         </div>
 
         <p lvReveal class="font-mono text-[10px] uppercase tracking-widest text-lv-cream/25">
-          Diseño paramétrico &nbsp;·&nbsp; Colores de facción &nbsp;·&nbsp; Cero stock masivo
+          UNO A UNO &nbsp;·&nbsp; A TU COLOR &nbsp;·&nbsp; SIN COMPROMISOS
         </p>
 
       </div>

@@ -13,8 +13,7 @@ import { RouterLink } from '@angular/router';
 
         <span class="font-display text-lv-gold text-base">LayerVault</span>
         <span class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/25">2026</span>
-        <span class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/20 hidden sm:inline">· Impresión 3D · Por encargo</span>
-        <a routerLink="/legal"      class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/25 hover:text-lv-gold transition-colors">Legal</a>
+<a routerLink="/legal"      class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/25 hover:text-lv-gold transition-colors">Legal</a>
         <a routerLink="/privacidad" class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/25 hover:text-lv-gold transition-colors">Privacidad</a>
 
       </div>

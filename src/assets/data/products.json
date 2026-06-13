@@ -4,16 +4,16 @@
       "id": "deckbox-ventana",
       "sku": "LDB",
       "name": "Leader Display Box",
-      "tagline": "Haz que tu Líder imponga respeto.",
+      "tagline": "Tu Líder en primera fila, donde tiene que estar.",
       "category": "deckbox",
       "badge": "Más vendida",
       "badgeStyle": "gold",
-      "description": "Haz que tu Líder imponga respeto antes de empezar la partida. Ventana frontal de ajuste perfecto con barra WANTED deslizante integrada en relieve.",
+      "description": "Ventana frontal para exhibir tu carta Líder mientras juegas. Barra WANTED deslizante integrada y ajuste perfecto con doble funda. Se ve bien en mesa y aguanta el día a día.",
       "features": [
         "Ventana frontal para la carta Líder",
-        "Barra WANTED deslizante en relieve",
-        "Ajuste milimétrico con doble funda",
-        "Color a elegir sin coste extra"
+        "Barra WANTED deslizante",
+        "Ajuste con doble funda",
+        "Color a elegir"
       ],
       "video": "deckBox_video",
       "images": ["deckbox-ventana-01", "deckbox-ventana-02", "deckbox-ventana-03", "deckbox-ventana-04", "deckbox-ventana-05"],
@@ -25,16 +25,16 @@
       "id": "deckbox-toploader",
       "sku": "SHV",
       "name": "Shutter Vault",
-      "tagline": "Cero vuelcos. Cero tirones. Desliza y juega.",
+      "tagline": "Tus toploaders organizados, protegidos y listos para enseñar.",
       "category": "deckbox",
       "badge": "Toploader",
       "badgeStyle": "teal",
-      "description": "Cero vuelcos. Cero tirones. Cierre técnico de persiana enrollable y eyector mecánico inferior para acceder a tus mejores cartas sin riesgo.",
+      "description": "Persiana enrollable que cierra de verdad. Mete tus toploaders, cierra y listo — sin que se salgan, sin polvo, sin el caos de tenerlos sueltos en una bolsa. Abre, enseña, cierra. Así de simple.",
       "features": [
-        "Cierre de persiana enrollable anti-polvo",
-        "Eyector mecánico inferior integrado",
-        "Ventana de exhibición frontal",
-        "Laterales estriados antideslizantes"
+        "Cierre de persiana anti-polvo",
+        "Eyector inferior para sacar sin forzar",
+        "Ventana frontal de exhibición",
+        "Laterales antideslizantes"
       ],
       "images": ["deckbox-toploader-01", "deckbox-toploader-02", "deckbox-toploader-03", "deckbox-toploader-04", "deckbox-toploader-05"],
       "price": 20,
@@ -45,16 +45,15 @@
       "id": "caja-minisnap",
       "sku": "TCV",
       "name": "Tactical Vault",
-      "tagline": "El búnker definitivo para colecciones de élite.",
+      "tagline": "Tus Mini Snaps encajados. Sin moverse. Sin golpes.",
       "category": "storage",
       "badge": "Premium",
       "badgeStyle": "gold",
-      "description": "Maletín de alta densidad para Mini Snaps y Toploaders: cero holguras, cero movimiento. Texturizado Fuzzy Skin antideslizante, logotipo integrado en la estructura y soporte de exposición trasero incluido.",
+      "description": "Hecho a medida para Mini Snaps — cero holgura, cero movimiento. Llévalo en la mochila sin que nada se mueva. Para el que sabe lo que vale lo que guarda.",
       "features": [
-        "Fila completa de Mini Snaps o Toploaders",
-        "Texturizado Fuzzy Skin antideslizante",
-        "Logo integrado en la estructura (no pegatina)",
-        "Soporte de exposición trasero incluido"
+        "Fila completa de Mini Snaps sin holgura",
+        "Texturizado antideslizante",
+        "Logo integrado en estructura"
       ],
       "video": "layerVault_video_minsnap",
       "images": ["caja-minisnap-01", "caja-minisnap-02", "caja-minisnap-03", "caja-minisnap-04", "caja-minisnap-05"],
@@ -66,16 +65,16 @@
       "id": "organizador-fundas",
       "sku": "ORF",
       "name": "Organizador de fundas",
-      "tagline": "30 toploaders + 45 semirígidas + cientos de penny.",
+      "tagline": "Un sitio para cada funda. Cada funda en su sitio.",
       "category": "storage",
       "badge": "Único",
       "badgeStyle": "teal",
-      "description": "30 toploaders + 45 semirígidas + cientos de penny. Todo clasificado, todo a mano.",
+      "description": "Tres compartimentos específicos para toploaders, semirígidas y pennies. Acabas con el cajón donde todo se mezcla y nada aparece cuando lo necesitas.",
       "features": [
-        "3 compartimentos específicos TCG",
         "30 toploaders en vertical",
         "45 fundas semirígidas",
-        "Color a elegir sin coste extra"
+        "Compartimento penny",
+        "Color a elegir"
       ],
       "images": ["organizador-fundas-01", "organizador-fundas-02", "organizador-fundas-03", "organizador-fundas-04", "organizador-fundas-05"],
       "price": 12,
@@ -83,65 +82,89 @@
       "available": true
     },
     {
-      "id": "aplastador-60",
-      "sku": "A60",
-      "name": "Aplastador 60 cartas",
-      "tagline": "Elimina el aire. Aplana deformaciones.",
+      "id": "aplastador",
+      "sku": "APL",
+      "name": "Aplastador",
+      "tagline": "Mazo listo. Sin ondulaciones, sin excusas.",
       "category": "tools",
-      "badge": "60 cartas",
-      "badgeStyle": "purple",
-      "description": "Elimina el aire y aplana deformaciones. Compatible con doble enfundado. Para mazos estándar sin hardware adicional.",
+      "badge": null,
+      "badgeStyle": null,
+      "description": "Elimina el aire y aplana las deformaciones de tus cartas enfundadas. Compatible con doble enfundado. Sin tornillos ni nada que perder.",
       "features": [
         "Compatible con doble enfundado",
-        "Marco grueso y robusto",
+        "Marco robusto",
         "Sin hardware adicional"
       ],
       "images": ["aplastador-60-01", "aplastador-60-02", "aplastador-60-03", "aplastador-60-04", "aplastador-60-05"],
       "price": 20,
       "colorPickerEnabled": false,
-      "available": true
-    },
-    {
-      "id": "aplastador-100",
-      "sku": "A100",
-      "name": "Aplastador 100 cartas",
-      "tagline": "Para doble enfundado y cartas premium.",
-      "category": "tools",
-      "badge": "Pro 100",
-      "badgeStyle": "coral",
-      "description": "Para doble enfundado y cartas premium que necesitan más espacio. Ideal para coleccionistas exigentes.",
-      "features": [
-        "Capacidad 100 cartas",
-        "Ideal para coleccionistas",
-        "Sin hardware adicional"
+      "variants": [
+        {
+          "label": "60 cartas", "price": 20, "default": true,
+          "copy": {
+            "tagline": "Mazo listo. Sin ondulaciones, sin excusas.",
+            "description": "Elimina el aire y aplana las deformaciones de tus cartas enfundadas. Compatible con doble enfundado para mazos estándar de 60. Sin tornillos ni nada que perder.",
+            "uses": ["Mazos de 60", "Doble enfundado", "Uso diario"]
+          }
+        },
+        {
+          "label": "100 cartas", "price": 25,
+          "copy": {
+            "tagline": "Para los que no se conforman con el mazo justo.",
+            "description": "Mismo concepto que el de 60, pero para 100 cartas. Ideal si llevas sideboard, doble enfundado grueso o cartas premium que necesitan espacio extra.",
+            "uses": ["Sideboard incluido", "Doble enfundado grueso", "Cartas premium"]
+          }
+        }
       ],
-      "images": ["aplastador-100-01", "aplastador-100-02", "aplastador-100-03", "aplastador-100-04", "aplastador-100-05"],
-      "price": 25,
-      "colorPickerEnabled": false,
       "available": true
     },
     {
       "id": "caja-bulk",
       "sku": "SKV",
       "name": "Stack Vault",
-      "tagline": "Organiza por colores. Apila sin límites.",
+      "tagline": "Apila, organiza, olvídate.",
       "category": "storage",
       "badge": null,
       "badgeStyle": null,
-      "description": "Dile adiós al cartón feo. Sistema modular apilable con paredes rígidas para pool, colecciones y cubos completos. Elige el tamaño que necesitas.",
+      "description": "Cajas bulk apilables con paredes rígidas. Se sostienen unas sobre otras sin deformarse. Elige el color de tu facción y monta tu sistema como quieras.",
       "features": [
-        "Diseño apilable (stackable) estable",
+        "Diseño apilable estable",
         "Paredes rígidas bajo carga continua",
-        "Código de color por facción disponible",
-        "Color a elegir sin coste extra"
+        "Color de facción disponible",
+        "Color a elegir"
       ],
       "images": ["caja-bulk-01", "caja-bulk-02", "caja-bulk-03", "caja-bulk-04", "caja-bulk-05"],
       "price": 10,
       "colorPickerEnabled": true,
+      "available_addons": ["separadores"],
       "variants": [
-        { "label": "Pequeña (~100 cartas)", "price": 10 },
-        { "label": "Mediana (~200 cartas)", "price": 12 },
-        { "label": "Grande (~350 cartas)", "price": 15 }
+        {
+          "label": "Pequeña", "price": 10,
+          "specs": { "capacity": 400, "width_cm": 7.0, "length_cm": 15.0 },
+          "copy": {
+            "tagline": "La caja del booster cumplió su función. Ya puedes jubilarla.",
+            "description": "Guarda hasta 400 cartas perfectamente organizadas, con el espacio justo para que estén seguras sin apretarse.",
+            "uses": ["Sets completos", "Commons por color", "Cartas de reserva"]
+          }
+        },
+        {
+          "label": "Mediana", "price": 12, "default": true,
+          "specs": { "capacity": 500, "width_cm": 7.0, "length_cm": 18.2 },
+          "copy": {
+            "tagline": "El caos de tu colección, resuelto.",
+            "description": "500 cartas ordenadas y a mano cuando las necesitas. Tener tus cartas localizadas no es un capricho — es tiempo que te ahorras cada vez que buscas algo.",
+            "uses": ["Colecciones activas", "Playsets organizados", "Bulk de un set completo"]
+          }
+        },
+        {
+          "label": "Grande", "price": 15,
+          "specs": { "capacity": 650, "width_cm": 7.0, "length_cm": 23.5 },
+          "copy": {
+            "tagline": "Para los que van en serio.",
+            "description": "650 cartas, acceso rápido, y una presencia en tu estantería que ninguna caja de cartón va a darte. Por menos de lo que cuesta un booster box, tienes tu colección bajo control.",
+            "uses": ["Revendedores", "Coleccionistas de varios sets", "Almacenaje a largo plazo"]
+          }
+        }
       ],
       "available": true
     },
@@ -149,15 +172,15 @@
       "id": "llaveros",
       "sku": "LLV",
       "name": "Llaveros",
-      "tagline": "Diseños bicolor exclusivos One Piece.",
+      "tagline": "Lleva tu facción encima.",
       "category": "accessories",
       "badge": "One Piece",
       "badgeStyle": "teal",
-      "description": "Diseños bicolor exclusivos con argolla metálica incluida. Personaliza con los colores de tu facción favorita.",
+      "description": "Diseños bicolor exclusivos One Piece con argolla metálica incluida. Elige los colores de tu facción y listo.",
       "features": [
-        "Diseños personalizables",
+        "Bicolor personalizable",
         "Argolla metálica incluida",
-        "Bicolor sin coste extra"
+        "Diseños exclusivos One Piece"
       ],
       "images": ["llaveros-01", "llaveros-02", "llaveros-03", "llaveros-04", "llaveros-05"],
       "price": 4,
@@ -173,13 +196,36 @@
     { "id": "accessories", "label": "Accesorios",    "emoji": "🗝️"  }
   ],
   "colors": [
-    { "id": "negro",       "name": "Negro",       "hex": "#1A1A1A", "type": "PLA Basic", "stock": "alto",   "quantity": 2, "popular": true },
-    { "id": "blanco-jade", "name": "Blanco jade", "hex": "#F0EFE8", "type": "PLA Basic", "stock": "alto",   "quantity": 2, "popular": true },
-    { "id": "rojo",        "name": "Rojo",        "hex": "#CC2200", "type": "PLA Basic", "stock": "normal", "quantity": 1, "popular": true },
-    { "id": "azul",        "name": "Azul",        "hex": "#1E6FD9", "type": "PLA Basic", "stock": "normal", "quantity": 1, "popular": true },
-    { "id": "purpura",     "name": "Púrpura",     "hex": "#6B2D8B", "type": "PLA Basic", "stock": "normal", "quantity": 1, "popular": true },
-    { "id": "verde-bambu", "name": "Verde bambú", "hex": "#4A7C59", "type": "PLA Basic", "stock": "alto",   "quantity": 2, "popular": true },
-    { "id": "amarillo",    "name": "Amarillo",    "hex": "#F5C800", "type": "PLA Basic", "stock": "normal", "quantity": 1, "popular": true }
+    { "id": "negro",    "name": "Negro",    "hex": "#1A1A1A", "type": "PLA Basic", "stock": "alto",   "quantity": 2, "popular": true },
+    { "id": "rojo",     "name": "Rojo",     "hex": "#CC2200", "type": "PLA Basic", "stock": "normal", "quantity": 1, "popular": true },
+    { "id": "verde",    "name": "Verde",    "hex": "#2E7D45", "type": "PLA Basic", "stock": "alto",   "quantity": 2, "popular": true },
+    { "id": "azul",     "name": "Azul",     "hex": "#1E6FD9", "type": "PLA Basic", "stock": "normal", "quantity": 1, "popular": true },
+    { "id": "morado",   "name": "Morado",   "hex": "#6B2D8B", "type": "PLA Basic", "stock": "normal", "quantity": 1, "popular": true },
+    { "id": "amarillo", "name": "Amarillo", "hex": "#F5C800", "type": "PLA Basic", "stock": "normal", "quantity": 1, "popular": true },
+    { "id": "blanco",   "name": "Blanco",   "hex": "#EFEFEF", "type": "PLA Basic", "stock": "alto",   "quantity": 2, "popular": true }
+  ],
+  "addons": [
+    { "id": "separadores", "name": "Añadir 10 separadores", "price": 2.00, "default": false }
+  ],
+  "bulk_boxes": [
+    {
+      "id": "bulk-small",
+      "name": "Caja Bulk Pequeña",
+      "capacity": 400,
+      "dimensions_exterior_cm": { "width": 7.0, "length": 15.0 }
+    },
+    {
+      "id": "bulk-medium",
+      "name": "Caja Bulk Mediana",
+      "capacity": 500,
+      "dimensions_exterior_cm": { "width": 7.0, "length": 18.2 }
+    },
+    {
+      "id": "bulk-large",
+      "name": "Caja Bulk Grande",
+      "capacity": 650,
+      "dimensions_exterior_cm": { "width": 7.0, "length": 23.5 }
+    }
   ],
   "settings": {
     "shopName": "LayerVault",

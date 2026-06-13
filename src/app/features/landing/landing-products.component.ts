@@ -23,9 +23,9 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
         <!-- Header -->
         <div lvReveal class="flex items-baseline justify-between mb-10 sm:mb-14">
           <div>
-            <p class="font-mono text-[10px] uppercase tracking-[0.35em] text-lv-gold/60 mb-3">— Colección</p>
+            <p class="font-mono text-[10px] uppercase tracking-[0.35em] text-lv-gold/60 mb-3">— Catálogo</p>
             <h2 class="font-display uppercase leading-[0.9] text-lv-cream"
-                style="font-size: clamp(2.4rem, 6vw, 5rem)">ARMERÍA TCG</h2>
+                style="font-size: clamp(2.4rem, 6vw, 5rem)">CADA PIEZA, UN PROPÓSITO</h2>
           </div>
           <a routerLink="/catalog"
              class="font-mono text-[10px] uppercase tracking-widest text-lv-gold/70 hover:text-lv-gold transition-colors hidden sm:block">
