@@ -4,6 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs';
 import { LvNavbarComponent } from './features/landing/lv-navbar.component';
 import { CartDrawerComponent } from './shared/components/cart-drawer.component';
+import { SeoService } from './core/services/seo.service';
 
 @Component({
   selector: 'app-root',
@@ -22,6 +23,9 @@ import { CartDrawerComponent } from './shared/components/cart-drawer.component';
 })
 export class AppComponent {
   private router = inject(Router);
+  private seo = inject(SeoService);
+
+  constructor() { this.seo.init(); }
 
   private currentUrl = toSignal(
     this.router.events.pipe(
