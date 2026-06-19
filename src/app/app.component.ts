@@ -32,12 +32,14 @@ import { CartDrawerComponent } from './shared/components/cart-drawer.component';
 
     @if (showBerryModal()) {
       <div class="fixed inset-0 z-[999] flex items-center justify-center px-4"
-           style="background:rgba(0,0,0,0.78);backdrop-filter:blur(6px)">
-        <div class="bg-lv-surface border border-lv-border rounded-[24px] p-8 flex flex-col items-center gap-5 max-w-xs w-full text-center">
+           style="background:rgba(0,0,0,0.78);backdrop-filter:blur(6px);animation:overlay-in 220ms ease-out both">
+        <div class="bg-lv-surface border border-lv-border rounded-[24px] p-8 flex flex-col items-center gap-5 max-w-xs w-full text-center"
+             style="animation:modal-pop 380ms cubic-bezier(0.34,1.56,0.64,1) both">
           <img src="https://res.cloudinary.com/dew1whfdu/image/upload/v1781902915/berrycoin.png"
                alt="₿erry" width="120" height="120"
-               class="w-[120px] h-[120px] object-contain select-none" draggable="false" />
-          <div>
+               class="w-[120px] h-[120px] object-contain select-none" draggable="false"
+               style="animation:coin-drop 520ms cubic-bezier(0.34,1.56,0.64,1) 80ms both" />
+          <div style="animation:fade-up 300ms ease-out 200ms both">
             <h2 class="font-display text-4xl text-lv-gold uppercase tracking-wide">ENVÍO GRATIS</h2>
             <p class="font-mono text-xs uppercase tracking-wide text-lv-cream/50 mt-2 leading-relaxed">
               Tu ₿erry está activa. El envío de tu pedido corre por nuestra cuenta.
@@ -45,8 +47,9 @@ import { CartDrawerComponent } from './shared/components/cart-drawer.component';
           </div>
           <button type="button"
             class="bg-lv-gold text-black font-mono text-xs uppercase tracking-widest font-semibold rounded-full px-8 py-3 hover:brightness-110 transition-all duration-200"
+            style="animation:fade-up 300ms ease-out 320ms both"
             (click)="closeBerryModal()">
-            Cerrar
+            ¡A LA TIENDA!
           </button>
         </div>
       </div>
