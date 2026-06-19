@@ -38,9 +38,9 @@ import { CartDrawerComponent } from './shared/components/cart-drawer.component';
                alt="₿erry" width="120" height="120"
                class="w-[120px] h-[120px] object-contain select-none" draggable="false" />
           <div>
-            <h2 class="font-display text-3xl text-lv-cream uppercase tracking-wide">¡Felicidades!</h2>
+            <h2 class="font-display text-4xl text-lv-gold uppercase tracking-wide">ENVÍO GRATIS</h2>
             <p class="font-mono text-xs uppercase tracking-wide text-lv-cream/50 mt-2 leading-relaxed">
-              Tu envío ha sido pagado con 1 ₿erry
+              Tu ₿erry está activa. El envío de tu pedido corre por nuestra cuenta.
             </p>
           </div>
           <button type="button"
