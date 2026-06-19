@@ -111,3 +111,18 @@
   to   { transform: translateX(-50%); }
 }
 .animate-marquee { animation: marquee 80s linear infinite; }
+
+@keyframes overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes modal-pop {
+  from { opacity: 0; transform: scale(0.88) translateY(16px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes coin-drop {
+  0%   { opacity: 0; transform: translateY(-24px) scale(0.85); }
+  55%  { opacity: 1; transform: translateY(6px) scale(1.08); }
+  75%  { transform: translateY(-4px) scale(0.97); }
+  100% { transform: translateY(0) scale(1); }
+}
