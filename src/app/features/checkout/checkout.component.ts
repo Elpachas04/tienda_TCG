@@ -123,8 +123,14 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
 
                 @if (form.deliveryMethod === 'shipping' && shippingInfo()) {
                   <div class="flex justify-between items-center pt-3 border-t border-white/[0.06]">
-                    <span class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/50">Envío — {{ shippingInfo()!.zone }}</span>
-                    <span class="font-display text-base text-lv-cream/80">{{ shippingInfo()!.price.toFixed(2) }}€</span>
+                    <span class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/50">
+                      @if (berryActive()) { Envío — ₿erry }
+                      @else if (freeShippingByTotal()) { Envío — Pedido +50€ }
+                      @else { Envío — {{ shippingInfo()!.zone }} }
+                    </span>
+                    <span class="font-display text-base text-lv-cream/80">
+                      @if (freeShipping()) { Gratis } @else { {{ shippingInfo()!.price.toFixed(2) }}€ }
+                    </span>
                   </div>
                 }
 
@@ -235,13 +241,31 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                     </div>
                   } @else if (shippingInfo()) {
                     <div class="mt-3 flex items-center justify-between px-3 sm:px-4 py-3 rounded-xl border border-lv-gold/30 bg-lv-gold/[0.07]">
-                      <div>
-                        <p class="font-display text-lv-gold text-xl sm:text-2xl leading-none">{{ shippingInfo()!.price.toFixed(2) }}€</p>
-                        <p class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/40 mt-0.5">Correos · {{ shippingInfo()!.zone }}</p>
-                      </div>
-                      <svg class="w-6 h-6 text-lv-gold/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                      </svg>
+                      @if (berryActive()) {
+                        <div>
+                          <p class="font-display text-lv-gold text-xl sm:text-2xl leading-none">Gratis</p>
+                          <p class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/40 mt-0.5">Envío pagado con ₿erry</p>
+                        </div>
+                        <img src="https://res.cloudinary.com/dew1whfdu/image/upload/v1781902915/berrycoin.png"
+                             alt="₿erry" width="32" height="32"
+                             class="w-8 h-8 object-contain select-none" draggable="false" />
+                      } @else if (freeShippingByTotal()) {
+                        <div>
+                          <p class="font-display text-lv-gold text-xl sm:text-2xl leading-none">Gratis</p>
+                          <p class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/40 mt-0.5">Correos · Pedido +50€</p>
+                        </div>
+                        <svg class="w-6 h-6 text-lv-gold/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                      } @else {
+                        <div>
+                          <p class="font-display text-lv-gold text-xl sm:text-2xl leading-none">{{ shippingInfo()!.price.toFixed(2) }}€</p>
+                          <p class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/40 mt-0.5">Correos · {{ shippingInfo()!.zone }}</p>
+                        </div>
+                        <svg class="w-6 h-6 text-lv-gold/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                        </svg>
+                      }
                     </div>
                   }
 
@@ -394,6 +418,7 @@ export class CheckoutComponent implements OnInit {
   submitting       = signal(false);
   fallbackUrl      = signal('');
   summaryOpen      = signal(false);
+  berryActive      = signal(false);
 
   shippingInfo     = signal<{ zone: string; price: number } | null>(null);
   shippingBlocked  = signal(false);
@@ -401,9 +426,13 @@ export class CheckoutComponent implements OnInit {
   oficinasExactas  = signal(true);
   selectedOficina  = signal<OficinaCorreos | null>(null);
 
-  readonly grandTotal = computed(() =>
-    this.cartService.total() + (this.shippingInfo()?.price ?? 0)
-  );
+  readonly freeShippingByTotal = computed(() => this.cartService.total() >= 50);
+  readonly freeShipping        = computed(() => this.berryActive() || this.freeShippingByTotal());
+
+  readonly grandTotal = computed(() => {
+    const shipping = this.freeShipping() ? 0 : (this.shippingInfo()?.price ?? 0);
+    return this.cartService.total() + shipping;
+  });
 
   readonly steps = [
     { n: '01', text: 'Te contactamos por email para confirmar detalles y coordinar el pago' },
@@ -415,6 +444,9 @@ export class CheckoutComponent implements OnInit {
   ngOnInit() {
     if (this.cartService.cartItems().length === 0) {
       this.router.navigate(['/catalog']);
+    }
+    if (isPlatformBrowser(this.platformId)) {
+      this.berryActive.set(sessionStorage.getItem('berry_active') === 'true');
     }
   }
 
@@ -527,7 +559,11 @@ export class CheckoutComponent implements OnInit {
 
     const deliveryLine = this.form.deliveryMethod === 'pickup'
       ? 'En mano (sin coste)'
-      : `Correos · CP ${this.form.postalCode} — ${info?.price.toFixed(2) ?? '?'} €`;
+      : this.berryActive()
+        ? `Correos · CP ${this.form.postalCode} — Envío pagado con ₿erry`
+        : this.freeShippingByTotal()
+          ? `Correos · CP ${this.form.postalCode} — Envío gratis (pedido +50€)`
+          : `Correos · CP ${this.form.postalCode} — ${info?.price.toFixed(2) ?? '?'} €`;
 
     fetch('/api/confirmation', {
       method:  'POST',
@@ -584,7 +620,9 @@ export class CheckoutComponent implements OnInit {
       deliveryMethod: this.form.deliveryMethod,
       postalCode:      this.form.deliveryMethod === 'shipping' ? this.form.postalCode : undefined,
       shippingZone:    info?.zone,
-      shippingCost:    info?.price,
+      shippingCost:    this.freeShipping() ? 0 : info?.price,
+      berry:           this.berryActive() || undefined,
+      freeShipping:    this.freeShippingByTotal() || undefined,
       oficina:         oficina ? {
         nombre:       oficina.nombre,
         direccion:    oficina.direccion,
@@ -624,6 +662,11 @@ export class CheckoutComponent implements OnInit {
       this.orderId.set(orderId);
       this.orderConfirmed.set(true);
       this.cartService.clearCart();
+      if (this.berryActive() && isPlatformBrowser(this.platformId)) {
+        sessionStorage.removeItem('berry_active');
+        sessionStorage.removeItem('berry_shown');
+        localStorage.setItem('berry_spent', 'true');
+      }
       this.sendConfirmationEmail(items, info, oficina, orderId);
     } catch {
       this.fallbackUrl.set(this.buildEmailFallbackUrl());
@@ -652,7 +695,11 @@ export class CheckoutComponent implements OnInit {
 
     const deliveryLine = this.form.deliveryMethod === 'pickup'
       ? 'En mano (sin coste)'
-      : `Envío Correos a CP ${this.form.postalCode} (${info?.zone}) — ${info?.price.toFixed(2)}€`;
+      : this.berryActive()
+        ? `Envío Correos a CP ${this.form.postalCode} (${info?.zone}) — Pagado con ₿erry`
+        : this.freeShippingByTotal()
+          ? `Envío Correos a CP ${this.form.postalCode} (${info?.zone}) — Gratis (pedido +50€)`
+          : `Envío Correos a CP ${this.form.postalCode} (${info?.zone}) — ${info?.price.toFixed(2)}€`;
 
     const oficinaLines = oficina ? [
       `Oficina: ${oficina.nombre}`,
