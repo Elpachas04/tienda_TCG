@@ -10,7 +10,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
   host: { class: 'block' },
   template: `
     <section id="hero"
-      class="relative min-h-screen flex flex-col justify-center items-center text-center px-4 sm:px-6 pt-24 sm:pt-28 pb-16 sm:pb-24 bg-lv-black">
+      class="relative min-h-screen flex flex-col justify-center items-center text-center px-4 sm:px-6 pt-32 sm:pt-36 pb-16 sm:pb-24 bg-lv-black">
 
       <!-- Radial glow -->
       <div class="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true"

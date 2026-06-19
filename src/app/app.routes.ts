@@ -57,5 +57,10 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/not-found/not-found.component').then(m => m.NotFoundComponent),
   },
+  {
+    path: 'gum-gum-berry',
+    loadComponent: () =>
+      import('./features/berry/gum-gum-berry.component').then(m => m.GumGumBerryComponent),
+  },
   { path: '**', redirectTo: '404' },
 ];

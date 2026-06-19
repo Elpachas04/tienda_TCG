@@ -12,7 +12,8 @@ import { CartService } from '../../core/services/cart.service';
   imports: [RouterLink],
   host: { class: 'block' },
   template: `
-    <header class="fixed top-0 left-0 right-0 z-60 flex justify-center pt-3 sm:pt-4 px-3 sm:px-4 pointer-events-none">
+    <header class="fixed left-0 right-0 z-60 flex justify-center pt-3 sm:pt-4 px-3 sm:px-4 pointer-events-none"
+            [style.top]="navTop() + 'px'">
       <nav
         class="liquid-glass rounded-[24px] sm:rounded-[32px] w-full max-w-[900px] px-4 sm:px-6 lg:px-8 py-3 sm:py-4 flex items-center justify-between transition-all duration-300 pointer-events-auto"
         [style.background]="scrolled() ? 'rgba(18,18,18,0.85)' : ''"
@@ -63,6 +64,7 @@ export class LvNavbarComponent {
   private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
   readonly scrolled = signal(false);
+  readonly navTop   = signal(32);
 
   private currentUrl = toSignal(
     this.router.events.pipe(
@@ -84,6 +86,7 @@ export class LvNavbarComponent {
   onScroll(): void {
     if (!isPlatformBrowser(this.platformId)) return;
     this.scrolled.set(window.scrollY > 50);
+    this.navTop.set(Math.max(0, 32 - window.scrollY));
   }
 
   onOrderClick(): void {
