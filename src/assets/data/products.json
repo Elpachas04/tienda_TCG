@@ -36,7 +36,8 @@
         "Ventana frontal de exhibición",
         "Laterales antideslizantes"
       ],
-      "images": ["deckbox-toploader-01", "deckbox-toploader-02", "deckbox-toploader-03", "deckbox-toploader-04", "deckbox-toploader-05"],
+      "video": "0620",
+      "images": ["1", "20260528_032610", "20260528_032728", "deckbox-toploader-03", "deckbox-toploader-04", "deckbox-toploader-05"],
       "price": 20,
       "colorPickerEnabled": true,
       "available": true
@@ -76,7 +77,7 @@
         "Compartimento penny",
         "Color a elegir"
       ],
-      "images": ["organizador-fundas-01", "organizador-fundas-02", "organizador-fundas-03", "organizador-fundas-04", "organizador-fundas-05"],
+      "images": ["20260612_171645", "20260612_171642", "20260612_171705", "organizador-fundas-04", "organizador-fundas-05"],
       "price": 12,
       "colorPickerEnabled": true,
       "available": true
@@ -95,7 +96,7 @@
         "Marco robusto",
         "Sin hardware adicional"
       ],
-      "images": ["aplastador-60-01", "aplastador-60-02", "aplastador-60-03", "aplastador-60-04", "aplastador-60-05"],
+      "images": ["20260528_032214", "aplastador-60-02", "aplastador-60-03", "aplastador-60-04", "aplastador-60-05"],
       "price": 20,
       "colorPickerEnabled": false,
       "variants": [
@@ -185,7 +186,8 @@
       "images": ["llaveros-01", "llaveros-02", "llaveros-03", "llaveros-04", "llaveros-05"],
       "price": 4,
       "colorPickerEnabled": false,
-      "available": true
+      "available": false,
+      "hidden": true
     }
   ],
   "categories": [
