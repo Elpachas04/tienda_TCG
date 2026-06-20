@@ -14,7 +14,7 @@ import { CartDrawerComponent } from './shared/components/cart-drawer.component';
     <div class="h-8 overflow-hidden flex items-center"
          style="background:rgba(201,168,76,0.07);border-bottom:1px solid rgba(201,168,76,0.14)">
       <div class="flex whitespace-nowrap animate-marquee" aria-hidden="true">
-        @for (i of bannerItems; track i) {
+        @for (i of bannerItems; track $index) {
           <span class="font-mono text-[10px] uppercase tracking-[0.25em] text-lv-gold/75 px-24">
             ENVÍO GRATIS EN PEDIDOS SUPERIORES A 50€
           </span>
