@@ -7,7 +7,7 @@ export class CatalogService {
   private readonly catalog = productsData as unknown as ProductCatalog;
 
   // Datos leídos una sola vez del JSON bundleado — no hay suscripciones ni recálculo
-  readonly products:   readonly Product[]        = this.catalog.products;
+  readonly products:   readonly Product[]        = this.catalog.products.filter(p => !p.hidden);
   readonly categories: readonly CategoryItem[]   = this.catalog.categories;
   readonly colors:     readonly Color[]          = this.catalog.colors;
   readonly addons:     readonly ProductAddon[]   = this.catalog.addons ?? [];

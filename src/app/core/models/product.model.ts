@@ -45,6 +45,7 @@ export interface Product {
   available_addons?: string[];
   colorPickerEnabled: boolean;
   available: boolean;
+  hidden?: boolean;
 }
 
 export interface CategoryItem {
