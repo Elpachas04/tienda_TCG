@@ -17,7 +17,7 @@
       ],
       "video": "deckBox_video",
       "images": ["deckbox-ventana-01", "deckbox-ventana-02", "deckbox-ventana-03", "deckbox-ventana-04", "deckbox-ventana-05"],
-      "price": 20,
+      "price": 15,
       "colorPickerEnabled": true,
       "available": true
     },
@@ -38,7 +38,7 @@
       ],
       "video": "0620",
       "images": ["1", "20260528_032610", "20260528_032728", "deckbox-toploader-03", "deckbox-toploader-04", "deckbox-toploader-05"],
-      "price": 20,
+      "price": 15,
       "colorPickerEnabled": true,
       "available": true
     },
