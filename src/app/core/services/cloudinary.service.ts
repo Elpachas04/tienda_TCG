@@ -25,10 +25,10 @@ export class CloudinaryService {
     return this.build(publicId, 'f_auto,q_auto,c_pad,b_rgb:111111,w_160,h_160');
   }
 
-  /** Video optimizado para tarjeta: 480px, calidad baja, formato auto */
+  /** Video optimizado para tarjeta: 480px, sin audio, calidad baja, formato auto */
   video(publicId: string): string {
     if (!publicId) return '';
-    return `https://res.cloudinary.com/dew1whfdu/video/upload/w_480,q_auto:low,f_auto/${publicId}`;
+    return `https://res.cloudinary.com/dew1whfdu/video/upload/w_480,q_auto:low,f_auto,ac_none/${publicId}`;
   }
 
   private build(publicId: string, transforms: string): string {

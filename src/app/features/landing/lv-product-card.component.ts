@@ -27,6 +27,7 @@ import { CloudinaryService } from '../../core/services/cloudinary.service';
         @if (product.video) {
           <video class="w-full h-full object-cover scale-[1.18] bg-lv-black"
                  autoplay muted loop playsinline preload="metadata"
+                 disablepictureinpicture disableremoteplayback
                  [src]="cloudinary.video(product.video!)"
                  [poster]="product.images.length ? cloudinary.card(product.images[0]) : ''">
           </video>
