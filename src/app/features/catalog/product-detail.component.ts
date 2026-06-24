@@ -289,6 +289,7 @@ export class ProductDetailComponent {
 
   private addTimer: ReturnType<typeof setTimeout> | null = null;
   private thumbProbes: HTMLImageElement[] = [];
+  private colorProbes: HTMLImageElement[] = [];
 
   readonly productData = toSignal<DetailData>(
     this.route.params.pipe(
@@ -324,6 +325,9 @@ export class ProductDetailComponent {
         }
         if (data?.product) {
           this.preloadThumbs(data.product.images);
+          if (data.product.colorImageKey) {
+            this.preloadColorImages(data.product.colorImageKey, data.colors);
+          }
           const variants = data.product.variants;
           if (variants?.length) {
             this.selectedVariant.set(variants.find(v => v.default) ?? variants[0]);
@@ -333,6 +337,7 @@ export class ProductDetailComponent {
     this.destroyRef.onDestroy(() => {
       if (this.addTimer) clearTimeout(this.addTimer);
       this.abortThumbProbes();
+      this.colorProbes.forEach(p => { p.src = ''; });
     });
   }
 
@@ -349,6 +354,15 @@ export class ProductDetailComponent {
   private abortThumbProbes(): void {
     this.thumbProbes.forEach(p => { p.onload = null; p.src = ''; });
     this.thumbProbes = [];
+  }
+
+  private preloadColorImages(key: string, colors: Color[]): void {
+    this.colorProbes.forEach(p => { p.src = ''; });
+    this.colorProbes = colors.map(color => {
+      const img = new Image();
+      img.src = this.cloudinary.colorImage(key, color.id);
+      return img;
+    });
   }
 
   thumbIndex(img: string, product: Product): number {
