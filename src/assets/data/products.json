@@ -199,12 +199,12 @@
   ],
   "colors": [
     { "id": "negro",    "name": "Negro",    "hex": "#1A1A1A", "type": "PLA Basic", "stock": "alto",   "quantity": 2, "popular": true },
-    { "id": "rojo",     "name": "Rojo",     "hex": "#CC2200", "type": "PLA Basic", "stock": "normal", "quantity": 1, "popular": true },
-    { "id": "verde",    "name": "Verde",    "hex": "#2E7D45", "type": "PLA Basic", "stock": "alto",   "quantity": 2, "popular": true },
-    { "id": "azul",     "name": "Azul",     "hex": "#1E6FD9", "type": "PLA Basic", "stock": "normal", "quantity": 1, "popular": true },
-    { "id": "morado",   "name": "Morado",   "hex": "#6B2D8B", "type": "PLA Basic", "stock": "normal", "quantity": 1, "popular": true },
-    { "id": "amarillo", "name": "Amarillo", "hex": "#F5C800", "type": "PLA Basic", "stock": "normal", "quantity": 1, "popular": true },
-    { "id": "blanco",   "name": "Blanco",   "hex": "#EFEFEF", "type": "PLA Basic", "stock": "alto",   "quantity": 2, "popular": true }
+    { "id": "rojo",     "name": "Rojo",     "hex": "#C12E1F", "type": "PLA Basic", "stock": "normal", "quantity": 1, "popular": true },
+    { "id": "verde",    "name": "Verde",    "hex": "#00AE42", "type": "PLA Basic", "stock": "alto",   "quantity": 2, "popular": true },
+    { "id": "azul",     "name": "Azul",     "hex": "#0A2989", "type": "PLA Basic", "stock": "normal", "quantity": 1, "popular": true },
+    { "id": "morado",   "name": "Morado",   "hex": "#5E43B7", "type": "PLA Basic", "stock": "normal", "quantity": 1, "popular": true },
+    { "id": "amarillo", "name": "Amarillo", "hex": "#F4EE2A", "type": "PLA Basic", "stock": "normal", "quantity": 1, "popular": true },
+    { "id": "blanco",   "name": "Blanco",   "hex": "#FFFFFF", "type": "PLA Basic", "stock": "alto",   "quantity": 2, "popular": true }
   ],
   "addons": [
     { "id": "separadores", "name": "Añadir 10 separadores", "price": 2.00, "default": false }
