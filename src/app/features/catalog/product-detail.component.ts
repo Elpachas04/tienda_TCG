@@ -67,7 +67,7 @@ type DetailData = { product: Product | null; colors: Color[] };
                     <button
                       class="w-14 h-14 sm:w-20 sm:h-20 rounded-xl overflow-hidden border-2 transition-colors duration-200 bg-black flex items-center justify-center flex-shrink-0"
                       [class]="showVideo() ? 'border-lv-gold' : 'border-white/10 hover:border-lv-gold/40'"
-                      (click)="showVideo.set(true)">
+                      (click)="showVideo.set(true); showColorImage.set(false)">
                       <svg class="w-6 h-6 text-lv-gold/80" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z"/>
                       </svg>
@@ -77,7 +77,7 @@ type DetailData = { product: Product | null; colors: Color[] };
                     <button
                       class="w-14 h-14 sm:w-20 sm:h-20 rounded-xl overflow-hidden border-2 transition-colors duration-200 flex-shrink-0"
                       [class]="!showVideo() && currentImageIndex() === thumbIndex(img, data.product) ? 'border-lv-gold' : 'border-white/10 hover:border-lv-gold/40'"
-                      (click)="showVideo.set(false); currentImageIndex.set(thumbIndex(img, data.product))">
+                      (click)="showVideo.set(false); showColorImage.set(false); currentImageIndex.set(thumbIndex(img, data.product)); mainImageLoaded.set(false)">
                       <img [src]="cloudinary.thumb(img)" [alt]="data.product.name" class="w-full h-full object-cover"
                            draggable="false"
                            (contextmenu)="$event.preventDefault()"/>
@@ -198,7 +198,7 @@ type DetailData = { product: Product | null; colors: Color[] };
                         [class]="selectedColor()?.id === color.id
                           ? 'border-lv-gold scale-110 ring-2 ring-lv-gold/30 ring-offset-2 ring-offset-lv-black'
                           : 'border-white/20 hover:border-white/50 hover:scale-105'"
-                        (click)="selectedColor.set(color)">
+                        (click)="selectColor(color)">
                       </button>
                     }
                   </div>
@@ -283,6 +283,7 @@ export class ProductDetailComponent {
   readonly selectedAddonIds   = signal<Set<string>>(new Set());
   readonly justAdded          = signal(false);
   readonly showVideo          = signal(true);
+  readonly showColorImage     = signal(false);
   readonly mainImageLoaded    = signal(false);
   readonly readyThumbs        = signal<string[]>([]);
 
@@ -298,6 +299,7 @@ export class ProductDetailComponent {
         this.selectedColor.set(null);
         this.selectedAddonIds.set(new Set());
         this.showVideo.set(true);
+        this.showColorImage.set(false);
         this.mainImageLoaded.set(false);
         this.readyThumbs.set([]);
         this.abortThumbProbes();
@@ -315,6 +317,10 @@ export class ProductDetailComponent {
       .subscribe(data => {
         if (data?.colors.length) {
           this.selectedColor.set(data.colors.find(c => c.id === 'negro') ?? data.colors[0]);
+          if (data.product?.colorImageKey) {
+            this.showColorImage.set(true);
+            this.showVideo.set(false);
+          }
         }
         if (data?.product) {
           this.preloadThumbs(data.product.images);
@@ -355,9 +361,20 @@ export class ProductDetailComponent {
   }
 
   currentImage(product: Product): string {
+    const color = this.selectedColor();
+    if (this.showColorImage() && product.colorImageKey && color) {
+      return this.cloudinary.colorImage(product.colorImageKey, color.id);
+    }
     const valid = this.validImages(product);
     const id = valid[this.currentImageIndex()];
     return id ? this.cloudinary.detail(id) : PLACEHOLDER;
+  }
+
+  selectColor(color: Color): void {
+    this.selectedColor.set(color);
+    this.showColorImage.set(true);
+    this.showVideo.set(false);
+    this.mainImageLoaded.set(false);
   }
 
   protected productAddons(product: Product): ProductAddon[] {

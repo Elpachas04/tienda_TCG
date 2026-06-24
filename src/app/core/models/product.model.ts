@@ -39,6 +39,7 @@ export interface Product {
   description: string;
   features: string[];
   video?: string;
+  colorImageKey?: string;
   images: string[];
   price: number;
   variants?: ProductVariant[];

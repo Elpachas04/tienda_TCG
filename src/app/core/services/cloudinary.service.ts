@@ -25,6 +25,11 @@ export class CloudinaryService {
     return this.build(publicId, 'f_auto,q_auto,c_pad,b_rgb:111111,w_160,h_160');
   }
 
+  /** Imagen de producto en color específico: {key}_{colorId} */
+  colorImage(key: string, colorId: string): string {
+    return this.build(`${key}_${colorId}`, 'f_auto,q_auto,w_900');
+  }
+
   /** Video optimizado para tarjeta: 480px, sin audio, calidad baja, formato auto */
   video(publicId: string): string {
     if (!publicId) return '';
