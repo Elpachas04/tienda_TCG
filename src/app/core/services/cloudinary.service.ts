@@ -12,22 +12,22 @@ export class CloudinaryService {
 
   /** Tarjeta del catálogo — cuadrado 360 px, producto completo sin recorte */
   card(publicId: string): string {
-    return this.build(publicId, 'f_auto,q_auto,c_pad,b_rgb:111111,w_360,h_360');
+    return this.build(publicId, 'f_auto,q_auto:good,c_pad,b_rgb:111111,w_360,h_360');
   }
 
-  /** Imagen principal del detalle de producto — cuadrado 900 px, producto completo sin recorte */
+  /** Imagen principal del detalle de producto — cuadrado 700 px (cubre 2× DPR en col de 350 px) */
   detail(publicId: string): string {
-    return this.build(publicId, 'f_auto,q_auto,c_pad,b_rgb:111111,w_900,h_900');
+    return this.build(publicId, 'f_auto,q_auto:good,c_pad,b_rgb:111111,w_700,h_700');
   }
 
-  /** Miniatura de galería — cuadrado 160 px, producto completo sin recorte */
+  /** Miniatura de galería — cuadrado 120 px, calidad baja (se ve a 56–80 px) */
   thumb(publicId: string): string {
-    return this.build(publicId, 'f_auto,q_auto,c_pad,b_rgb:111111,w_160,h_160');
+    return this.build(publicId, 'f_auto,q_auto:low,c_pad,b_rgb:111111,w_120,h_120');
   }
 
   /** Imagen de producto en color específico: {key}_{colorId} */
   colorImage(key: string, colorId: string): string {
-    return this.build(`${key}_${colorId}`, 'f_auto,q_auto,w_900');
+    return this.build(`${key}_${colorId}`, 'f_auto,q_auto:good,w_700');
   }
 
   /** Video optimizado para tarjeta: 480px, sin audio, calidad baja, formato auto */

@@ -53,7 +53,7 @@ type DetailData = { product: Product | null; colors: Color[] };
                 } @else {
                   <img [src]="currentImage(data.product)" [alt]="data.product.name"
                        class="w-full h-full object-contain transition-transform duration-700 ease-out hover:scale-110"
-                       loading="eager"
+                       loading="eager" fetchpriority="high" decoding="async"
                        draggable="false"
                        (load)="mainImageLoaded.set(true)"
                        (contextmenu)="$event.preventDefault()"
@@ -79,6 +79,7 @@ type DetailData = { product: Product | null; colors: Color[] };
                       [class]="!showVideo() && currentImageIndex() === thumbIndex(img, data.product) ? 'border-lv-gold' : 'border-white/10 hover:border-lv-gold/40'"
                       (click)="showVideo.set(false); showColorImage.set(false); currentImageIndex.set(thumbIndex(img, data.product)); mainImageLoaded.set(false)">
                       <img [src]="cloudinary.thumb(img)" [alt]="data.product.name" class="w-full h-full object-cover"
+                           loading="lazy" decoding="async"
                            draggable="false"
                            (contextmenu)="$event.preventDefault()"/>
                     </button>
