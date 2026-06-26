@@ -158,9 +158,17 @@ type DetailData = { product: Product | null; colors: Color[] };
               }
 
               <!-- Descripción -->
-              <p class="text-lv-cream/55 font-body leading-relaxed text-sm mb-5">
+              <p class="text-lv-cream/55 font-body leading-relaxed text-sm mb-4">
                 {{ variantDescription(data.product) }}
               </p>
+
+              <!-- Aviso: cartas no incluidas -->
+              <div class="flex items-center gap-2.5 bg-lv-surface border border-lv-border rounded-card px-3.5 py-2.5 mb-5">
+                <svg class="w-4 h-4 text-lv-gold/60 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <p class="font-mono text-[10px] uppercase tracking-wider text-lv-muted">Las cartas <strong class="text-lv-cream/50">no están incluidas</strong> — solo el accesorio impreso en 3D</p>
+              </div>
 
               <!-- Ideal para (chips) o Features (checkmarks) -->
               @if (variantUses(data.product); as uses) {
