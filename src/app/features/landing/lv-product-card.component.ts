@@ -68,7 +68,8 @@ import { CloudinaryService } from '../../core/services/cloudinary.service';
           <h3 class="font-display text-xl text-lv-cream leading-tight group-hover:text-lv-gold transition-colors duration-200">
             {{ product.name }}
           </h3>
-          <p class="font-body text-[11px] text-lv-cream/35 mt-1 mb-3 leading-snug">{{ product.tagline }}</p>
+          <p class="font-body text-[11px] text-lv-cream/35 mt-1 mb-2 leading-snug">{{ product.tagline }}</p>
+          <p class="font-mono text-[8px] uppercase tracking-wider text-lv-muted/50 mb-3">Sin cartas incluidas</p>
         </a>
 
         <!-- Variantes -->
