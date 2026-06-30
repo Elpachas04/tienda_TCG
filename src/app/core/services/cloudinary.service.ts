@@ -30,6 +30,7 @@ export class CloudinaryService {
     return this.build(`${key}_${colorId}`, 'f_auto,q_auto:good,w_700');
   }
 
+
   /** Video optimizado para tarjeta: 480px, sin audio, calidad baja, formato auto */
   video(publicId: string): string {
     if (!publicId) return '';
