@@ -4,9 +4,11 @@ import { toSignal, toObservable, takeUntilDestroyed } from '@angular/core/rxjs-i
 import { map, tap } from 'rxjs';
 import { CatalogService } from '../../core/services/catalog.service';
 import { CartService } from '../../core/services/cart.service';
-import { Product, ProductVariant, ProductAddon, Color } from '../../core/models/product.model';
+import { Product, ProductVariant, ProductAddon, Color, Leader } from '../../core/models/product.model';
 import { PLACEHOLDER } from '../../shared/constants';
 import { CloudinaryService } from '../../core/services/cloudinary.service';
+import { LeaderPickerComponent } from '../../shared/components/leader-picker.component';
+import { CustomLeaderRequestComponent } from '../../shared/components/custom-leader-request.component';
 
 type DetailData = { product: Product | null; colors: Color[] };
 
@@ -14,7 +16,7 @@ type DetailData = { product: Product | null; colors: Color[] };
   selector: 'app-product-detail',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink],
+  imports: [RouterLink, LeaderPickerComponent, CustomLeaderRequestComponent],
   host: { class: 'block animate-fade-up' },
   template: `
     @let data = productData();
@@ -111,6 +113,43 @@ type DetailData = { product: Product | null; colors: Color[] };
                 <h1 class="font-display text-4xl sm:text-5xl md:text-6xl text-lv-cream leading-none uppercase">{{ data.product.name }}</h1>
               </div>
 
+              <!-- Color — swatches directos One Piece -->
+              @if (data.product.colorPickerEnabled && data.colors.length > 0) {
+                <div class="mb-5">
+                  <p class="font-mono text-[10px] uppercase tracking-widest text-lv-cream/30 mb-3">Color</p>
+                  <div class="flex flex-wrap gap-2.5">
+                    @for (color of data.colors; track color.id) {
+                      <button
+                        type="button"
+                        [title]="color.name"
+                        class="w-8 h-8 rounded-full border-2 transition-all duration-150 flex-shrink-0"
+                        [style.background-color]="color.hex"
+                        [class]="selectedColor()?.id === color.id
+                          ? 'border-lv-gold scale-110 ring-2 ring-lv-gold/30 ring-offset-2 ring-offset-lv-black'
+                          : 'border-white/20 hover:border-white/50 hover:scale-105'"
+                        (click)="selectColor(color)">
+                      </button>
+                    }
+                  </div>
+                </div>
+              }
+
+              <!-- Leader picker -->
+              @if (data.product.leaderPickerEnabled && data.product.leaders?.length) {
+                <div class="mb-5">
+                  <p class="font-mono text-[10px] uppercase tracking-widest text-lv-cream/30 mb-3">Líder</p>
+                  <app-leader-picker
+                    [leaders]="data.product.leaders!"
+                    [selected]="selectedLeader()"
+                    layout="block"
+                    (leaderChange)="onLeaderChange($event)">
+                  </app-leader-picker>
+                  @if (data.product.customLeaderRequest) {
+                    <app-custom-leader-request></app-custom-leader-request>
+                  }
+                </div>
+              }
+
               <!-- Selector de tamaño tipo card -->
               @if (data.product.variants && data.product.variants.length > 0) {
                 <div class="mb-5">
@@ -162,14 +201,6 @@ type DetailData = { product: Product | null; colors: Color[] };
                 {{ variantDescription(data.product) }}
               </p>
 
-              <!-- Aviso: cartas no incluidas -->
-              <div class="flex items-center gap-2.5 bg-lv-surface border border-lv-border rounded-card px-3.5 py-2.5 mb-5">
-                <svg class="w-4 h-4 text-lv-gold/60 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                <p class="font-mono text-[10px] uppercase tracking-wider text-lv-muted">Las cartas <strong class="text-lv-cream/50">no están incluidas</strong> — solo el accesorio impreso en 3D</p>
-              </div>
-
               <!-- Ideal para (chips) o Features (checkmarks) -->
               @if (variantUses(data.product); as uses) {
                 <div class="mb-5">
@@ -191,30 +222,6 @@ type DetailData = { product: Product | null; colors: Color[] };
                     </li>
                   }
                 </ul>
-              }
-
-              <!-- Color — swatches directos One Piece -->
-              @if (data.product.colorPickerEnabled && data.colors.length > 0) {
-                <div class="border-t border-white/[0.06] pt-5 mb-5">
-                  <p class="font-mono text-[10px] uppercase tracking-widest text-lv-cream/30 mb-3">Color</p>
-                  <div class="flex flex-wrap gap-2.5">
-                    @for (color of data.colors; track color.id) {
-                      <button
-                        type="button"
-                        [title]="color.name"
-                        class="w-8 h-8 rounded-full border-2 transition-all duration-150 flex-shrink-0"
-                        [style.background-color]="color.hex"
-                        [class]="selectedColor()?.id === color.id
-                          ? 'border-lv-gold scale-110 ring-2 ring-lv-gold/30 ring-offset-2 ring-offset-lv-black'
-                          : 'border-white/20 hover:border-white/50 hover:scale-105'"
-                        (click)="selectColor(color)">
-                      </button>
-                    }
-                  </div>
-                  @if (selectedColor()) {
-                    <p class="font-mono text-xs text-lv-muted mt-2.5">{{ selectedColor()!.name }}</p>
-                  }
-                </div>
               }
 
               <!-- Addons -->
@@ -242,6 +249,15 @@ type DetailData = { product: Product | null; colors: Color[] };
                       <span class="font-mono text-sm text-lv-gold">+{{ addon.price }}€</span>
                     </label>
                   }
+                </div>
+              }
+
+              @if (data.product.id === 'caja-bulk') {
+                <div class="flex items-center gap-2.5 bg-lv-surface border border-lv-border rounded-card px-3.5 py-2.5 mb-5">
+                  <svg class="w-4 h-4 text-lv-gold/60 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  <p class="font-mono text-[10px] uppercase tracking-wider text-lv-muted">Las cartas <strong class="text-lv-cream/50">no están incluidas</strong> — solo el accesorio impreso en 3D</p>
                 </div>
               }
 
@@ -289,6 +305,8 @@ export class ProductDetailComponent {
   readonly failedIds          = signal<Set<string>>(new Set());
   readonly selectedVariant    = signal<ProductVariant | null>(null);
   readonly selectedColor      = signal<Color | null>(null);
+  readonly selectedLeader     = signal<Leader | null>(null);
+  readonly leaderImageIds     = signal<string[]>([]);
   readonly selectedAddonIds   = signal<Set<string>>(new Set());
   readonly justAdded          = signal(false);
   readonly showVideo          = signal(true);
@@ -307,6 +325,8 @@ export class ProductDetailComponent {
         this.failedIds.set(new Set());
         this.selectedVariant.set(null);
         this.selectedColor.set(null);
+        this.selectedLeader.set(null);
+        this.leaderImageIds.set([]);
         this.selectedAddonIds.set(new Set());
         this.showVideo.set(true);
         this.showColorImage.set(false);
@@ -333,13 +353,26 @@ export class ProductDetailComponent {
           }
         }
         if (data?.product) {
-          this.preloadThumbs(data.product.images);
-          if (data.product.colorImageKey) {
-            this.preloadColorImages(data.product.colorImageKey, data.colors);
-          }
           const variants = data.product.variants;
           if (variants?.length) {
             this.selectedVariant.set(variants.find(v => v.default) ?? variants[0]);
+          }
+          if (data.product.colorImageKey) {
+            this.preloadColorImages(data.product.colorImageKey, data.colors);
+          }
+          if (data.product.leaderPickerEnabled && data.product.leaders?.length) {
+            const available = data.product.leaders.filter(l => l.available);
+            const leader = available.find(l => l.selected) ?? available[0] ?? null;
+            this.selectedLeader.set(leader);
+            if (leader && data.product.leaderImageKey) {
+              const ids = this.buildLeaderImageIds(leader, data.product.leaderImageKey);
+              this.leaderImageIds.set(ids);
+              this.preloadThumbs(ids);
+            } else {
+              this.preloadThumbs(data.product.images);
+            }
+          } else {
+            this.preloadThumbs(data.product.images);
           }
         }
       });
@@ -378,7 +411,14 @@ export class ProductDetailComponent {
     return this.validImages(product).indexOf(img);
   }
 
+  private buildLeaderImageIds(leader: Leader, key: string): string[] {
+    if (leader.images?.length) return [...leader.images];
+    return [1, 2, 3, 4, 5].map(i => `${key}_${leader.id}_${String(i).padStart(2, '0')}`);
+  }
+
   validImages(product: Product): string[] {
+    const leaderIds = this.leaderImageIds();
+    if (leaderIds.length) return leaderIds;
     const failed = this.failedIds();
     return product.images.filter(id => !failed.has(id));
   }
@@ -398,6 +438,22 @@ export class ProductDetailComponent {
     this.showColorImage.set(true);
     this.showVideo.set(false);
     this.mainImageLoaded.set(false);
+  }
+
+  onLeaderChange(leader: Leader | null): void {
+    this.selectedLeader.set(leader);
+    const product = this.productData()?.product;
+    if (leader && product?.leaderImageKey) {
+      const ids = this.buildLeaderImageIds(leader, product.leaderImageKey);
+      this.leaderImageIds.set(ids);
+      this.currentImageIndex.set(0);
+      this.mainImageLoaded.set(false);
+      this.showVideo.set(false);
+      this.readyThumbs.set([]);
+      this.preloadThumbs(ids);
+    } else {
+      this.leaderImageIds.set([]);
+    }
   }
 
   protected productAddons(product: Product): ProductAddon[] {
@@ -446,12 +502,14 @@ export class ProductDetailComponent {
     }
     const addons = this.productAddons(product).filter(a => this.selectedAddonIds().has(a.id));
     const addonLabel = addons.map(a => a.name).join(', ');
+    const leader = this.selectedLeader()?.name;
     this.cartService.addItem({
       productId:   product.id,
       productSku:  product.sku,
       productName: product.name,
       variant:     [this.selectedVariant()?.label, addonLabel].filter(Boolean).join(' + '),
       color:       color?.name,
+      leader,
       quantity:    1,
       unitPrice:   this.currentPrice(product)
     });
@@ -462,6 +520,13 @@ export class ProductDetailComponent {
   }
 
   onImageError(product: Product): void {
+    if (this.leaderImageIds().length) {
+      const next = this.currentImageIndex() + 1;
+      if (next < this.leaderImageIds().length) {
+        this.currentImageIndex.set(next);
+      }
+      return;
+    }
     const valid = this.validImages(product);
     const failedId = valid[this.currentImageIndex()];
     if (!failedId) return;

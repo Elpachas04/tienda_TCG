@@ -45,7 +45,7 @@ const handler: Handler = async (event: HandlerEvent) => {
   const { customerName, customerEmail, items, deliveryLine, deliveryMethod, oficina, total, orderId } = body as {
     customerName:   string;
     customerEmail:  string;
-    items:          { name: string; qty: number; variant?: string; color?: string; price: number }[];
+    items:          { name: string; qty: number; variant?: string; color?: string; leader?: string; price: number }[];
     deliveryLine:   string;
     deliveryMethod?: string;
     oficina?:       { nombre: string; direccion: string; codigoPostal: string; localidad: string };
@@ -59,9 +59,9 @@ const handler: Handler = async (event: HandlerEvent) => {
 
   const trackingUrl = orderId ? `${SITE_URL}/seguimiento?id=${encodeURIComponent(orderId)}` : `${SITE_URL}/seguimiento`;
 
-  const itemRows = (items as { name: string; qty: number; variant?: string; color?: string; price: number }[])
+  const itemRows = (items as { name: string; qty: number; variant?: string; color?: string; leader?: string; price: number }[])
     .map(i => {
-      const detail = [i.variant, i.color].filter(Boolean).map(v => esc(v as string)).join(" &middot; ");
+      const detail = [i.variant, i.color, i.leader ? `Líder: ${i.leader}` : undefined].filter(Boolean).map(v => esc(v as string)).join(" &middot; ");
       return `
         <tr>
           <td style="padding:10px 0;border-bottom:1px solid #2a2a2a;color:#f0f0f0;font-family:'Barlow',Arial,sans-serif;font-size:14px;">

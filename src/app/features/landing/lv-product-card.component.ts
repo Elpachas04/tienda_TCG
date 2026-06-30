@@ -1,17 +1,18 @@
 import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, signal, inject, DestroyRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Product, ProductVariant, Color } from '../../core/models/product.model';
+import { Product, ProductVariant, Color, Leader } from '../../core/models/product.model';
 import { CartItem } from '../../core/models/cart-item.model';
 import { CardGlowDirective } from '../../shared/directives/card-glow.directive';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 import { PLACEHOLDER } from '../../shared/constants';
 import { CloudinaryService } from '../../core/services/cloudinary.service';
+import { LeaderPickerComponent } from '../../shared/components/leader-picker.component';
 
 @Component({
   selector: 'app-lv-product-card',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, RevealDirective],
+  imports: [RouterLink, RevealDirective, LeaderPickerComponent],
   host: { class: 'block h-full' },
   template: `
     <div lvReveal
@@ -69,7 +70,9 @@ import { CloudinaryService } from '../../core/services/cloudinary.service';
             {{ product.name }}
           </h3>
           <p class="font-body text-[11px] text-lv-cream/35 mt-1 mb-2 leading-snug">{{ product.tagline }}</p>
-          <p class="font-mono text-[8px] uppercase tracking-wider text-lv-muted/50 mb-3">Sin cartas incluidas</p>
+          @if (product.id === 'caja-bulk') {
+            <p class="font-mono text-[8px] uppercase tracking-wider text-lv-muted/50 mb-3">Sin cartas incluidas</p>
+          }
         </a>
 
         <!-- Variantes -->
@@ -126,11 +129,18 @@ import { CloudinaryService } from '../../core/services/cloudinary.service';
               </button>
             }
           </div>
-          @if (selectedColor()) {
-            <p class="font-mono text-[9px] uppercase tracking-wider text-lv-gold/60 mt-1.5">
-              Color: {{ selectedColor()!.name }}
-            </p>
-          }
+        }
+
+        <!-- Leader picker (inline) -->
+        @if (product.leaderPickerEnabled && product.leaders?.length) {
+          <div class="mt-3" (click)="$event.stopPropagation()">
+            <app-leader-picker
+              [leaders]="product.leaders!"
+              [selected]="selectedLeader()"
+              layout="inline"
+              (leaderChange)="selectedLeader.set($event)">
+            </app-leader-picker>
+          </div>
         }
       </div>
     </div>
@@ -150,6 +160,7 @@ export class LvProductCardComponent implements OnChanges {
   readonly failedIds         = signal<Set<string>>(new Set());
   readonly selectedVariant   = signal<ProductVariant | null>(null);
   readonly selectedColor     = signal<Color | null>(null);
+  readonly selectedLeader    = signal<Leader | null>(null);
   readonly justAdded         = signal(false);
 
   constructor() {
@@ -167,6 +178,10 @@ export class LvProductCardComponent implements OnChanges {
       this.currentImageIndex.set(0);
       const variants = this.product.variants;
       this.selectedVariant.set(variants?.length ? (variants.find(v => v.default) ?? variants[0]) : null);
+      if (this.product.leaderPickerEnabled && this.product.leaders?.length) {
+        const avail = this.product.leaders.filter(l => l.available);
+        this.selectedLeader.set(avail.find(l => l.selected) ?? avail[0] ?? null);
+      }
     }
   }
 
@@ -198,6 +213,7 @@ export class LvProductCardComponent implements OnChanges {
       productName: this.product.name,
       variant:     this.selectedVariant()?.label,
       color:       this.selectedColor()?.name,
+      leader:      this.selectedLeader()?.name,
       quantity:    1,
       unitPrice:   this.currentPrice()
     });

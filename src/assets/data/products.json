@@ -1,6 +1,33 @@
 {
   "products": [
     {
+      "id": "leader-vault",
+      "sku": "LDV",
+      "name": "Leader Vault",
+      "tagline": "Tu Líder al frente, tu mazo bajo control.",
+      "category": "deckbox",
+      "badge": "Nuevo",
+      "badgeStyle": "gold",
+      "description": "Deckbox con la carta Líder a la vista en el frente y una ilustración del personaje en cada uno de los 3 laterales restantes. Tapa superior deslizante con cierre magnético y el símbolo de la tripulación grabado por fuera — por dentro lleva las fichas de estado imantadas (Freeze, Tax, Negate, Blocker, Effect Used) listas para usar en partida. Interior dividido en dos compartimentos: mazo y cartas DON!!.",
+      "features": [
+        "Ventana frontal para la carta Líder",
+        "Ilustración del personaje en los 3 laterales",
+        "Tapa deslizante con cierre magnético y símbolo de tripulación",
+        "Fichas de estado imantadas bajo la tapa (Freeze, Tax, Negate, Blocker, Effect Used)",
+        "Interior dividido: compartimento mazo y compartimento DON!!"
+      ],
+      "images": ["leader-vault_yamato_01"],
+      "price": 50,
+      "colorPickerEnabled": false,
+      "leaderPickerEnabled": true,
+      "leaderImageKey": "leader-vault",
+      "leaders": [
+        { "id": "yamato", "name": "Yamato", "available": true, "selected": true }
+      ],
+      "customLeaderRequest": true,
+      "available": true
+    },
+    {
       "id": "deckbox-ventana",
       "sku": "LDB",
       "name": "Leader Display Box",
@@ -18,28 +45,6 @@
       "video": "deckBox_video",
       "colorImageKey": "deckbox",
       "images": ["deckbox-ventana-01", "deckbox-ventana-02", "deckbox-ventana-03", "deckbox-ventana-04", "deckbox-ventana-05"],
-      "price": 15,
-      "colorPickerEnabled": true,
-      "available": true
-    },
-    {
-      "id": "deckbox-toploader",
-      "sku": "SHV",
-      "name": "Shutter Vault",
-      "tagline": "Tus toploaders organizados, protegidos y listos para enseñar.",
-      "category": "deckbox",
-      "badge": "Toploader",
-      "badgeStyle": "teal",
-      "description": "Persiana enrollable que cierra de verdad. Mete tus toploaders, cierra y listo — sin que se salgan, sin polvo, sin el caos de tenerlos sueltos en una bolsa. Abre, enseña, cierra. Así de simple.",
-      "features": [
-        "Cierre de persiana anti-polvo",
-        "Eyector inferior para sacar sin forzar",
-        "Ventana frontal de exhibición",
-        "Laterales antideslizantes"
-      ],
-      "video": "0620",
-      "colorImageKey": "toploader",
-      "images": ["1", "20260528_032610", "20260528_032728", "deckbox-toploader-03", "deckbox-toploader-04", "deckbox-toploader-05"],
       "price": 15,
       "colorPickerEnabled": true,
       "available": true
@@ -65,11 +70,33 @@
       "available": true
     },
     {
+      "id": "deckbox-toploader",
+      "sku": "SHV",
+      "name": "Shutter Vault",
+      "tagline": "Tus toploaders organizados, protegidos y listos para enseñar.",
+      "category": "storage",
+      "badge": "Toploader",
+      "badgeStyle": "teal",
+      "description": "Persiana enrollable que cierra de verdad. Mete tus toploaders, cierra y listo — sin que se salgan, sin polvo, sin el caos de tenerlos sueltos en una bolsa. Abre, enseña, cierra. Así de simple.",
+      "features": [
+        "Cierre de persiana anti-polvo",
+        "Eyector inferior para sacar sin forzar",
+        "Ventana frontal de exhibición",
+        "Laterales antideslizantes"
+      ],
+      "video": "0620",
+      "colorImageKey": "toploader",
+      "images": ["1", "20260528_032610", "20260528_032728", "deckbox-toploader-03", "deckbox-toploader-04", "deckbox-toploader-05"],
+      "price": 15,
+      "colorPickerEnabled": true,
+      "available": true
+    },
+    {
       "id": "organizador-fundas",
       "sku": "ORF",
       "name": "Organizador de fundas",
       "tagline": "Un sitio para cada funda. Cada funda en su sitio.",
-      "category": "storage",
+      "category": "tools",
       "badge": "Único",
       "badgeStyle": "teal",
       "description": "Tres compartimentos específicos para toploaders, semirígidas y pennies. Acabas con el cajón donde todo se mezcla y nada aparece cuando lo necesitas.",
