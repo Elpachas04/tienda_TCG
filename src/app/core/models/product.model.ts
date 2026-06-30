@@ -28,6 +28,14 @@ export interface ProductAddon {
 export type BadgeStyle = 'gold' | 'teal' | 'purple' | 'coral' | null;
 export type ProductCategory = 'deckbox' | 'storage' | 'tools' | 'accessories';
 
+export interface Leader {
+  id: string;
+  name: string;
+  available: boolean;
+  selected?: boolean;
+  images?: string[];
+}
+
 export interface Product {
   id: string;
   sku?: string;
@@ -39,11 +47,16 @@ export interface Product {
   description: string;
   features: string[];
   video?: string;
+  colorImageKey?: string;
+  leaderImageKey?: string;
   images: string[];
   price: number;
   variants?: ProductVariant[];
   available_addons?: string[];
   colorPickerEnabled: boolean;
+  leaderPickerEnabled?: boolean;
+  leaders?: Leader[];
+  customLeaderRequest?: boolean;
   available: boolean;
   hidden?: boolean;
 }

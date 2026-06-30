@@ -55,6 +55,7 @@ interface ValidatedItem {
   unitPrice:   number;
   variant?:    string;
   color?:      string;
+  leader?:     string;
   notes?:      string;
 }
 
@@ -137,6 +138,7 @@ function validateOrder(body: unknown, orderId: string): ValidatedOrder {
       unitPrice,
       variant: sanitizeOptionalStr(i["variant"], 100),
       color:   sanitizeOptionalStr(i["color"],   100),
+      leader:  sanitizeOptionalStr(i["leader"],  200),
       notes:   sanitizeOptionalStr(i["notes"],   500),
     };
   });
@@ -195,6 +197,7 @@ function buildMessage(order: ValidatedOrder): string {
     let line   = `• ${item.quantity}× <b>${escapeHtml(item.productName)}</b> <code>[${escapeHtml(ref)}]</code>`;
     if (item.variant) line += ` (${escapeHtml(item.variant)})`;
     if (item.color)   line += ` — Color: ${escapeHtml(item.color)}`;
+    if (item.leader)  line += ` — Líder: ${escapeHtml(item.leader)}`;
     line += ` — ${(item.quantity * item.unitPrice).toFixed(2)}€`;
     if (item.notes)   line += `\n  📝 <i>${escapeHtml(item.notes)}</i>`;
     return line;
@@ -247,7 +250,7 @@ function buildMessage(order: ValidatedOrder): string {
 
 async function writeOrderToNotion(order: ValidatedOrder, token: string, dbId: string): Promise<void> {
   const productosSummary = order.items
-    .map(i => `${i.quantity}× [${i.productSku ?? i.productId}] ${i.productName}${i.variant ? ` (${i.variant})` : ""}${i.color ? ` — ${i.color}` : ""}`)
+    .map(i => `${i.quantity}× [${i.productSku ?? i.productId}] ${i.productName}${i.variant ? ` (${i.variant})` : ""}${i.color ? ` — ${i.color}` : ""}${i.leader ? ` — Líder: ${i.leader}` : ""}`)
     .join(", ")
     .slice(0, 1900);
 
@@ -259,6 +262,7 @@ async function writeOrderToNotion(order: ValidatedOrder, token: string, dbId: st
       quantity:    i.quantity,
       variant:     i.variant,
       color:       i.color,
+      leader:      i.leader,
     }))
   ).slice(0, 1900);
 

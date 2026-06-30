@@ -111,6 +111,9 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                           @if (item.color) {
                             <span class="font-mono text-[9px] uppercase tracking-wider text-lv-gold bg-lv-gold/[0.10] rounded-full px-2 py-0.5">{{ item.color }}</span>
                           }
+                          @if (item.leader) {
+                            <span class="font-mono text-[9px] uppercase tracking-wider text-lv-cream/60 bg-white/[0.06] rounded-full px-2 py-0.5">{{ item.leader }}</span>
+                          }
                         </div>
                         @if (item.notes) {
                           <p class="font-body text-[10px] text-lv-cream/40 mt-1 italic leading-snug">{{ item.notes }}</p>
@@ -586,6 +589,7 @@ export class CheckoutComponent implements OnInit {
           qty:     i.quantity,
           variant: i.variant,
           color:   i.color,
+          leader:  i.leader,
           price:   i.unitPrice,
         })),
       }),
@@ -639,6 +643,7 @@ export class CheckoutComponent implements OnInit {
         productName: i.productName,
         variant:     i.variant,
         color:       i.color,
+        leader:      i.leader,
         quantity:    i.quantity,
         unitPrice:   i.unitPrice,
         notes:       i.notes,
@@ -688,6 +693,7 @@ export class CheckoutComponent implements OnInit {
       let line = `• ${i.quantity}× ${i.productName}`;
       if (i.variant) line += ` (${i.variant})`;
       if (i.color)   line += ` — color ${i.color}`;
+      if (i.leader)  line += ` — líder ${i.leader}`;
       line += ` — ${(i.unitPrice * i.quantity).toFixed(2)}€`;
       if (i.notes)   line += `\n   Nota: ${i.notes}`;
       return line;
