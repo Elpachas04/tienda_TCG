@@ -28,7 +28,7 @@ type DetailData = { product: Product | null; colors: Color[] };
       <div class="bg-lv-black bg-grid-premium min-h-screen relative overflow-x-hidden">
         <div class="absolute -top-20 -right-20 sm:-top-40 sm:-right-40 w-[250px] h-[250px] sm:w-[500px] sm:h-[500px] bg-[#C9A84C]/[0.05] rounded-full blur-[80px] sm:blur-[120px] animate-aurora pointer-events-none" style="z-index:0"></div>
 
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 lg:py-16">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 pt-3 pb-8 sm:py-12 lg:py-16">
 
           <a routerLink="/catalog"
              class="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-lv-cream/40 hover:text-lv-gold transition-colors duration-200 mb-6 sm:mb-10 lg:mb-12">
@@ -167,7 +167,10 @@ type DetailData = { product: Product | null; colors: Color[] };
                           {{ variant.label }}
                         </span>
                         @if (variant.specs?.capacity) {
-                          <span class="font-mono text-[9px] text-lv-muted leading-none mb-1">{{ variant.specs!.capacity }} cartas</span>
+                          <span class="font-mono text-[9px] leading-none mb-1"
+                                [class]="selectedVariant()?.label === variant.label ? 'text-lv-gold' : 'text-lv-muted'">
+                            {{ variant.specs!.capacity }} cartas
+                          </span>
                         }
                         <span class="font-mono text-xs font-semibold"
                               [class]="selectedVariant()?.label === variant.label ? 'text-lv-gold' : 'text-lv-muted'">
@@ -183,9 +186,9 @@ type DetailData = { product: Product | null; colors: Color[] };
               @if (selectedVariant()?.specs; as specs) {
                 <div class="flex items-center justify-around bg-lv-surface border border-lv-border rounded-card px-4 py-3 mb-5">
                   @for (stat of [
-                    { label: 'Capacidad', value: specs.capacity,  unit: 'cartas' },
-                    { label: 'Largo',     value: specs.length_cm, unit: 'cm' },
-                    { label: 'Ancho',     value: specs.width_cm,  unit: 'cm' }
+                    { label: 'Alto',  value: specs.height_cm, unit: 'cm' },
+                    { label: 'Largo', value: specs.length_cm, unit: 'cm' },
+                    { label: 'Ancho', value: specs.width_cm,  unit: 'cm' }
                   ]; track stat.label) {
                     <div class="text-center">
                       <p class="font-display text-2xl text-lv-cream leading-none">{{ stat.value }}</p>

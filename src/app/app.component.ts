@@ -11,19 +11,8 @@ import { CartDrawerComponent } from './shared/components/cart-drawer.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterOutlet, LvNavbarComponent, CartDrawerComponent],
   template: `
-    <div class="h-8 overflow-hidden flex items-center"
-         style="background:rgba(201,168,76,0.07);border-bottom:1px solid rgba(201,168,76,0.14)">
-      <div class="flex whitespace-nowrap animate-marquee" aria-hidden="true">
-        @for (i of bannerItems; track $index) {
-          <span class="font-mono text-[10px] uppercase tracking-[0.25em] text-lv-gold/75 px-24">
-            ENVÍO GRATIS EN PEDIDOS SUPERIORES A 50€
-          </span>
-        }
-      </div>
-    </div>
-
     <app-lv-navbar />
-    <main [class.min-h-screen]="!isLanding()" [class.pt-28]="!isLanding()">
+    <main [class.min-h-screen]="!isLanding()" [class.pt-20]="!isLanding()">
       <router-outlet />
     </main>
     @if (!isCheckout()) {
@@ -40,10 +29,14 @@ import { CartDrawerComponent } from './shared/components/cart-drawer.component';
                class="w-[120px] h-[120px] object-contain select-none" draggable="false"
                style="animation:coin-drop 520ms cubic-bezier(0.34,1.56,0.64,1) 80ms both" />
           <div style="animation:fade-up 300ms ease-out 200ms both">
-            <h2 class="font-display text-4xl text-lv-gold uppercase tracking-wide">ENVÍO GRATIS</h2>
-            <p class="font-mono text-xs uppercase tracking-wide text-lv-cream/50 mt-2 leading-relaxed">
-              Tu ₿erry está activa. El envío de tu pedido corre por nuestra cuenta.
-            </p>
+            <p class="font-mono text-[10px] uppercase tracking-widest text-lv-gold/50 tracking-[0.3em]">Tienes una</p>
+            <h2 class="font-display text-5xl text-lv-gold uppercase tracking-wide leading-none">₿ERRY</h2>
+            <div class="space-y-1 mt-1">
+              <p class="font-display text-2xl text-lv-cream uppercase tracking-wide">Vale 5€</p>
+              <p class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/40 leading-relaxed">
+                Descuento automático en tu pedido<br>al gastar un mínimo de 35€
+              </p>
+            </div>
           </div>
           <button type="button"
             class="bg-lv-gold text-black font-mono text-xs uppercase tracking-widest font-semibold rounded-full px-8 py-3 hover:brightness-110 transition-all duration-200"
