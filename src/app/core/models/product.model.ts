@@ -1,5 +1,6 @@
 export interface VariantSpecs {
-  capacity: number;
+  capacity?: number;
+  height_cm: number;
   width_cm: number;
   length_cm: number;
 }

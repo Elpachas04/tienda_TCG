@@ -59,7 +59,24 @@ import { CONTACT_EMAIL } from '../../shared/constants';
             <section class="space-y-3">
               <h2 class="font-display text-xl text-lv-gold uppercase">Objeto y uso del sitio</h2>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
-                LayerVault es una tienda de venta directa de accesorios fabricados bajo demanda mediante impresión 3D. Todos los productos se fabrican por encargo y de forma artesanal. Los pedidos se gestionan mediante correo electrónico; el pago se realiza por Bizum una vez confirmado el pedido.
+                LayerVault es una tienda de venta directa de accesorios fabricados bajo demanda mediante impresión 3D. Todos los productos se fabrican por encargo, uno a uno, de forma artesanal. El pedido se formaliza a través del formulario web; el pago se realiza por Bizum una vez que confirmamos los detalles contigo por email.
+              </p>
+            </section>
+
+            <section class="space-y-3">
+              <h2 class="font-display text-xl text-lv-gold uppercase">Proceso de pedido y pago</h2>
+              <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
+                Al enviar el formulario recibirás un email de confirmación con el resumen de tu pedido. Nos pondremos en contacto contigo en menos de 1 hora para coordinar el pago por Bizum y resolver cualquier duda. El pedido no se fabrica hasta que el pago está confirmado.
+              </p>
+            </section>
+
+            <section class="space-y-3">
+              <h2 class="font-display text-xl text-lv-gold uppercase">Envíos y devoluciones</h2>
+              <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
+                Los envíos se realizan únicamente a Península mediante Correos, con entrega en oficina Correos. También es posible la recogida en mano sin coste. El plazo de fabricación es de 3 a 7 días laborables desde la confirmación del pago.
+              </p>
+              <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
+                Dado que los productos se fabrican por encargo y de forma personalizada, no se admiten devoluciones ni desistimientos salvo en caso de defecto de fabricación acreditado. En ese supuesto, contacta en los 7 días siguientes a la recepción escribiendo a <a [href]="'mailto:' + email" class="text-lv-gold hover:underline">{{ email }}</a>.
               </p>
             </section>
 
@@ -67,13 +84,6 @@ import { CONTACT_EMAIL } from '../../shared/constants';
               <h2 class="font-display text-xl text-lv-gold uppercase">Propiedad intelectual</h2>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
                 El diseño, imágenes, textos y modelos 3D publicados en este sitio son propiedad de LayerVault. Queda prohibida su reproducción, distribución o uso comercial sin autorización expresa.
-              </p>
-            </section>
-
-            <section class="space-y-3">
-              <h2 class="font-display text-xl text-lv-gold uppercase">Envíos y devoluciones</h2>
-              <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
-                Los envíos se realizan únicamente a Península mediante Correos iPaq domicilio. Dado que los productos se fabrican por encargo, no se admiten devoluciones salvo en caso de defecto de fabricación acreditado. En ese supuesto, contacta en los 7 días siguientes a la recepción por email a hola@layervault.es.
               </p>
             </section>
 
@@ -104,28 +114,37 @@ import { CONTACT_EMAIL } from '../../shared/constants';
             <section class="space-y-3">
               <h2 class="font-display text-xl text-lv-gold uppercase">Datos que recogemos</h2>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
-                Únicamente los datos que tú proporcionas al realizar un pedido: nombre, dirección de email (obligatorio), teléfono (opcional) y código postal (cuando eliges envío). No se recogen datos de navegación, cookies propias ni se usa ningún sistema de analítica.
+                Únicamente los datos que tú proporcionas al realizar un pedido: nombre, email y teléfono (todos obligatorios) y código postal (solo cuando eliges envío a domicilio). No se recogen datos de navegación, no se usan cookies propias ni ningún sistema de analítica.
               </p>
             </section>
 
             <section class="space-y-3">
               <h2 class="font-display text-xl text-lv-gold uppercase">Finalidad y base legitimadora</h2>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
-                Tus datos se usan exclusivamente para gestionar y coordinar tu pedido. La base legal es la ejecución del contrato de compraventa (art. 6.1.b RGPD).
+                Tus datos se usan exclusivamente para gestionar, fabricar y entregar tu pedido, y para enviarte la confirmación por email. La base legal es la ejecución del contrato de compraventa (art. 6.1.b RGPD).
+              </p>
+            </section>
+
+            <section class="space-y-3">
+              <h2 class="font-display text-xl text-lv-gold uppercase">Servicios que intervienen</h2>
+              <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
+                Para gestionar los pedidos se utilizan los siguientes servicios externos, cada uno con su propia política de privacidad:
+              </p>
+              <ul class="space-y-1.5 font-body text-sm text-lv-cream/60">
+                <li><span class="text-lv-cream/40 font-mono text-[11px] uppercase tracking-wider">Brevo</span> — envío del email de confirmación al cliente.</li>
+                <li><span class="text-lv-cream/40 font-mono text-[11px] uppercase tracking-wider">Notion</span> — registro interno de pedidos (nombre, email, resumen del pedido).</li>
+                <li><span class="text-lv-cream/40 font-mono text-[11px] uppercase tracking-wider">Telegram</span> — notificación interna al vendedor del nuevo pedido.</li>
+                <li><span class="text-lv-cream/40 font-mono text-[11px] uppercase tracking-wider">Correos España</span> — gestión del envío cuando eliges esta modalidad de entrega.</li>
+              </ul>
+              <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
+                No se ceden datos a ningún otro tercero ni se usan con fines publicitarios o de perfilado.
               </p>
             </section>
 
             <section class="space-y-3">
               <h2 class="font-display text-xl text-lv-gold uppercase">Conservación</h2>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
-                Los datos se conservan durante el tiempo necesario para gestionar el pedido y, en su caso, atender posibles reclamaciones (máximo 1 año desde la entrega).
-              </p>
-            </section>
-
-            <section class="space-y-3">
-              <h2 class="font-display text-xl text-lv-gold uppercase">Cesión a terceros</h2>
-              <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
-                No se ceden datos a terceros salvo a Correos España, exclusivamente para gestionar el envío cuando lo solicitas, y en cumplimiento de obligaciones legales.
+                Los datos se conservan durante el tiempo necesario para gestionar el pedido y atender posibles reclamaciones (máximo 1 año desde la entrega).
               </p>
             </section>
 
@@ -139,7 +158,7 @@ import { CONTACT_EMAIL } from '../../shared/constants';
         }
 
         <p class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/20 mt-16 pt-8 border-t border-lv-gold/10">
-          Última actualización: junio 2026
+          Última actualización: julio 2026
         </p>
 
       </div>

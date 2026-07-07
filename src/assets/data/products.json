@@ -165,13 +165,13 @@
         "Color a elegir"
       ],
       "images": ["caja-bulk-01", "caja-bulk-02", "caja-bulk-03", "caja-bulk-04", "caja-bulk-05"],
-      "price": 10,
+      "price": 12,
       "colorPickerEnabled": true,
       "available_addons": ["separadores"],
       "variants": [
         {
-          "label": "Pequeña", "price": 10,
-          "specs": { "capacity": 400, "width_cm": 7.0, "length_cm": 15.0 },
+          "label": "Pequeña", "price": 12,
+          "specs": { "capacity": 400, "height_cm": 9.5, "width_cm": 7.0, "length_cm": 15.0 },
           "copy": {
             "tagline": "La caja del booster cumplió su función. Ya puedes jubilarla.",
             "description": "Guarda hasta 400 cartas perfectamente organizadas, con el espacio justo para que estén seguras sin apretarse.",
@@ -179,8 +179,8 @@
           }
         },
         {
-          "label": "Mediana", "price": 12, "default": true,
-          "specs": { "capacity": 500, "width_cm": 7.0, "length_cm": 18.2 },
+          "label": "Mediana", "price": 15, "default": true,
+          "specs": { "capacity": 500, "height_cm": 9.5, "width_cm": 7.0, "length_cm": 18.2 },
           "copy": {
             "tagline": "El caos de tu colección, resuelto.",
             "description": "500 cartas ordenadas y a mano cuando las necesitas. Tener tus cartas localizadas no es un capricho — es tiempo que te ahorras cada vez que buscas algo.",
@@ -188,8 +188,8 @@
           }
         },
         {
-          "label": "Grande", "price": 15,
-          "specs": { "capacity": 650, "width_cm": 7.0, "length_cm": 23.5 },
+          "label": "Grande", "price": 20,
+          "specs": { "capacity": 650, "height_cm": 9.5, "width_cm": 7.0, "length_cm": 23.5 },
           "copy": {
             "tagline": "Para los que van en serio.",
             "description": "650 cartas, acceso rápido, y una presencia en tu estantería que ninguna caja de cartón va a darte. Por menos de lo que cuesta un booster box, tienes tu colección bajo control.",

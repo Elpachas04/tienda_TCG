@@ -77,6 +77,9 @@ import { LeaderPickerComponent } from '../../shared/components/leader-picker.com
 
         <!-- Variantes -->
         @if (product.variants && product.variants.length > 0) {
+          @if (selectedVariant()?.specs?.capacity) {
+            <p class="font-mono text-[8px] text-lv-gold mb-1">{{ selectedVariant()!.specs!.capacity }} cartas</p>
+          }
           <div class="flex gap-1 flex-wrap mb-3">
             @for (v of product.variants; track v.label) {
               <button
