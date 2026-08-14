@@ -86,10 +86,18 @@ export interface ShopSettings {
   deliveryDays: string;
 }
 
+export interface BulkBox {
+  id: string;
+  name: string;
+  capacity: number;
+  dimensions_exterior_cm: { width: number; length: number };
+}
+
 export interface ProductCatalog {
   products: Product[];
   categories: CategoryItem[];
   colors: Color[];
   addons: ProductAddon[];
+  bulk_boxes?: BulkBox[];
   settings: ShopSettings;
 }

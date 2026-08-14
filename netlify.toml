@@ -58,6 +58,51 @@
   to   = "/.netlify/functions/send-confirmation"
   status = 200
 
+[[redirects]]
+  from = "/api/products"
+  to   = "/.netlify/functions/products-get"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/login"
+  to   = "/.netlify/functions/admin-login"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/logout"
+  to   = "/.netlify/functions/admin-logout"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/session"
+  to   = "/.netlify/functions/admin-session"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/products"
+  to   = "/.netlify/functions/admin-products-save"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/catalog"
+  to   = "/.netlify/functions/admin-catalog-save"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/image-upload"
+  to   = "/.netlify/functions/admin-image-upload"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/orders"
+  to   = "/.netlify/functions/admin-orders-list"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/orders/status"
+  to   = "/.netlify/functions/admin-order-status"
+  status = 200
+
 # ── Angular SPA fallback ────────────────────────────────────────────────────
 [[redirects]]
   from   = "/*"
