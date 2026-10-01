@@ -54,8 +54,6 @@ export class AppComponent {
   private router = inject(Router);
   private seo = inject(SeoService);
 
-  constructor() { this.seo.init(); }
-
   private currentUrl = toSignal(
     this.router.events.pipe(
       filter(e => e instanceof NavigationEnd),
@@ -75,6 +73,7 @@ export class AppComponent {
   readonly bannerItems = Array(14).fill(0);
 
   constructor() {
+    this.seo.init();
     afterNextRender(() => {
       const checkBerry = () => {
         if (sessionStorage.getItem('berry_active') === 'true' &&
