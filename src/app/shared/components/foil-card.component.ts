@@ -84,7 +84,22 @@ const TILT_RANGE = 36;
         #fffbef 0%, #f3dc95 12%, #C9A84C 30%, #6b5a26 62%, #3d331b 100%);
       -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
       -webkit-mask-composite: xor;
+      mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
       mask-composite: exclude;
+    }
+    /* Táctil sin sensor (o sin permiso): un destello recorre el marco para que siga brillando */
+    @media (hover: none) {
+      .foil-window::after { padding: 3px; }
+      .foil:not(.tilting) .foil-window::after {
+        background:
+          conic-gradient(from var(--foil-sweep), transparent 0deg, rgba(255, 251, 239, .95) 16deg, #f3dc95 28deg, transparent 52deg),
+          radial-gradient(150px circle at var(--mx) var(--my),
+            #fffbef 0%, #f3dc95 12%, #C9A84C 30%, #6b5a26 62%, #3d331b 100%);
+        animation: foil-sweep 3.2s linear infinite;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .foil-window::after { animation: none !important; }
     }
     .foil-window img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .foil-bottom { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
@@ -184,6 +199,7 @@ export class FoilCardComponent {
 
   private readonly onOrientation = (e: DeviceOrientationEvent) => {
     if (e.beta == null || e.gamma == null) return;
+    if (this.mode !== 'tilt') this.card().nativeElement.classList.add('tilting');
     this.mode = 'tilt';
     // La referencia se adapta despacio a cómo sostiene el móvil cada persona
     if (!this.baseline) this.baseline = { beta: e.beta, gamma: e.gamma };

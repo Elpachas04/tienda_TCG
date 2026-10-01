@@ -126,3 +126,13 @@
   75%  { transform: translateY(-4px) scale(0.97); }
   100% { transform: translateY(0) scale(1); }
 }
+
+/* Ángulo animable del destello que recorre el marco de la tarjeta foil (lv-foil-card) */
+@property --foil-sweep {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+@keyframes foil-sweep {
+  to { --foil-sweep: 360deg; }
+}
