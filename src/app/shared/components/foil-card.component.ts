@@ -11,8 +11,6 @@ type Mode = 'idle' | 'pointer' | 'tilt';
 
 // Grados de inclinación del móvil que recorren el brillo de un borde al otro
 const TILT_RANGE = 36;
-// Sin mover el ratón durante este tiempo, la tarjeta vuelve al vaivén
-const POINTER_TIMEOUT = 2500;
 
 @Component({
   selector: 'lv-foil-card',
@@ -20,7 +18,7 @@ const POINTER_TIMEOUT = 2500;
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
   template: `
-    <div class="foil-stage">
+    <div #stage class="foil-stage">
       <div #card class="foil" (click)="enableTilt()">
         <div class="foil-top font-mono">
           <span>{{ eyebrow() }}</span><span>Hecho en BCN</span>
@@ -39,7 +37,7 @@ const POINTER_TIMEOUT = 2500;
     }
   `,
   styles: [`
-    .foil-stage { perspective: 1000px; display: grid; place-items: center; }
+    .foil-stage { perspective: 1000px; width: fit-content; margin-inline: auto; }
     .foil {
       --mx: 62%; --my: 30%; --rx: 0deg; --ry: 0deg;
       position: relative;
@@ -62,20 +60,6 @@ const POINTER_TIMEOUT = 2500;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
     }
-    .foil::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      pointer-events: none;
-      mix-blend-mode: color-dodge;
-      opacity: .85;
-      background:
-        radial-gradient(circle at var(--mx) var(--my), rgba(255, 233, 170, .55), transparent 42%),
-        repeating-linear-gradient(115deg, transparent 0 7%, rgba(201, 168, 76, .28) 10%, rgba(255, 244, 214, .12) 13%, transparent 19%);
-      background-size: 100% 100%, 260% 260%;
-      background-position: center, var(--mx) var(--my);
-    }
     .foil-top {
       display: flex; justify-content: space-between;
       font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
@@ -84,10 +68,23 @@ const POINTER_TIMEOUT = 2500;
     .foil-window {
       position: relative;
       min-height: 0;
-      border: 1.5px solid #C9A84C;
       border-radius: 10px;
       overflow: hidden;
       background: #111;
+    }
+    /* El brillo vive solo en el marco: la máscara recorta el centro y deja 2px de borde */
+    .foil-window::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 2.5px;
+      pointer-events: none;
+      background: radial-gradient(150px circle at var(--mx) var(--my),
+        #fffbef 0%, #f3dc95 12%, #C9A84C 30%, #6b5a26 62%, #3d331b 100%);
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
     }
     .foil-window img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .foil-bottom { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
@@ -109,13 +106,13 @@ export class FoilCardComponent {
   readonly needsPermission = signal(false);
 
   private readonly card = viewChild.required<ElementRef<HTMLElement>>('card');
+  private readonly stage = viewChild.required<ElementRef<HTMLElement>>('stage');
   private readonly zone = inject(NgZone);
   private readonly destroyRef = inject(DestroyRef);
 
   private mode: Mode = 'idle';
   private target = { x: .62, y: .3 };
   private current = { x: .62, y: .3 };
-  private lastPointer = 0;
   private baseline: { beta: number; gamma: number } | null = null;
   private visible = true;
   private frame = 0;
@@ -138,16 +135,19 @@ export class FoilCardComponent {
 
   private start(): void {
     const el = this.card().nativeElement;
+    // El ratón se mide sobre el contenedor, que no gira: medir sobre la tarjeta girada hace temblar el borde
+    const stage = this.stage().nativeElement;
 
     const onPointer = (e: PointerEvent) => {
       if (e.pointerType !== 'mouse' || this.mode === 'tilt') return;
-      const r = el.getBoundingClientRect();
+      const r = stage.getBoundingClientRect();
       this.mode = 'pointer';
-      this.lastPointer = performance.now();
       this.target.x = clamp((e.clientX - r.left) / r.width);
       this.target.y = clamp((e.clientY - r.top) / r.height);
     };
-    window.addEventListener('pointermove', onPointer, { passive: true });
+    const onLeave = () => { if (this.mode === 'pointer') this.mode = 'idle'; };
+    stage.addEventListener('pointermove', onPointer, { passive: true });
+    stage.addEventListener('pointerleave', onLeave);
 
     // Solo en táctiles: algunos portátiles tienen sensor y anularían el seguimiento del ratón
     const touch = matchMedia('(pointer: coarse)').matches;
@@ -170,7 +170,8 @@ export class FoilCardComponent {
     this.destroyRef.onDestroy(() => {
       cancelAnimationFrame(this.frame);
       io.disconnect();
-      window.removeEventListener('pointermove', onPointer);
+      stage.removeEventListener('pointermove', onPointer);
+      stage.removeEventListener('pointerleave', onLeave);
       window.removeEventListener('deviceorientation', this.onOrientation);
     });
   }
@@ -195,7 +196,6 @@ export class FoilCardComponent {
   private readonly tick = (now: number) => {
     if (!this.visible) { this.frame = 0; return; }
 
-    if (this.mode === 'pointer' && now - this.lastPointer > POINTER_TIMEOUT) this.mode = 'idle';
     if (this.mode === 'idle') {
       const t = now / 1000;
       this.target.x = .5 + Math.sin(t * .6) * .32;
@@ -208,8 +208,8 @@ export class FoilCardComponent {
     const s = this.card().nativeElement.style;
     s.setProperty('--mx', `${(this.current.x * 100).toFixed(1)}%`);
     s.setProperty('--my', `${(this.current.y * 100).toFixed(1)}%`);
-    s.setProperty('--ry', `${((this.current.x - .5) * 18).toFixed(2)}deg`);
-    s.setProperty('--rx', `${((.5 - this.current.y) * 14).toFixed(2)}deg`);
+    s.setProperty('--ry', `${((this.current.x - .5) * 14).toFixed(2)}deg`);
+    s.setProperty('--rx', `${((.5 - this.current.y) * 10).toFixed(2)}deg`);
 
     this.frame = requestAnimationFrame(this.tick);
   };
