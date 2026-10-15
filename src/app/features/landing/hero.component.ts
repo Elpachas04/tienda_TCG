@@ -41,7 +41,6 @@ import { gsap, prefersReducedMotion } from '../../core/motion/motion';
 
           <div class="flex gap-3 flex-wrap hero-reveal">
             <a routerLink="/catalog" class="lv-btn lv-btn-primary">Ver catálogo</a>
-            <a href="#colores" class="lv-btn lv-btn-ghost">Elegir color</a>
           </div>
 
           <dl class="hero-reveal grid grid-cols-3 gap-x-6 sm:gap-x-10 pt-6 border-t border-lv-cream/10 w-full max-w-md">
