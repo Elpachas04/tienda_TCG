@@ -56,11 +56,19 @@
                 "glob": "**/*",
                 "input": "src/assets",
                 "output": "assets"
+              },
+              {
+                "glob": "bricolage-grotesque-latin*-opsz-normal.woff2",
+                "input": "node_modules/@fontsource-variable/bricolage-grotesque/files",
+                "output": "assets/fonts"
+              },
+              {
+                "glob": "hanken-grotesk-latin*-wght-normal.woff2",
+                "input": "node_modules/@fontsource-variable/hanken-grotesk/files",
+                "output": "assets/fonts"
               }
             ],
             "styles": [
-              "@fontsource-variable/bricolage-grotesque/opsz.css",
-              "@fontsource-variable/hanken-grotesk/wght.css",
               "src/styles.css"
             ],
             "scripts": []

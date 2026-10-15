@@ -2,6 +2,7 @@ import type { Handler } from "@netlify/functions";
 import { connectLambda, getStore } from "@netlify/blobs";
 import { originOk } from "./_guard";
 import { verifyAdminSession } from "./_admin-auth";
+import { purgeCatalogCache } from "./_catalog-cache";
 
 const STORE_NAME     = "products";
 const BLOB_KEY        = "catalog";
@@ -60,6 +61,7 @@ const handler: Handler = async (event) => {
     const existing = (await store.get(BLOB_KEY, { type: "json" })) as Record<string, unknown> | null;
     const catalog  = { ...(existing ?? {}), products };
     await store.setJSON(BLOB_KEY, catalog);
+    await purgeCatalogCache();
     return { statusCode: 200, headers, body: JSON.stringify({ success: true }) };
   } catch (err) {
     console.error("Error saving products blob:", err);
