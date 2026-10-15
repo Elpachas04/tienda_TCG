@@ -132,11 +132,6 @@
   .foil-frame:hover::before { opacity: 1; }
 }
 
-/* Textura de líneas de capa de impresión 3D */
-.layer-lines {
-  background-image: repeating-linear-gradient(0deg, rgb(0 0 0 / .16) 0 1px, transparent 1px 3px);
-}
-
 /* Antes de que GSAP prepare la entrada, los titulares y el hero esperan ocultos (html.motion lo pone index.html).
    Si el script fallara, se muestran solos a los 2,5 s. */
 html.motion [data-split]:not(.split-ready),
