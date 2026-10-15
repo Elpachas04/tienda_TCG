@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal, computed } from '@angular/core';
+import { SplitHeadingDirective } from '../../shared/directives/split-heading.directive';
 import { CatalogService } from '../../core/services/catalog.service';
 import { CartService } from '../../core/services/cart.service';
 import { LvProductCardComponent } from '../landing/lv-product-card.component';
@@ -15,7 +16,7 @@ const SKELETONS = [1,2,3,4,5,6,7,8];
   selector: 'app-catalog',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [LvProductCardComponent],
+  imports: [LvProductCardComponent, SplitHeadingDirective],
   host: { class: 'block' },
   template: `
     <div class="bg-lv-black min-h-screen">

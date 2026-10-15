@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { SplitHeadingDirective } from '../../shared/directives/split-heading.directive';
 import { WHATSAPP_URL, CONTACT_EMAIL } from '../../shared/constants';
 
 @Component({
   selector: 'app-lv-cta',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [],
+  imports: [SplitHeadingDirective],
   host: { class: 'block' },
   template: `
     <section id="contacto" class="relative bg-lv-black border-t border-lv-cream/[0.06] overflow-hidden">

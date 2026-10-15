@@ -137,8 +137,13 @@
   background-image: repeating-linear-gradient(0deg, rgb(0 0 0 / .16) 0 1px, transparent 1px 3px);
 }
 
-/* Titulares partidos por SplitText: cada línea recorta su propia subida */
-.split-line { overflow: clip; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+/* Antes de que GSAP prepare la entrada, los titulares y el hero esperan ocultos (html.motion lo pone index.html).
+   Si el script fallara, se muestran solos a los 2,5 s. */
+html.motion [data-split]:not(.split-ready),
+html.motion .hero-reveal { visibility: hidden; animation: motion-failsafe 0s 2.5s forwards; }
+@keyframes motion-failsafe { to { visibility: visible; } }
+/* Las máscaras de línea no deben cortar los trazos descendentes (j, p, q) mientras suben */
+.splitline-mask { padding-bottom: 0.14em; margin-bottom: -0.14em; }
 
 /* Lenis */
 html.lenis, html.lenis body { height: auto; }
@@ -149,17 +154,6 @@ html.lenis, html.lenis body { height: auto; }
 /* View Transitions entre catálogo y ficha */
 ::view-transition-group(*) { animation-duration: .42s; animation-timing-function: cubic-bezier(.2,.8,.2,1); }
 ::view-transition-old(root), ::view-transition-new(root) { animation-duration: .25s; }
-
-/* Scroll reveal — class added by RevealDirective host binding */
-.lv-reveal {
-  opacity: 0;
-  transform: translateY(0.75rem);
-  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(.2,.8,.2,1);
-}
-.lv-reveal.revealed {
-  opacity: 1;
-  transform: translateY(0);
-}
 
 @keyframes toast-in {
   from { opacity: 0; transform: translateX(1rem); }
@@ -210,7 +204,6 @@ html.lenis, html.lenis body { height: auto; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .lv-reveal           { opacity: 1; transform: none; transition: none; }
   .animate-fade-up     { animation: none; opacity: 1; }
   .animate-toast-in    { animation: none; opacity: 1; }
   .animate-badge-pop   { animation: none; }

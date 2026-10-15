@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { SplitHeadingDirective } from '../../shared/directives/split-heading.directive';
 import { RouterLink } from '@angular/router';
 import { CatalogService } from '../../core/services/catalog.service';
 import { CartService } from '../../core/services/cart.service';
@@ -9,7 +10,7 @@ import { CartItem } from '../../core/models/cart-item.model';
   selector: 'app-landing-products',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, LvProductCardComponent],
+  imports: [RouterLink, LvProductCardComponent, SplitHeadingDirective],
   host: { class: 'block' },
   template: `
     <section class="bg-lv-black py-20 sm:py-28 lg:py-32">

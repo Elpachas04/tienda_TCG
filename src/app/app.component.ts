@@ -5,6 +5,7 @@ import { filter, map, startWith } from 'rxjs';
 import { LvNavbarComponent } from './features/landing/lv-navbar.component';
 import { CartDrawerComponent } from './shared/components/cart-drawer.component';
 import { SeoService } from './core/services/seo.service';
+import { SmoothScrollService } from './core/motion/smooth-scroll.service';
 
 @Component({
   selector: 'app-root',
@@ -53,6 +54,7 @@ import { SeoService } from './core/services/seo.service';
 export class AppComponent {
   private router = inject(Router);
   private seo = inject(SeoService);
+  private smoothScroll = inject(SmoothScrollService);
 
   private currentUrl = toSignal(
     this.router.events.pipe(
@@ -75,6 +77,7 @@ export class AppComponent {
   constructor() {
     this.seo.init();
     afterNextRender(() => {
+      this.smoothScroll.start();
       const checkBerry = () => {
         if (sessionStorage.getItem('berry_active') === 'true' &&
             !sessionStorage.getItem('berry_shown')) {

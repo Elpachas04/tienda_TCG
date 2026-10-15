@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { SplitHeadingDirective } from '../../shared/directives/split-heading.directive';
 import { CatalogService } from '../../core/services/catalog.service';
 
 const STEPS = [
@@ -12,7 +13,7 @@ const STEPS = [
   selector: 'app-lv-colors-process',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [],
+  imports: [SplitHeadingDirective],
   host: { class: 'block' },
   template: `
     <section id="colores" class="bg-lv-black py-20 sm:py-28 lg:py-32 border-t border-lv-cream/[0.06]">

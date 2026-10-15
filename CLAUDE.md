@@ -30,14 +30,22 @@ Superficie:     #1a1a1a  → lv-surface
 Bordes:         #2a2a2a  → lv-border
 Dorado:         #C9A84C  → lv-gold
 Crema:          #F5F0E8  → lv-cream
-Texto muted:    #888888  → lv-muted
-Fuente títulos: Bebas Neue  → font-display
-Fuente cuerpo:  Barlow      → font-body
-Border radius:  12px     → rounded-card
+Texto muted:    #8F8A80  → lv-muted
+Foil claro:     #F3DC95  → lv-foil
+Latón:          #6B5A26  → lv-brass
+Fuente títulos: Bricolage Grotesque (Fontsource, eje opsz) → font-display
+Fuente cuerpo:  Hanken Grotesk (Fontsource)                → font-body
+Border radius:  14px     → rounded-card
 ```
 
-Hover de cards: borde cambia a `lv-gold`.
-`overflow-hidden` va en el div de imagen (`rounded-t-card`), NO en `.card`, para que el color-picker no quede recortado.
+Rediseño "Foil" (rama redesign):
+- Escala tipográfica en styles.css: `lv-display`, `lv-h1`, `lv-h2`, `lv-h3`, `lv-lede`, `lv-note`, `lv-price`
+- Botones: `lv-btn` + `lv-btn-primary` (crema) / `lv-btn-gold` / `lv-btn-ghost`
+- Texto en minúscula de frase: sin etiquetas en mayúsculas con tracking, sin monoespaciada, sin flechas `→` en botones
+- El dorado se reserva para el brillo foil (`.foil-frame` + directiva `lvFoil`) y detalles; el botón principal es crema
+- Titulares con `data-split` entran línea a línea (GSAP SplitText); Lenis da scroll suave solo con ratón
+- `withViewTransitions`: la foto de la tarjeta viaja a la ficha (`view-transition-name: product-<id>`)
+En las tarjetas, `overflow-hidden` va en el div interior de la foto, NO en el enlace `.foil-frame`, para que el brillo del marco y el color-picker no queden recortados.
 
 ---
 
@@ -58,7 +66,7 @@ src/app/
 │   └── legal/        legal.component.ts
 └── shared/
     ├── components/   cart-drawer.component.ts · color-picker.component.ts · telegram-fab.component.ts
-    ├── directives/   card-glow.directive.ts · reveal.directive.ts
+    ├── directives/   foil-hover.directive.ts · split-heading.directive.ts
     └── constants/    index.ts
 ```
 
@@ -104,6 +112,10 @@ animate-toast-in      → toast de confirmación
 animate-badge-pop     → badge del carrito
 animate-dropdown-in   → dropdown del color picker
 ```
+
+Movimiento con GSAP (`core/motion/`): SplitHeadingDirective (`[data-split]`), secuencia del hero en HeroComponent,
+SmoothScrollService (Lenis, carga diferida). `html.motion` (script en index.html) oculta lo que va a animarse, con
+un failsafe CSS a los 2,5 s. Todo respeta `prefers-reduced-motion`.
 
 ---
 
