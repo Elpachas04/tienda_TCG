@@ -9,6 +9,7 @@ import { PLACEHOLDER } from '../../shared/constants';
 import { CloudinaryService } from '../../core/services/cloudinary.service';
 import { LeaderPickerComponent } from '../../shared/components/leader-picker.component';
 import { CustomLeaderRequestComponent } from '../../shared/components/custom-leader-request.component';
+import { FoilHoverDirective } from '../../shared/directives/foil-hover.directive';
 
 type DetailData = { product: Product | null; colors: Color[] };
 
@@ -16,8 +17,8 @@ type DetailData = { product: Product | null; colors: Color[] };
   selector: 'app-product-detail',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, LeaderPickerComponent, CustomLeaderRequestComponent],
-  host: { class: 'block animate-fade-up' },
+  imports: [RouterLink, LeaderPickerComponent, CustomLeaderRequestComponent, FoilHoverDirective],
+  host: { class: 'block' },
   template: `
     @let data = productData();
     @if (data === undefined) {
@@ -27,23 +28,24 @@ type DetailData = { product: Product | null; colors: Color[] };
     } @else if (data.product) {
       <div class="bg-lv-black min-h-screen relative overflow-x-hidden">
 
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 pt-3 pb-8 sm:py-12 lg:py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-4 pb-20 sm:pt-10 lg:pt-12">
 
           <a routerLink="/catalog"
-             class="inline-flex items-center gap-2 font-body text-[13px] text-lv-cream/40 hover:text-lv-gold transition-colors duration-200 mb-6 sm:mb-10 lg:mb-12">
+             class="inline-flex items-center gap-2 text-sm text-lv-cream/60 hover:text-lv-cream transition-colors duration-200 mb-6 sm:mb-8">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
             </svg>
             Volver al catálogo
           </a>
 
-          <div class="grid md:grid-cols-2 gap-6 md:gap-10 lg:gap-12">
+          <div class="grid md:grid-cols-[1.1fr_1fr] gap-8 md:gap-12 lg:gap-20 items-start">
 
             <!-- Media: vídeo + imágenes -->
             <div class="space-y-3">
-              <div class="liquid-glass rounded-[20px] overflow-hidden aspect-square relative bg-lv-surface">
+              <div lvFoil class="foil-frame rounded-card overflow-hidden aspect-square relative bg-[#111]"
+                   [style.view-transition-name]="'product-' + data.product.id">
                 @if (!showVideo() && !mainImageLoaded()) {
-                  <div class="absolute inset-0 animate-pulse bg-white/[0.04] rounded-[20px]"></div>
+                  <div class="absolute inset-0 animate-pulse bg-white/[0.04]"></div>
                 }
                 @if (data.product.video && showVideo()) {
                   <video class="w-full h-full object-cover"
@@ -53,7 +55,7 @@ type DetailData = { product: Product | null; colors: Color[] };
                   </video>
                 } @else {
                   <img [src]="currentImage(data.product)" [alt]="data.product.name"
-                       class="w-full h-full object-contain transition-transform duration-700 ease-out hover:scale-110"
+                       class="w-full h-full object-contain"
                        loading="eager" fetchpriority="high" decoding="async"
                        draggable="false"
                        (load)="mainImageLoaded.set(true)"
@@ -92,30 +94,20 @@ type DetailData = { product: Product | null; colors: Color[] };
             <!-- Info -->
             <div class="flex flex-col gap-0">
 
-              <!-- Tagline -->
-              <div class="border-l-2 border-lv-gold pl-4 mb-6">
-                <p class="font-body italic text-lv-cream/80 text-base sm:text-lg leading-snug">
-                  {{ variantTagline(data.product) }}
-                </p>
-              </div>
-
-              <!-- Badge + nombre -->
-              <div class="mb-5">
-                <div class="flex items-center gap-3 mb-2">
-                  <p class="font-body text-xs text-lv-gold/50">{{ data.product.category }}</p>
-                  @if (data.product.badge && !selectedVariant()?.copy) {
-                    <span class="rounded-full px-2 py-0.5 font-body text-xs text-lv-gold border border-lv-gold/30">
-                      {{ data.product.badge }}
-                    </span>
-                  }
-                </div>
-                <h1 class="font-display text-4xl sm:text-5xl md:text-6xl text-lv-cream leading-none ">{{ data.product.name }}</h1>
+              <div class="mb-8">
+                @if (data.product.badge && !selectedVariant()?.copy) {
+                  <span class="inline-block mb-4 rounded-full px-2.5 py-1 text-xs font-semibold text-lv-foil border border-lv-gold/30">
+                    {{ data.product.badge }}
+                  </span>
+                }
+                <h1 class="lv-h1 text-lv-cream">{{ data.product.name }}</h1>
+                <p class="lv-lede mt-4">{{ variantTagline(data.product) }}</p>
               </div>
 
               <!-- Color — swatches directos One Piece -->
               @if (data.product.colorPickerEnabled && data.colors.length > 0) {
                 <div class="mb-5">
-                  <p class="font-body text-xs text-lv-cream/30 mb-3">Color</p>
+                  <p class="text-sm font-semibold text-lv-cream mb-3">Color</p>
                   <div class="flex flex-wrap gap-2.5">
                     @for (color of data.colors; track color.id) {
                       <button
@@ -136,7 +128,7 @@ type DetailData = { product: Product | null; colors: Color[] };
               <!-- Leader picker -->
               @if (data.product.leaderPickerEnabled && data.product.leaders?.length) {
                 <div class="mb-5">
-                  <p class="font-body text-xs text-lv-cream/30 mb-3">Líder</p>
+                  <p class="text-sm font-semibold text-lv-cream mb-3">Líder</p>
                   <app-leader-picker
                     [leaders]="data.product.leaders!"
                     [selected]="selectedLeader()"
@@ -152,7 +144,7 @@ type DetailData = { product: Product | null; colors: Color[] };
               <!-- Selector de tamaño tipo card -->
               @if (data.product.variants && data.product.variants.length > 0) {
                 <div class="mb-5">
-                  <p class="font-body text-xs text-lv-cream/30 mb-3">Tamaño</p>
+                  <p class="text-sm font-semibold text-lv-cream mb-3">Tamaño</p>
                   <div class="grid grid-cols-3 gap-2">
                     @for (variant of data.product.variants; track variant.label) {
                       <button
@@ -206,7 +198,7 @@ type DetailData = { product: Product | null; colors: Color[] };
               <!-- Ideal para (chips) o Features (checkmarks) -->
               @if (variantUses(data.product); as uses) {
                 <div class="mb-5">
-                  <p class="font-body text-xs text-lv-cream/30 mb-2.5">Ideal para</p>
+                  <p class="text-sm font-semibold text-lv-cream mb-3">Ideal para</p>
                   <div class="flex flex-wrap gap-2">
                     @for (use of uses; track use) {
                       <span class="rounded-full px-3 py-1.5 font-body text-[13px] border border-lv-gold/20 text-lv-gold/70 bg-lv-gold/5">
@@ -259,24 +251,24 @@ type DetailData = { product: Product | null; colors: Color[] };
                   <svg class="w-4 h-4 text-lv-gold/60 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                   </svg>
-                  <p class="font-body text-xs text-lv-muted">Las cartas <strong class="text-lv-cream/50">no están incluidas</strong> — solo el accesorio impreso en 3D</p>
+                  <p class="font-body text-xs text-lv-muted">Las cartas <strong class="text-lv-cream/70">no están incluidas</strong>, solo el accesorio impreso en 3D.</p>
                 </div>
               }
 
               <!-- Precio + botón -->
               <div class="flex items-center justify-between pt-4 sm:pt-5 border-t border-white/[0.06] mt-auto gap-3">
-                <span class="font-display text-4xl sm:text-5xl text-lv-gold leading-none">{{ currentPrice(data.product) }}€</span>
+                <span class="lv-price font-display text-4xl sm:text-5xl font-semibold tracking-[-0.03em] text-lv-cream leading-none">{{ currentPrice(data.product) }} €</span>
                 <button
-                  class="rounded-full px-4 sm:px-7 py-3 sm:py-3.5 font-body text-[13px] font-semibold transition-all duration-200 disabled:opacity-40 flex-shrink-0"
+                  class="lv-btn flex-shrink-0 disabled:opacity-40"
                   [class]="!data.product.available
                     ? 'bg-white/5 text-lv-cream/30 cursor-not-allowed'
                     : justAdded()
-                      ? 'bg-green-600 text-white scale-95'
-                      : 'bg-lv-gold hover:brightness-110 text-black'"
+                      ? 'lv-btn-gold'
+                      : 'lv-btn-primary'"
                   [disabled]="!data.product.available"
                   (click)="addToCart(data.product)">
                   @if (!data.product.available) { Agotado }
-                  @else if (justAdded()) { ✓ Añadido }
+                  @else if (justAdded()) { Añadido }
                   @else { Añadir a la cesta }
                 </button>
               </div>
@@ -287,9 +279,9 @@ type DetailData = { product: Product | null; colors: Color[] };
       </div>
     } @else {
       <div class="flex flex-col items-center justify-center min-h-screen gap-4 text-center">
-        <p class="font-display text-4xl text-lv-cream/30 ">Producto no encontrado</p>
+        <p class="lv-h2 text-lv-cream/60">Producto no encontrado</p>
         <a routerLink="/catalog"
-           class="liquid-glass border border-lv-gold/20 text-lv-cream rounded-full px-6 py-3 font-body text-[13px] hover:border-lv-gold transition-all duration-200">
+           class="lv-btn lv-btn-ghost">
           Volver al catálogo
         </a>
       </div>

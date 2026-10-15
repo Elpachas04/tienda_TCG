@@ -62,7 +62,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                 @if (fallbackUrl()) {
                   <a [href]="fallbackUrl()" target="_blank" rel="noopener noreferrer"
                      class="block mt-2 font-body text-xs text-lv-gold hover:underline">
-                    Enviar pedido por email →
+                    Enviar pedido por email
                   </a>
                 }
               </div>
@@ -312,9 +312,9 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
 
             <button
               type="button"
-              class="w-full font-body text-[13px] font-semibold rounded-full py-3.5 sm:py-4 transition-all duration-200 flex items-center justify-center gap-2"
+              class="w-full font-body text-[15px] font-semibold rounded-full min-h-[52px] transition-colors duration-200 flex items-center justify-center gap-2"
               [class]="isFormValid() && !submitting()
-                ? 'bg-lv-gold hover:brightness-110 text-black'
+                ? 'bg-lv-cream hover:bg-white text-lv-black'
                 : submitting() ? 'bg-white/[0.05] text-lv-cream/20 cursor-not-allowed' : 'bg-white/[0.05] text-lv-cream/40 hover:bg-white/[0.08] cursor-pointer'"
               [disabled]="submitting()"
               (click)="submitOrder()">
@@ -322,7 +322,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                 <span class="w-3.5 h-3.5 border-2 border-black/40 border-t-black rounded-full animate-spin"></span>
                 <span>Enviando...</span>
               } @else {
-                <span>Confirmar pedido →</span>
+                <span>Confirmar pedido</span>
               }
             </button>
 
@@ -347,7 +347,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                 </p>
                 <a routerLink="/seguimiento" [queryParams]="{id: orderId()}"
                    class="inline-flex items-center gap-1.5 mt-3 font-body text-xs text-lv-gold hover:underline">
-                  Ver estado del pedido →
+                  Ver estado del pedido
                 </a>
               </div>
             }

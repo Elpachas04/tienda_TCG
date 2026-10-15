@@ -30,7 +30,7 @@ import { NOTES_MAX } from '../constants';
         <!-- Header -->
         <div class="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-white/[0.07] flex-shrink-0">
           <div class="flex items-center gap-3">
-            <h2 class="font-display text-2xl sm:text-3xl text-lv-gold leading-none">CESTA</h2>
+            <h2 class="lv-h3 text-lv-cream">Cesta</h2>
             @if (cart.itemCount() > 0) {
               <span class="bg-lv-gold text-black font-body text-[13px] font-bold px-2 py-0.5 rounded-full leading-none [animation:badge-pop_0.35s_ease-out]">
                 {{ cart.itemCount() }}
@@ -126,7 +126,7 @@ import { NOTES_MAX } from '../constants';
           <div class="flex-shrink-0 border-t border-white/[0.07] px-4 sm:px-6 py-4 sm:py-5 space-y-3 sm:space-y-4 bg-lv-void">
             <div class="flex justify-between items-center">
               <div>
-                <span class="font-display text-xl sm:text-2xl text-lv-cream ">TOTAL</span>
+                <span class="font-display text-xl sm:text-2xl text-lv-cream ">Total</span>
                 <span class="font-body text-xs text-lv-cream/30 ml-2">
                   {{ cart.itemCount() }} {{ cart.itemCount() === 1 ? 'artículo' : 'artículos' }}
                 </span>
@@ -135,9 +135,9 @@ import { NOTES_MAX } from '../constants';
             </div>
 
             <button
-              class="w-full bg-lv-gold hover:brightness-110 text-black font-body text-[13px] font-semibold rounded-full py-3.5 sm:py-4 transition-all duration-200"
+              class="lv-btn lv-btn-primary w-full"
               (click)="goToCheckout()">
-              Hacer pedido →
+              Hacer pedido
             </button>
           </div>
         }

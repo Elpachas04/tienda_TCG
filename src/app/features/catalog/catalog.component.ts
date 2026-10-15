@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, inject, signal, computed } from '@a
 import { CatalogService } from '../../core/services/catalog.service';
 import { CartService } from '../../core/services/cart.service';
 import { LvProductCardComponent } from '../landing/lv-product-card.component';
-import { RevealDirective } from '../../shared/directives/reveal.directive';
 import { CartItem } from '../../core/models/cart-item.model';
 import { Product, CategoryItem, Color } from '../../core/models/product.model';
 import { BASE_PILL } from '../../shared/constants';
@@ -16,35 +15,30 @@ const SKELETONS = [1,2,3,4,5,6,7,8];
   selector: 'app-catalog',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [LvProductCardComponent, RevealDirective],
+  imports: [LvProductCardComponent],
   host: { class: 'block' },
   template: `
-    <div class="bg-lv-black min-h-screen relative">
+    <div class="bg-lv-black min-h-screen">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16 pb-24">
 
+        <header class="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end mb-10 sm:mb-14">
+          <div>
+            <h1 data-split class="lv-h1 text-lv-cream">Catálogo</h1>
+            <p class="lv-lede mt-4">
+              Accesorios para One Piece TCG impresos en 3D. Cada pieza se fabrica cuando la pides, en el color que elijas.
+            </p>
+          </div>
 
-      <div class="relative max-w-[1600px] mx-auto px-4 sm:px-6 py-10 sm:py-16 lg:py-20" style="z-index:1">
-
-        <!-- Header — pinta inmediatamente -->
-        <div lvReveal class="mb-8 sm:mb-12 lg:mb-16">
-          <p class="font-body text-[13px] text-lv-gold/60 mb-4 sm:mb-5">— Colección completa</p>
-          <h1 class="font-display leading-[0.9]">
-            <span class="block text-lv-cream" style="font-size: clamp(2rem, 8vw, 7rem)">LO QUE</span>
-            <span class="block text-lv-gold" style="font-size: clamp(2rem, 8vw, 7rem)">FABRICAMOS</span>
-          </h1>
-          <p class="font-body text-[13px] text-lv-cream/30 mt-4 sm:mt-6 max-w-sm leading-relaxed">
-            Accesorios para TCG impresos en 3D.<br>Cada pieza, por encargo. Cada color, el tuyo.
-          </p>
-        </div>
-
-        <!-- Pills — pintan inmediatamente, el usuario ya puede filtrar -->
-        <div lvReveal class="flex flex-wrap gap-2 mb-8 sm:mb-12">
-          @for (cat of categories(); track cat.id) {
-            <button [class]="pillClass(cat.id)" (click)="activeCategory.set(cat.id)">
-              {{ cat.label }}
-              <span class="opacity-40 ml-1">({{ cat.count }})</span>
-            </button>
-          }
-        </div>
+          <div class="flex flex-wrap gap-2" role="group" aria-label="Filtrar por categoría">
+            @for (cat of categories(); track cat.id) {
+              <button type="button" [class]="pillClass(cat.id)" [attr.aria-pressed]="activeCategory() === cat.id"
+                      (click)="activeCategory.set(cat.id)">
+                {{ cat.label }}
+                <span class="lv-price opacity-50 ml-1">{{ cat.count }}</span>
+              </button>
+            }
+          </div>
+        </header>
 
         <!--
           Grid diferido hasta que el browser esté idle.
@@ -57,7 +51,7 @@ const SKELETONS = [1,2,3,4,5,6,7,8];
               Sin productos en esta categoría
             </p>
           } @else {
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12 lg:gap-x-8">
               @for (product of filteredProducts(); track product.id; let i = $index) {
                 <app-lv-product-card
                   [product]="product"
@@ -69,14 +63,13 @@ const SKELETONS = [1,2,3,4,5,6,7,8];
           }
         } @placeholder {
           <!-- Skeleton mostrado mientras el browser no está idle aún -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12 lg:gap-x-8">
             @for (i of skeletons; track i) {
-              <div class="liquid-glass rounded-[28px] animate-pulse">
-                <div class="aspect-square bg-white/[0.03] rounded-[20px] m-3"></div>
-                <div class="px-4 pb-4 space-y-3">
-                  <div class="h-3 bg-white/[0.04] rounded-full w-1/3"></div>
-                  <div class="h-5 bg-white/[0.06] rounded-full w-4/5"></div>
-                  <div class="h-7 bg-white/[0.04] rounded-full w-2/5"></div>
+              <div class="animate-pulse">
+                <div class="aspect-square rounded-card bg-white/[0.035]"></div>
+                <div class="pt-4 space-y-3">
+                  <div class="h-5 bg-white/[0.06] rounded-full w-3/5"></div>
+                  <div class="h-3 bg-white/[0.04] rounded-full w-4/5"></div>
                 </div>
               </div>
             }
@@ -104,10 +97,12 @@ export class CatalogComponent {
     for (const p of this.catalogService.products) {
       freq.set(p.category, (freq.get(p.category) ?? 0) + 1);
     }
-    return this.catalogService.categories.map(cat => ({
-      ...cat,
-      count: cat.id === 'all' ? this.catalogService.products.length : (freq.get(cat.id) ?? 0),
-    }));
+    return this.catalogService.categories
+      .map(cat => ({
+        ...cat,
+        count: cat.id === 'all' ? this.catalogService.products.length : (freq.get(cat.id) ?? 0),
+      }))
+      .filter(cat => cat.count > 0);
   });
 
   readonly filteredProducts = computed((): Product[] => {
@@ -119,8 +114,8 @@ export class CatalogComponent {
 
   pillClass(id: CategoryFilter): string {
     return this.activeCategory() === id
-      ? `${BASE_PILL} bg-lv-gold text-black font-semibold`
-      : `${BASE_PILL} liquid-glass border border-lv-gold/20 text-lv-cream/50 hover:border-lv-gold/40`;
+      ? `${BASE_PILL} bg-lv-cream text-lv-black border border-lv-cream`
+      : `${BASE_PILL} border border-lv-cream/15 text-lv-cream/70 hover:border-lv-cream/40 hover:text-lv-cream`;
   }
 
   onAddToCart(item: CartItem) {
