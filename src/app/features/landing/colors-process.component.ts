@@ -1,9 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CatalogService } from '../../core/services/catalog.service';
-import { RevealDirective } from '../../shared/directives/reveal.directive';
 
 const STEPS = [
-  { n: '1', title: 'Elige tu pieza',     desc: 'Navega el catálogo. Elige producto, tamaño y color.' },
+  { n: '1', title: 'Elige tu pieza',     desc: 'Producto, tamaño y color. Si quieres algo fuera del catálogo, pregúntanos.' },
   { n: '2', title: 'Mándanos el pedido', desc: 'Solo tu nombre y contacto. Te confirmamos al momento.' },
   { n: '3', title: 'Paga por Bizum',     desc: 'Rápido y sin rodeos. Empezamos a fabricar en el momento.' },
   { n: '4', title: 'Recíbela en casa',   desc: '3–7 días laborables. Envío acordado o recogida en persona.' },
@@ -13,67 +12,53 @@ const STEPS = [
   selector: 'app-lv-colors-process',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RevealDirective],
+  imports: [],
   host: { class: 'block' },
   template: `
-    <section id="colores" class="bg-lv-black border-t border-lv-gold/[0.08] py-20 sm:py-28 px-4 sm:px-6">
-      <div class="max-w-[1400px] mx-auto">
+    <section id="colores" class="bg-lv-black py-20 sm:py-28 lg:py-32 border-t border-lv-cream/[0.06]">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-16 lg:gap-24">
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20">
+        <div>
+          <h2 data-split class="lv-h2 text-lv-cream">Tu color, tu pieza</h2>
+          <p class="lv-note mt-4 max-w-sm">
+            Los siete colores de One Piece TCG, en todos los productos y sin coste extra.
+            Así se ve el plástico impreso, capa a capa.
+          </p>
 
-          <!-- ── IZQUIERDA: Colores ── -->
-          <div>
-            <p lvReveal class="font-body text-[13px] text-lv-gold/60 mb-4">
-              — Elige tu facción
-            </p>
-            <h2 lvReveal class="font-display text-lv-cream leading-[0.88]"
-                style="font-size: clamp(2.8rem, 6vw, 5rem);">
-              TU COLOR,<br>TU PIEZA
-            </h2>
-            <p lvReveal class="font-body text-[13px] text-lv-cream/40 mt-5 mb-8 max-w-xs leading-relaxed">
-              Los 7 colores oficiales de One Piece TCG. En todos los productos sin coste extra.
-            </p>
-
-            <!-- Swatches: 4+3 centrado en móvil, fila única en sm+ -->
-            <div lvReveal class="flex flex-wrap justify-center lg:justify-start gap-4 sm:gap-5">
-              @for (color of colors; track color.id) {
-                <div class="flex flex-col items-center gap-2 w-[56px] sm:w-[64px]">
-                  <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-white/[0.07] flex-shrink-0"
-                       [style.background]="color.hex"></div>
-                  <span class="font-body text-xs text-lv-cream/40 text-center leading-tight">
-                    {{ color.name }}
-                  </span>
-                </div>
-              }
-            </div>
-          </div>
-
-          <!-- ── DERECHA: Pasos ── -->
-          <div>
-            <p lvReveal class="font-body text-[13px] text-lv-gold/60 mb-4 lg:mb-6">
-              — Así funciona
-            </p>
-
-            <div class="divide-y divide-lv-gold/[0.08]">
-              @for (step of steps; track step.n) {
-                <div lvReveal class="flex items-start gap-4 py-4 sm:py-5 first:pt-0">
-                  <span class="font-display text-[2.5rem] sm:text-[3rem] text-lv-gold/[0.15] leading-none
-                               flex-shrink-0 w-9 sm:w-11 text-right select-none">
-                    {{ step.n }}
-                  </span>
-                  <div class="pt-1">
-                    <p class="font-display text-lg sm:text-xl text-lv-cream leading-tight mb-1">{{ step.title }}</p>
-                    <p class="font-body text-[13px] text-lv-cream/35 leading-relaxed">{{ step.desc }}</p>
-                  </div>
-                </div>
-              }
-            </div>
-          </div>
-
+          <ul class="mt-10 grid grid-cols-4 sm:grid-cols-7 gap-x-3 gap-y-6 max-w-xl">
+            @for (color of colors; track color.id) {
+              <li class="flex flex-col gap-2">
+                <span class="chip layer-lines" [style.background-color]="color.hex"></span>
+                <span class="text-[13px] text-lv-cream/60">{{ color.name }}</span>
+              </li>
+            }
+          </ul>
         </div>
+
+        <div>
+          <h2 class="lv-h3 text-lv-cream">Cómo funciona</h2>
+          <ol class="mt-6 border-t border-lv-cream/10">
+            @for (step of steps; track step.n) {
+              <li class="grid grid-cols-[3rem_1fr] gap-x-3 py-5 border-b border-lv-cream/10">
+                <span class="lv-price font-display text-[2rem] font-semibold leading-none tracking-[-0.04em] text-lv-gold/70">{{ step.n }}</span>
+                <div>
+                  <p class="text-[17px] font-semibold text-lv-cream leading-snug">{{ step.title }}</p>
+                  <p class="lv-note mt-1">{{ step.desc }}</p>
+                </div>
+              </li>
+            }
+          </ol>
+        </div>
+
       </div>
     </section>
   `,
+  styles: [`
+    .chip {
+      display: block; aspect-ratio: 63 / 88; border-radius: 6px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.28), inset 0 -10px 18px rgba(0,0,0,.28), 0 0 0 1px rgba(255,255,255,.08);
+    }
+  `],
 })
 export class ColorsProcessComponent {
   private readonly catalogService = inject(CatalogService);

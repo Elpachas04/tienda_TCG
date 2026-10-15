@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, HostListener, inject, signal, computed, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { Router, RouterLink, NavigationEnd } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, NavigationEnd } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs';
 import { CartService } from '../../core/services/cart.service';
@@ -9,49 +9,43 @@ import { CartService } from '../../core/services/cart.service';
   selector: 'app-lv-navbar',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink],
+  imports: [RouterLink, RouterLinkActive],
   host: { class: 'block' },
   template: `
-    <header class="fixed left-0 right-0 z-60 flex justify-center pt-3 sm:pt-4 px-3 sm:px-4 pointer-events-none"
-            [style.top]="navTop() + 'px'">
-      <nav
-        class="liquid-glass rounded-[24px] sm:rounded-[32px] w-full max-w-[900px] px-4 sm:px-6 lg:px-8 py-3 sm:py-4 flex items-center justify-between transition-all duration-300 pointer-events-auto"
-        [style.background]="scrolled() ? 'rgba(18,18,18,0.85)' : ''"
-        [style.backdrop-filter]="scrolled() ? 'blur(20px)' : 'blur(6px)'"
-      >
-        <a routerLink="/" class="font-display text-lv-gold text-base sm:text-xl hover:opacity-80 transition-opacity flex-shrink-0">LayerVault</a>
+    <header class="fixed inset-x-0 top-0 z-60 transition-[background-color,border-color,backdrop-filter] duration-300 border-b"
+            [class]="scrolled() || !isLanding()
+              ? 'bg-lv-black/85 backdrop-blur-xl border-lv-gold/[0.12]'
+              : 'bg-transparent border-transparent'">
+      <nav class="max-w-7xl mx-auto h-16 sm:h-[72px] px-4 sm:px-6 flex items-center justify-between gap-6" aria-label="Principal">
+        <a routerLink="/" class="font-display text-[1.375rem] font-[760] tracking-[-0.04em] text-lv-cream hover:text-lv-foil transition-colors"
+           style="font-variation-settings: 'opsz' 48">LayerVault</a>
 
-        <div class="hidden lg:flex items-center gap-8">
-          @if (isLanding()) {
-            <a routerLink="/catalog"    class="font-body text-[13px] text-lv-cream/70 hover:text-lv-gold transition-colors py-3 px-1">Productos</a>
-            <a routerLink="/" fragment="colores"  class="font-body text-[13px] text-lv-cream/70 hover:text-lv-gold transition-colors py-3 px-1">Colores</a>
-            <a routerLink="/" fragment="contacto" class="font-body text-[13px] text-lv-cream/70 hover:text-lv-gold transition-colors py-3 px-1">Contacto</a>
-          } @else {
-            <a routerLink="/catalog"    class="font-body text-[13px] text-lv-cream/70 hover:text-lv-gold transition-colors py-3 px-1">Catálogo</a>
-          }
-          <a routerLink="/seguimiento" class="font-body text-[13px] text-lv-cream/70 hover:text-lv-gold transition-colors py-3 px-1">Mis pedidos</a>
+        <div class="hidden md:flex items-center gap-8 text-[15px] text-lv-cream/70">
+          <a routerLink="/catalog" routerLinkActive="!text-lv-cream" class="hover:text-lv-cream transition-colors">Catálogo</a>
+          <a routerLink="/" fragment="colores" class="hover:text-lv-cream transition-colors">Colores</a>
+          <a routerLink="/" fragment="contacto" class="hover:text-lv-cream transition-colors">Contacto</a>
+          <a routerLink="/seguimiento" routerLinkActive="!text-lv-cream" class="hover:text-lv-cream transition-colors">Mis pedidos</a>
         </div>
 
-        <div class="flex items-center gap-2 sm:gap-3">
+        <div class="flex items-center gap-1 sm:gap-2">
+          <a routerLink="/catalog" class="md:hidden px-3 py-2 text-[15px] text-lv-cream/75 hover:text-lv-cream">Catálogo</a>
           <a routerLink="/seguimiento"
-             class="lg:hidden flex items-center justify-center w-11 h-11 text-lv-cream/50 hover:text-lv-gold transition-colors"
-             title="Mis pedidos">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>
+             class="md:hidden flex items-center justify-center w-11 h-11 text-lv-cream/60 hover:text-lv-cream transition-colors"
+             aria-label="Mis pedidos">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>
           </a>
-          @if (!isCheckout() && cart.itemCount() > 0) {
-            <button type="button"
-              [attr.aria-label]="'Ver cesta — ' + cart.itemCount() + ' artículos'"
-              class="w-8 h-8 rounded-full bg-lv-gold text-black font-body text-[13px] font-bold flex items-center justify-center hover:brightness-110 transition-all [animation:badge-pop_0.35s_ease-out] flex-shrink-0"
-              (click)="cart.openDrawer()">
-              {{ cart.itemCount() }}
-            </button>
-          }
           @if (!isCheckout()) {
             <button type="button"
-              class="liquid-glass border border-lv-gold/30 font-body text-[13px] text-lv-gold px-3 sm:px-5 py-2 rounded-full hover:bg-lv-gold hover:text-black transition-all duration-200 whitespace-nowrap"
-              (click)="onOrderClick()">
-              <span class="hidden sm:inline">Pedir ahora</span>
-              <span class="sm:hidden">Pedir</span>
+              class="relative flex items-center gap-2 h-10 pl-3.5 pr-4 rounded-full border border-lv-cream/20 text-[15px] font-semibold text-lv-cream hover:border-lv-gold hover:text-lv-foil transition-colors"
+              [attr.aria-label]="'Abrir cesta, ' + cart.itemCount() + ' artículos'"
+              (click)="cart.openDrawer()">
+              <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z"/></svg>
+              <span class="hidden sm:inline">Cesta</span>
+              @if (cart.itemCount() > 0) {
+                <span class="lv-price min-w-[20px] h-5 px-1.5 rounded-full bg-lv-gold text-lv-black text-xs font-bold grid place-items-center [animation:badge-pop_0.35s_ease-out]">
+                  {{ cart.itemCount() }}
+                </span>
+              }
             </button>
           }
         </div>
@@ -64,7 +58,6 @@ export class LvNavbarComponent {
   private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
   readonly scrolled = signal(false);
-  readonly navTop   = signal(32);
 
   private currentUrl = toSignal(
     this.router.events.pipe(
@@ -77,7 +70,7 @@ export class LvNavbarComponent {
 
   readonly isLanding = computed(() => {
     const url = this.currentUrl();
-    return url === '/' || url === '';
+    return url === '/' || url === '' || url.startsWith('/#');
   });
 
   readonly isCheckout = computed(() => this.currentUrl().startsWith('/checkout'));
@@ -85,16 +78,6 @@ export class LvNavbarComponent {
   @HostListener('window:scroll')
   onScroll(): void {
     if (!isPlatformBrowser(this.platformId)) return;
-    this.scrolled.set(window.scrollY > 50);
-    this.navTop.set(Math.max(0, 32 - window.scrollY));
-  }
-
-  onOrderClick(): void {
-    if (this.cart.itemCount() > 0) {
-      this.cart.closeDrawer();
-      this.router.navigate(['/checkout']);
-    } else {
-      this.router.navigate(['/catalog']);
-    }
+    this.scrolled.set(window.scrollY > 24);
   }
 }

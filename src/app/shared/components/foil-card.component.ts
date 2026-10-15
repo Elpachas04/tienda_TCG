@@ -62,7 +62,7 @@ const TILT_RANGE = 36;
     }
     .foil-top {
       display: flex; justify-content: space-between;
-      font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+      font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
       color: #C9A84C;
     }
     .foil-window {
@@ -103,12 +103,12 @@ const TILT_RANGE = 36;
     }
     .foil-window img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .foil-bottom { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-    .foil-bottom strong { font-weight: 400; font-size: 26px; line-height: 1; letter-spacing: .02em; color: #F5F0E8; }
-    .foil-bottom em { font-style: normal; font-size: 14px; color: #C9A84C; }
+    .foil-bottom strong { font-weight: 680; font-size: 22px; line-height: 1; letter-spacing: -.025em; color: #F5F0E8; }
+    .foil-bottom em { font-style: normal; font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; color: #F3DC95; }
     .hint {
       margin-top: 18px; text-align: center;
-      font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
-      color: rgba(245, 240, 232, .45);
+      font-size: 13px;
+      color: rgba(245, 240, 232, .5);
     }
   `],
 })

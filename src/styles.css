@@ -32,23 +32,23 @@
     font-family: theme('fontFamily.display');
     font-weight: 750;
     font-variation-settings: "opsz" 96;
-    letter-spacing: -0.045em;
-    line-height: 0.9;
-    font-size: clamp(3rem, 8.2vw, 7.25rem);
+    letter-spacing: -0.034em;
+    line-height: 0.92;
+    font-size: clamp(3.25rem, 8vw, 7rem);
   }
   .lv-h1 {
     font-family: theme('fontFamily.display');
     font-weight: 720;
     font-variation-settings: "opsz" 96;
-    letter-spacing: -0.04em;
-    line-height: 0.95;
+    letter-spacing: -0.03em;
+    line-height: 0.96;
     font-size: clamp(2.5rem, 6vw, 5rem);
   }
   .lv-h2 {
     font-family: theme('fontFamily.display');
     font-weight: 700;
     font-variation-settings: "opsz" 72;
-    letter-spacing: -0.035em;
+    letter-spacing: -0.028em;
     line-height: 1;
     font-size: clamp(2rem, 4.4vw, 3.5rem);
   }

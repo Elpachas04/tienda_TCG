@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { RevealDirective } from '../../shared/directives/reveal.directive';
 import { FoilCardComponent } from '../../shared/components/foil-card.component';
 import { CloudinaryService } from '../../core/services/cloudinary.service';
 
@@ -8,65 +7,67 @@ import { CloudinaryService } from '../../core/services/cloudinary.service';
   selector: 'app-lv-hero',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RevealDirective, RouterLink, FoilCardComponent],
+  imports: [RouterLink, FoilCardComponent],
   host: { class: 'block' },
   template: `
-    <section id="hero"
-      class="relative min-h-screen flex items-center px-4 sm:px-6 pt-32 sm:pt-36 pb-16 sm:pb-24 bg-lv-black overflow-hidden">
+    <section id="hero" class="relative min-h-[100svh] flex items-center overflow-hidden bg-lv-black">
 
+      <!-- Vitrina: fondo quieto y un foco cálido sobre la pieza -->
       <div class="absolute inset-0 pointer-events-none" aria-hidden="true"
-           style="background: radial-gradient(70% 90% at 72% 45%, #19160e 0%, #0a0a0a 60%);"></div>
+           style="background: radial-gradient(60% 75% at 74% 42%, #1d1a11 0%, #121212 58%, #0c0c0b 100%);"></div>
+      <div class="hero-cone absolute pointer-events-none" aria-hidden="true"></div>
 
-      <!-- Móvil: titular → tarjeta → botones. Escritorio: texto a la izquierda, tarjeta a la derecha -->
-      <div class="relative z-10 w-full max-w-7xl mx-auto grid gap-10 lg:gap-x-16 lg:grid-cols-[1.4fr_1fr] items-center text-center lg:text-left">
+      <div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 pt-28 pb-16 sm:pt-32 lg:pt-28 lg:pb-20
+                  grid gap-10 lg:gap-x-20 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] items-center">
 
-        <div class="flex flex-col items-center lg:items-start gap-6 lg:col-start-1 lg:row-start-1 lg:self-end">
-          <p lvReveal class="font-body text-[13px] text-lv-gold">
-            Bajo demanda · One Piece TCG
-          </p>
-
-          <h1 lvReveal
-              class="font-display leading-[0.95] text-[44px] sm:text-[64px] md:text-[84px] lg:text-[84px] xl:text-[100px]">
-            <span class="text-lv-cream block">LA PRIMERA CARTA</span>
-            <span class="text-lv-cream block">QUE VEN ES</span>
-            <span class="text-lv-gold block">TU CAJA.</span>
+        <div class="hero-copy flex flex-col items-start gap-7 lg:col-start-1 lg:row-start-1 lg:self-end">
+          <h1 data-split class="lv-display text-lv-cream max-w-[11ch]">
+            La primera carta que ven es tu caja.
           </h1>
-
-          <p lvReveal class="font-display text-lv-cream/70 text-xl sm:text-2xl md:text-4xl ">
-            No les decepciones.
-          </p>
         </div>
 
-        <lv-foil-card class="lg:col-start-2 lg:row-start-1 lg:row-span-2"
+        <lv-foil-card class="hero-card lg:col-start-2 lg:row-start-1 lg:row-span-2"
           name="Leader Vault"
           [price]="50"
           [image]="leaderVaultImage" />
 
-        <div class="flex flex-col items-center lg:items-start gap-6 lg:col-start-1 lg:row-start-2 lg:self-start">
-          <p lvReveal class="font-body text-[13px] text-lv-cream/50 max-w-md leading-relaxed">
-            Accesorios TCG hechos a medida, en el color de tu facción.<br>
-            Sin stock masivo.
+        <div class="hero-copy flex flex-col items-start gap-8 lg:col-start-1 lg:row-start-2 lg:self-start">
+          <p class="lv-lede">
+            No les decepciones. Deckboxes, expositores y organizadores para One Piece TCG,
+            impresos en 3D en Barcelona y en el color de tu líder.
           </p>
 
-          <div lvReveal class="flex gap-4 flex-wrap justify-center lg:justify-start">
-            <a routerLink="/catalog"
-               class="bg-lv-gold text-black rounded-full px-6 sm:px-8 py-3 sm:py-4 font-body text-[13px] font-semibold hover:brightness-110 transition-all duration-200">
-              Quiero el mío
-            </a>
-            <a href="#colores"
-               class="border border-lv-gold/30 text-lv-cream rounded-full px-6 sm:px-8 py-3 sm:py-4 font-body text-[13px] hover:border-lv-gold transition-all duration-200">
-              Ver colores →
-            </a>
+          <div class="flex gap-3 flex-wrap">
+            <a routerLink="/catalog" class="lv-btn lv-btn-primary">Ver catálogo</a>
+            <a href="#colores" class="lv-btn lv-btn-ghost">Elegir color</a>
           </div>
 
-          <p lvReveal class="font-body text-xs text-lv-cream/25">
-            UNO A UNO &nbsp;·&nbsp; A TU COLOR &nbsp;·&nbsp; SIN COMPROMISOS
-          </p>
+          <dl class="grid grid-cols-3 gap-x-6 sm:gap-x-10 pt-6 border-t border-lv-cream/10 w-full max-w-md">
+            <div>
+              <dt class="text-xs text-lv-cream/45">Fabricación</dt>
+              <dd class="mt-1 text-[15px] font-semibold text-lv-cream">Uno a uno</dd>
+            </div>
+            <div>
+              <dt class="text-xs text-lv-cream/45">Entrega</dt>
+              <dd class="mt-1 text-[15px] font-semibold text-lv-cream">3–7 días</dd>
+            </div>
+            <div>
+              <dt class="text-xs text-lv-cream/45">Pago</dt>
+              <dd class="mt-1 text-[15px] font-semibold text-lv-cream">Bizum</dd>
+            </div>
+          </dl>
         </div>
 
       </div>
     </section>
   `,
+  styles: [`
+    .hero-cone {
+      top: 0; right: 2%; width: 48%; height: 100%;
+      background: radial-gradient(ellipse 34% 92% at 50% 0%, rgba(255, 226, 165, .11), rgba(255, 226, 165, .03) 55%, transparent 80%);
+    }
+    @media (max-width: 1023px) { .hero-cone { display: none; } }
+  `],
 })
 export class HeroComponent {
   readonly leaderVaultImage = inject(CloudinaryService).detail('leader-vault_yamato_01');

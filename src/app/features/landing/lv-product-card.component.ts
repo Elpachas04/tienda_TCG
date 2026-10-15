@@ -2,8 +2,7 @@ import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChan
 import { RouterLink } from '@angular/router';
 import { Product, ProductVariant, Color, Leader } from '../../core/models/product.model';
 import { CartItem } from '../../core/models/cart-item.model';
-import { CardGlowDirective } from '../../shared/directives/card-glow.directive';
-import { RevealDirective } from '../../shared/directives/reveal.directive';
+import { FoilHoverDirective } from '../../shared/directives/foil-hover.directive';
 import { PLACEHOLDER } from '../../shared/constants';
 import { CloudinaryService } from '../../core/services/cloudinary.service';
 import { LeaderPickerComponent } from '../../shared/components/leader-picker.component';
@@ -12,129 +11,97 @@ import { LeaderPickerComponent } from '../../shared/components/leader-picker.com
   selector: 'app-lv-product-card',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, RevealDirective, LeaderPickerComponent],
+  imports: [RouterLink, FoilHoverDirective, LeaderPickerComponent],
   host: { class: 'block h-full' },
   template: `
-    <div lvReveal
-         [style.transition-delay]="delay"
-         class="relative h-full flex flex-col group rounded-card border border-lv-border
-                transition-all duration-300 hover:border-lv-gold cursor-pointer bg-lv-surface"
-         style="overflow:visible;">
+    <article class="group relative h-full flex flex-col">
 
-      <!-- Image area -->
-      <a [routerLink]="['/product', product.id]"
-         class="relative aspect-square rounded-t-card overflow-hidden block flex-shrink-0
-                bg-gradient-to-br from-[#201e1a] to-[#2a2820]">
-        @if (product.video) {
-          <video class="w-full h-full object-cover scale-[1.18] bg-lv-black"
-                 autoplay muted loop playsinline preload="metadata"
-                 disablepictureinpicture disableremoteplayback
-                 [src]="cloudinary.video(product.video!)"
-                 [poster]="product.images.length ? cloudinary.card(product.images[0]) : ''">
-          </video>
-        } @else {
-          <img
-            [src]="currentImage()"
-            [alt]="product.name"
-            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-            loading="lazy"
-            draggable="false"
-            (contextmenu)="$event.preventDefault()"
-            (error)="onImageError()"
-          />
-        }
+      <a [routerLink]="['/product', product.id]" lvFoil
+         class="foil-frame relative block aspect-square rounded-card bg-[#111] flex-shrink-0"
+         [style.view-transition-name]="'product-' + product.id"
+         [attr.aria-label]="product.name">
+        <div class="absolute inset-0 rounded-card overflow-hidden">
+          @if (product.video) {
+            <video class="w-full h-full object-cover scale-[1.18] bg-[#111]"
+                   autoplay muted loop playsinline preload="metadata"
+                   disablepictureinpicture disableremoteplayback
+                   [src]="cloudinary.video(product.video!)"
+                   [poster]="product.images.length ? cloudinary.card(product.images[0]) : ''">
+            </video>
+          } @else {
+            <img
+              [src]="currentImage()"
+              [alt]="product.name"
+              class="w-full h-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.04]"
+              loading="lazy"
+              draggable="false"
+              (contextmenu)="$event.preventDefault()"
+              (error)="onImageError()"
+            />
+          }
+        </div>
         @if (product.badge) {
-          <span class="absolute top-2 left-2 bg-lv-black/80 rounded-full px-2.5 py-1 font-body text-xs text-lv-gold border border-lv-gold/30">
+          <span class="absolute z-[2] top-3 left-3 rounded-full bg-lv-black/75 backdrop-blur px-2.5 py-1 text-xs font-semibold text-lv-foil">
             {{ product.badge }}
           </span>
         }
         @if (!product.available) {
-          <div class="absolute inset-0 bg-black/80 flex items-center justify-center">
-            <span class="font-body text-[13px] text-lv-cream/40">Agotado</span>
+          <div class="absolute inset-0 z-[2] rounded-card bg-black/75 grid place-items-center">
+            <span class="text-sm font-semibold text-lv-cream/60">Agotado</span>
           </div>
-        }
-        @if (product.colorPickerEnabled && selectedColor()) {
-          <div class="absolute bottom-2 right-2 w-5 h-5 rounded-full border-2 border-white/30"
-               [style.background]="selectedColor()!.hex"></div>
         }
       </a>
 
-      <!-- Body -->
-      <div class="px-4 pt-4 pb-5 flex flex-col flex-1 border-t border-lv-border">
-
-        <a [routerLink]="['/product', product.id]" class="block mb-1">
-          <p class="font-body text-xs text-lv-gold mb-1">
-            {{ product.category }}
-          </p>
-          <h3 class="font-display text-xl text-lv-cream leading-tight group-hover:text-lv-gold transition-colors duration-200">
-            {{ product.name }}
-          </h3>
-          <p class="font-body text-[11px] text-lv-cream/35 mt-1 mb-2 leading-snug">{{ product.tagline }}</p>
+      <div class="flex flex-col flex-1 pt-4">
+        <a [routerLink]="['/product', product.id]" class="block">
+          <h3 class="lv-h3 text-lv-cream group-hover:text-lv-foil transition-colors duration-200">{{ product.name }}</h3>
+          <p class="lv-note mt-1 line-clamp-2">{{ product.tagline }}</p>
           @if (product.id === 'caja-bulk') {
-            <p class="font-body text-xs text-lv-muted/50 mb-3">Sin cartas incluidas</p>
+            <p class="text-xs text-lv-muted mt-1">Sin cartas incluidas</p>
           }
         </a>
 
-        <!-- Variantes -->
         @if (product.variants && product.variants.length > 0) {
-          @if (selectedVariant()?.specs?.capacity) {
-            <p class="font-body text-xs text-lv-gold mb-1">{{ selectedVariant()!.specs!.capacity }} cartas</p>
-          }
-          <div class="flex gap-1 flex-wrap mb-3">
+          <div class="flex gap-1.5 flex-wrap items-center mt-3" role="group" aria-label="Tamaño">
             @for (v of product.variants; track v.label) {
-              <button
-                class="rounded-full px-2.5 py-0.5 font-body text-xs border transition-all duration-150"
+              <button type="button"
+                class="rounded-full px-3 h-8 text-[13px] font-medium border transition-colors duration-150"
                 [class]="selectedVariant()?.label === v.label
-                  ? 'border-lv-gold bg-lv-gold/10 text-lv-gold'
-                  : 'border-white/10 text-lv-cream/40 hover:border-lv-gold/30'"
+                  ? 'border-lv-gold text-lv-foil bg-lv-gold/10'
+                  : 'border-lv-cream/15 text-lv-cream/60 hover:border-lv-cream/40 hover:text-lv-cream'"
+                [attr.aria-pressed]="selectedVariant()?.label === v.label"
                 (click)="selectedVariant.set(v)">
                 {{ v.label }}
               </button>
             }
+            @if (selectedVariant()?.specs?.capacity) {
+              <span class="text-[13px] text-lv-cream/45 ml-1">{{ selectedVariant()!.specs!.capacity }} cartas</span>
+            }
           </div>
         }
 
-        <!-- Precio + botón añadir -->
-        <div class="flex items-center justify-between mt-auto">
-          <p class="font-display text-2xl text-lv-gold leading-none">
-            {{ currentPrice() }}€
-          </p>
-          <button
-            type="button"
-            class="w-9 h-9 rounded-full flex items-center justify-center font-body font-bold text-lg flex-shrink-0 transition-all duration-200 disabled:opacity-30"
-            [class]="justAdded()
-              ? 'bg-green-600 text-white scale-90'
-              : 'bg-lv-gold hover:scale-110 hover:brightness-110 text-black'"
-            [disabled]="!product.available"
-            (click)="onAdd($event)">
-            @if (justAdded()) {
-              <span class="text-xs font-bold">✓</span>
-            } @else {
-              +
-            }
-          </button>
-        </div>
-
-        <!-- Color dots -->
         @if (product.colorPickerEnabled && colors.length > 0) {
-          <div class="flex gap-1.5 flex-wrap items-center mt-3">
+          <div class="flex gap-2 flex-wrap items-center mt-3" role="group" aria-label="Color">
             @for (color of colors; track color.id) {
               <button
                 type="button"
-                class="rounded-full transition-all duration-150 cursor-pointer flex-shrink-0"
+                class="w-[18px] h-[18px] rounded-full flex-shrink-0 transition-shadow duration-150"
                 [title]="color.name"
-                [style.width]="selectedColor()?.id === color.id ? '14px' : '10px'"
-                [style.height]="selectedColor()?.id === color.id ? '14px' : '10px'"
+                [attr.aria-label]="color.name"
+                [attr.aria-pressed]="selectedColor()?.id === color.id"
                 [style.background]="color.hex"
-                [style.outline]="selectedColor()?.id === color.id ? '2px solid #C9A84C' : '1px solid rgba(255,255,255,0.15)'"
-                [style.outline-offset]="'2px'"
+                [style.box-shadow]="selectedColor()?.id === color.id
+                  ? '0 0 0 2px #121212, 0 0 0 3.5px #C9A84C'
+                  : 'inset 0 0 0 1px rgba(255,255,255,.14)'"
                 (click)="selectColor(color, $event)">
               </button>
+            }
+            @if (selectedColor()) {
+              <span class="text-[13px] text-lv-cream/45 ml-1">{{ selectedColor()!.name }}</span>
             }
           </div>
         }
 
-        <!-- Leader picker (inline) -->
         @if (product.leaderPickerEnabled && product.leaders?.length) {
           <div class="mt-3" (click)="$event.stopPropagation()">
             <app-leader-picker
@@ -145,14 +112,29 @@ import { LeaderPickerComponent } from '../../shared/components/leader-picker.com
             </app-leader-picker>
           </div>
         }
+
+        <div class="flex items-center justify-between gap-3 mt-auto pt-4">
+          <p class="lv-price font-display text-[1.375rem] font-semibold tracking-[-0.02em] text-lv-cream leading-none">
+            {{ currentPrice() }} €
+          </p>
+          <button
+            type="button"
+            class="h-10 px-4 rounded-full text-sm font-semibold transition-colors duration-200 disabled:opacity-30 disabled:pointer-events-none"
+            [class]="justAdded()
+              ? 'bg-lv-gold text-lv-black'
+              : 'border border-lv-cream/20 text-lv-cream hover:bg-lv-cream hover:text-lv-black'"
+            [disabled]="!product.available"
+            (click)="onAdd($event)">
+            {{ justAdded() ? 'Añadido' : 'Añadir' }}
+          </button>
+        </div>
       </div>
-    </div>
+    </article>
   `,
 })
 export class LvProductCardComponent implements OnChanges {
   @Input({ required: true }) product!: Product;
   @Input() colors: Color[] = [];
-  @Input() delay = '0ms';
   @Output() added = new EventEmitter<CartItem>();
 
   protected readonly cloudinary = inject(CloudinaryService);
