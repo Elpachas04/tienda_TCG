@@ -59,6 +59,8 @@
               }
             ],
             "styles": [
+              "@fontsource-variable/bricolage-grotesque/opsz.css",
+              "@fontsource-variable/hanken-grotesk/wght.css",
               "src/styles.css"
             ],
             "scripts": []

@@ -9,7 +9,7 @@ import { CatalogService } from '../../core/services/catalog.service';
     <a [href]="waUrl"
        target="_blank"
        rel="noopener noreferrer"
-       class="inline-flex items-center gap-1.5 mt-3 font-mono text-[10px] uppercase tracking-wider text-lv-cream/40 hover:text-lv-gold transition-colors duration-200">
+       class="inline-flex items-center gap-1.5 mt-3 font-body text-xs text-lv-cream/40 hover:text-lv-gold transition-colors duration-200">
       ¿No está tu Líder? Pídelo a medida
       <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>

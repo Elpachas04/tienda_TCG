@@ -20,7 +20,7 @@ const TILT_RANGE = 36;
   template: `
     <div #stage class="foil-stage">
       <div #card class="foil" (click)="enableTilt()">
-        <div class="foil-top font-mono">
+        <div class="foil-top font-body">
           <span>{{ eyebrow() }}</span><span>Hecho en BCN</span>
         </div>
         <div class="foil-window">
@@ -28,12 +28,12 @@ const TILT_RANGE = 36;
         </div>
         <div class="foil-bottom">
           <strong class="font-display">{{ name() }}</strong>
-          <em class="font-mono">{{ price() }} €</em>
+          <em class="font-body">{{ price() }} €</em>
         </div>
       </div>
     </div>
     @if (needsPermission()) {
-      <p class="hint font-mono">Toca la tarjeta e inclina el móvil</p>
+      <p class="hint font-body">Toca la tarjeta e inclina el móvil</p>
     }
   `,
   styles: [`

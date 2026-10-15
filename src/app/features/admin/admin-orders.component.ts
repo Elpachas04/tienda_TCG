@@ -19,8 +19,8 @@ interface OrderListItem {
   imports: [FormsModule, SlicePipe],
   template: `
     <div class="flex items-center justify-between mb-6">
-      <h1 class="font-display text-3xl text-lv-cream uppercase tracking-wide">Pedidos</h1>
-      <select class="bg-white/[0.03] border border-lv-border rounded-xl px-3 py-2 font-mono text-xs text-lv-cream"
+      <h1 class="font-display text-3xl text-lv-cream ">Pedidos</h1>
+      <select class="bg-white/[0.03] border border-lv-border rounded-xl px-3 py-2 font-body text-[13px] text-lv-cream"
         [(ngModel)]="statusFilter" (ngModelChange)="load()">
         <option value="">Todos los estados</option>
         @for (status of statuses; track status) { <option [value]="status">{{ status }}</option> }
@@ -28,9 +28,9 @@ interface OrderListItem {
     </div>
 
     @if (loading()) {
-      <p class="font-mono text-xs text-lv-muted uppercase tracking-wider">Cargando…</p>
+      <p class="font-body text-[13px] text-lv-muted ">Cargando…</p>
     } @else if (error()) {
-      <p class="text-red-400/80 font-mono text-[10px] uppercase tracking-wider mb-4">{{ error() }}</p>
+      <p class="text-red-400/80 font-body text-xs mb-4">{{ error() }}</p>
     }
 
     <div class="space-y-2">
@@ -38,18 +38,18 @@ interface OrderListItem {
         <div class="liquid-glass border border-lv-border rounded-xl px-4 py-3 flex items-center gap-4">
           <div class="flex-1 min-w-0">
             <p class="font-display text-lg text-lv-gold">{{ order.orderId }}</p>
-            <p class="font-mono text-[10px] text-lv-muted uppercase tracking-wider">
+            <p class="font-body text-xs text-lv-muted ">
               {{ order.customerName }} · {{ order.total.toFixed(2) }}€ · {{ order.deliveryMethod }} · {{ order.createdAt | slice:0:10 }}
             </p>
           </div>
-          <select class="bg-white/[0.03] border border-lv-border rounded-lg px-3 py-2 font-mono text-[11px] text-lv-cream flex-shrink-0"
+          <select class="bg-white/[0.03] border border-lv-border rounded-lg px-3 py-2 font-body text-[13px] text-lv-cream flex-shrink-0"
             [ngModel]="order.status" (ngModelChange)="updateStatus(order, $event)">
             @for (status of statuses; track status) { <option [value]="status">{{ status }}</option> }
           </select>
         </div>
       }
       @if (orders().length === 0 && !loading()) {
-        <p class="font-mono text-xs text-lv-muted uppercase tracking-wider">No hay pedidos.</p>
+        <p class="font-body text-[13px] text-lv-muted ">No hay pedidos.</p>
       }
     </div>
   `,

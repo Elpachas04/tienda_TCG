@@ -25,13 +25,12 @@ type DetailData = { product: Product | null; colors: Color[] };
         <div class="w-10 h-10 border-2 border-lv-gold border-t-transparent rounded-full animate-spin"></div>
       </div>
     } @else if (data.product) {
-      <div class="bg-lv-black bg-grid-premium min-h-screen relative overflow-x-hidden">
-        <div class="absolute -top-20 -right-20 sm:-top-40 sm:-right-40 w-[250px] h-[250px] sm:w-[500px] sm:h-[500px] bg-[#C9A84C]/[0.05] rounded-full blur-[80px] sm:blur-[120px] animate-aurora pointer-events-none" style="z-index:0"></div>
+      <div class="bg-lv-black min-h-screen relative overflow-x-hidden">
 
         <div class="max-w-5xl mx-auto px-4 sm:px-6 pt-3 pb-8 sm:py-12 lg:py-16">
 
           <a routerLink="/catalog"
-             class="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-lv-cream/40 hover:text-lv-gold transition-colors duration-200 mb-6 sm:mb-10 lg:mb-12">
+             class="inline-flex items-center gap-2 font-body text-[13px] text-lv-cream/40 hover:text-lv-gold transition-colors duration-200 mb-6 sm:mb-10 lg:mb-12">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
             </svg>
@@ -103,20 +102,20 @@ type DetailData = { product: Product | null; colors: Color[] };
               <!-- Badge + nombre -->
               <div class="mb-5">
                 <div class="flex items-center gap-3 mb-2">
-                  <p class="font-mono text-[10px] uppercase tracking-[0.3em] text-lv-gold/50">{{ data.product.category }}</p>
+                  <p class="font-body text-xs text-lv-gold/50">{{ data.product.category }}</p>
                   @if (data.product.badge && !selectedVariant()?.copy) {
-                    <span class="rounded-full px-2 py-0.5 font-mono text-[9px] uppercase tracking-wider text-lv-gold border border-lv-gold/30">
+                    <span class="rounded-full px-2 py-0.5 font-body text-xs text-lv-gold border border-lv-gold/30">
                       {{ data.product.badge }}
                     </span>
                   }
                 </div>
-                <h1 class="font-display text-4xl sm:text-5xl md:text-6xl text-lv-cream leading-none uppercase">{{ data.product.name }}</h1>
+                <h1 class="font-display text-4xl sm:text-5xl md:text-6xl text-lv-cream leading-none ">{{ data.product.name }}</h1>
               </div>
 
               <!-- Color — swatches directos One Piece -->
               @if (data.product.colorPickerEnabled && data.colors.length > 0) {
                 <div class="mb-5">
-                  <p class="font-mono text-[10px] uppercase tracking-widest text-lv-cream/30 mb-3">Color</p>
+                  <p class="font-body text-xs text-lv-cream/30 mb-3">Color</p>
                   <div class="flex flex-wrap gap-2.5">
                     @for (color of data.colors; track color.id) {
                       <button
@@ -137,7 +136,7 @@ type DetailData = { product: Product | null; colors: Color[] };
               <!-- Leader picker -->
               @if (data.product.leaderPickerEnabled && data.product.leaders?.length) {
                 <div class="mb-5">
-                  <p class="font-mono text-[10px] uppercase tracking-widest text-lv-cream/30 mb-3">Líder</p>
+                  <p class="font-body text-xs text-lv-cream/30 mb-3">Líder</p>
                   <app-leader-picker
                     [leaders]="data.product.leaders!"
                     [selected]="selectedLeader()"
@@ -153,7 +152,7 @@ type DetailData = { product: Product | null; colors: Color[] };
               <!-- Selector de tamaño tipo card -->
               @if (data.product.variants && data.product.variants.length > 0) {
                 <div class="mb-5">
-                  <p class="font-mono text-[10px] uppercase tracking-widest text-lv-cream/30 mb-3">Tamaño</p>
+                  <p class="font-body text-xs text-lv-cream/30 mb-3">Tamaño</p>
                   <div class="grid grid-cols-3 gap-2">
                     @for (variant of data.product.variants; track variant.label) {
                       <button
@@ -167,12 +166,12 @@ type DetailData = { product: Product | null; colors: Color[] };
                           {{ variant.label }}
                         </span>
                         @if (variant.specs?.capacity) {
-                          <span class="font-mono text-[9px] leading-none mb-1"
+                          <span class="font-body text-xs leading-none mb-1"
                                 [class]="selectedVariant()?.label === variant.label ? 'text-lv-gold' : 'text-lv-muted'">
                             {{ variant.specs!.capacity }} cartas
                           </span>
                         }
-                        <span class="font-mono text-xs font-semibold"
+                        <span class="font-body text-[13px] font-semibold"
                               [class]="selectedVariant()?.label === variant.label ? 'text-lv-gold' : 'text-lv-muted'">
                           {{ variant.price }}€
                         </span>
@@ -192,8 +191,8 @@ type DetailData = { product: Product | null; colors: Color[] };
                   ]; track stat.label) {
                     <div class="text-center">
                       <p class="font-display text-2xl text-lv-cream leading-none">{{ stat.value }}</p>
-                      <p class="font-mono text-[9px] text-lv-muted mt-0.5">{{ stat.unit }}</p>
-                      <p class="font-mono text-[8px] uppercase tracking-widest text-lv-gold/50 mt-0.5">{{ stat.label }}</p>
+                      <p class="font-body text-xs text-lv-muted mt-0.5">{{ stat.unit }}</p>
+                      <p class="font-body text-xs text-lv-gold/50 mt-0.5">{{ stat.label }}</p>
                     </div>
                   }
                 </div>
@@ -207,10 +206,10 @@ type DetailData = { product: Product | null; colors: Color[] };
               <!-- Ideal para (chips) o Features (checkmarks) -->
               @if (variantUses(data.product); as uses) {
                 <div class="mb-5">
-                  <p class="font-mono text-[10px] uppercase tracking-widest text-lv-cream/30 mb-2.5">Ideal para</p>
+                  <p class="font-body text-xs text-lv-cream/30 mb-2.5">Ideal para</p>
                   <div class="flex flex-wrap gap-2">
                     @for (use of uses; track use) {
-                      <span class="rounded-full px-3 py-1.5 font-mono text-[11px] border border-lv-gold/20 text-lv-gold/70 bg-lv-gold/5">
+                      <span class="rounded-full px-3 py-1.5 font-body text-[13px] border border-lv-gold/20 text-lv-gold/70 bg-lv-gold/5">
                         {{ use }}
                       </span>
                     }
@@ -249,7 +248,7 @@ type DetailData = { product: Product | null; colors: Color[] };
                             (click)="toggleAddon(addon.id)">
                         {{ addon.name }}
                       </span>
-                      <span class="font-mono text-sm text-lv-gold">+{{ addon.price }}€</span>
+                      <span class="font-body text-sm text-lv-gold">+{{ addon.price }}€</span>
                     </label>
                   }
                 </div>
@@ -260,7 +259,7 @@ type DetailData = { product: Product | null; colors: Color[] };
                   <svg class="w-4 h-4 text-lv-gold/60 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                   </svg>
-                  <p class="font-mono text-[10px] uppercase tracking-wider text-lv-muted">Las cartas <strong class="text-lv-cream/50">no están incluidas</strong> — solo el accesorio impreso en 3D</p>
+                  <p class="font-body text-xs text-lv-muted">Las cartas <strong class="text-lv-cream/50">no están incluidas</strong> — solo el accesorio impreso en 3D</p>
                 </div>
               }
 
@@ -268,7 +267,7 @@ type DetailData = { product: Product | null; colors: Color[] };
               <div class="flex items-center justify-between pt-4 sm:pt-5 border-t border-white/[0.06] mt-auto gap-3">
                 <span class="font-display text-4xl sm:text-5xl text-lv-gold leading-none">{{ currentPrice(data.product) }}€</span>
                 <button
-                  class="rounded-full px-4 sm:px-7 py-3 sm:py-3.5 font-mono text-xs uppercase tracking-wider font-semibold transition-all duration-200 disabled:opacity-40 flex-shrink-0"
+                  class="rounded-full px-4 sm:px-7 py-3 sm:py-3.5 font-body text-[13px] font-semibold transition-all duration-200 disabled:opacity-40 flex-shrink-0"
                   [class]="!data.product.available
                     ? 'bg-white/5 text-lv-cream/30 cursor-not-allowed'
                     : justAdded()
@@ -288,9 +287,9 @@ type DetailData = { product: Product | null; colors: Color[] };
       </div>
     } @else {
       <div class="flex flex-col items-center justify-center min-h-screen gap-4 text-center">
-        <p class="font-display text-4xl text-lv-cream/30 uppercase tracking-wide">Producto no encontrado</p>
+        <p class="font-display text-4xl text-lv-cream/30 ">Producto no encontrado</p>
         <a routerLink="/catalog"
-           class="liquid-glass border border-lv-gold/20 text-lv-cream rounded-full px-6 py-3 font-mono text-xs uppercase tracking-wider hover:border-lv-gold transition-all duration-200">
+           class="liquid-glass border border-lv-gold/20 text-lv-cream rounded-full px-6 py-3 font-body text-[13px] hover:border-lv-gold transition-all duration-200">
           Volver al catálogo
         </a>
       </div>

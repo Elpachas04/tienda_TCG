@@ -19,21 +19,19 @@ const SKELETONS = [1,2,3,4,5,6,7,8];
   imports: [LvProductCardComponent, RevealDirective],
   host: { class: 'block' },
   template: `
-    <div class="bg-lv-black bg-grid-premium min-h-screen relative">
+    <div class="bg-lv-black min-h-screen relative">
 
-      <div class="fixed -top-20 -right-20 sm:-top-40 sm:-right-40 w-[250px] h-[250px] sm:w-[450px] sm:h-[450px] lg:w-[600px] lg:h-[600px] bg-[#C9A84C]/[0.05] rounded-full blur-[80px] sm:blur-[140px] animate-aurora pointer-events-none" style="z-index:0"></div>
-      <div class="fixed bottom-0 -left-10 sm:-left-60 w-40 h-40 sm:w-80 sm:h-80 bg-[#C9A84C]/[0.03] rounded-full blur-[60px] sm:blur-[100px] animate-aurora pointer-events-none" style="z-index:0;animation-delay:-9s"></div>
 
       <div class="relative max-w-[1600px] mx-auto px-4 sm:px-6 py-10 sm:py-16 lg:py-20" style="z-index:1">
 
         <!-- Header — pinta inmediatamente -->
         <div lvReveal class="mb-8 sm:mb-12 lg:mb-16">
-          <p class="font-mono text-xs uppercase tracking-[0.35em] text-lv-gold/60 mb-4 sm:mb-5">— Colección completa</p>
-          <h1 class="font-display uppercase leading-[0.9]">
+          <p class="font-body text-[13px] text-lv-gold/60 mb-4 sm:mb-5">— Colección completa</p>
+          <h1 class="font-display leading-[0.9]">
             <span class="block text-lv-cream" style="font-size: clamp(2rem, 8vw, 7rem)">LO QUE</span>
             <span class="block text-lv-gold" style="font-size: clamp(2rem, 8vw, 7rem)">FABRICAMOS</span>
           </h1>
-          <p class="font-mono text-xs uppercase tracking-wide text-lv-cream/30 mt-4 sm:mt-6 max-w-sm leading-relaxed">
+          <p class="font-body text-[13px] text-lv-cream/30 mt-4 sm:mt-6 max-w-sm leading-relaxed">
             Accesorios para TCG impresos en 3D.<br>Cada pieza, por encargo. Cada color, el tuyo.
           </p>
         </div>
@@ -55,7 +53,7 @@ const SKELETONS = [1,2,3,4,5,6,7,8];
         -->
         @defer (on idle) {
           @if (filteredProducts().length === 0) {
-            <p class="font-mono text-xs uppercase tracking-wider text-lv-cream/25 text-center py-28">
+            <p class="font-body text-[13px] text-lv-cream/25 text-center py-28">
               Sin productos en esta categoría
             </p>
           } @else {

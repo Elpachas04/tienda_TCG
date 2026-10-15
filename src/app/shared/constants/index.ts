@@ -4,7 +4,7 @@ export const TOAST_DURATION = 2500;
 
 export const NOTES_MAX = 500;
 
-export const BASE_PILL = 'font-mono text-xs uppercase tracking-wider rounded-full px-5 py-2 transition-all duration-200 cursor-pointer';
+export const BASE_PILL = 'font-body text-[13px] rounded-full px-5 py-2 transition-all duration-200 cursor-pointer';
 
 export const WHATSAPP_PHONE = '644794412';
 export const WHATSAPP_URL   = `https://wa.me/34${WHATSAPP_PHONE}`;

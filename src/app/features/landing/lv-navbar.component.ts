@@ -19,17 +19,17 @@ import { CartService } from '../../core/services/cart.service';
         [style.background]="scrolled() ? 'rgba(18,18,18,0.85)' : ''"
         [style.backdrop-filter]="scrolled() ? 'blur(20px)' : 'blur(6px)'"
       >
-        <a routerLink="/" class="font-display text-lv-gold text-base sm:text-xl tracking-wide hover:opacity-80 transition-opacity flex-shrink-0">LayerVault</a>
+        <a routerLink="/" class="font-display text-lv-gold text-base sm:text-xl hover:opacity-80 transition-opacity flex-shrink-0">LayerVault</a>
 
         <div class="hidden lg:flex items-center gap-8">
           @if (isLanding()) {
-            <a routerLink="/catalog"    class="font-mono text-xs uppercase tracking-widest text-lv-cream/70 hover:text-lv-gold transition-colors py-3 px-1">Productos</a>
-            <a routerLink="/" fragment="colores"  class="font-mono text-xs uppercase tracking-widest text-lv-cream/70 hover:text-lv-gold transition-colors py-3 px-1">Colores</a>
-            <a routerLink="/" fragment="contacto" class="font-mono text-xs uppercase tracking-widest text-lv-cream/70 hover:text-lv-gold transition-colors py-3 px-1">Contacto</a>
+            <a routerLink="/catalog"    class="font-body text-[13px] text-lv-cream/70 hover:text-lv-gold transition-colors py-3 px-1">Productos</a>
+            <a routerLink="/" fragment="colores"  class="font-body text-[13px] text-lv-cream/70 hover:text-lv-gold transition-colors py-3 px-1">Colores</a>
+            <a routerLink="/" fragment="contacto" class="font-body text-[13px] text-lv-cream/70 hover:text-lv-gold transition-colors py-3 px-1">Contacto</a>
           } @else {
-            <a routerLink="/catalog"    class="font-mono text-xs uppercase tracking-widest text-lv-cream/70 hover:text-lv-gold transition-colors py-3 px-1">Catálogo</a>
+            <a routerLink="/catalog"    class="font-body text-[13px] text-lv-cream/70 hover:text-lv-gold transition-colors py-3 px-1">Catálogo</a>
           }
-          <a routerLink="/seguimiento" class="font-mono text-xs uppercase tracking-widest text-lv-cream/70 hover:text-lv-gold transition-colors py-3 px-1">Mis pedidos</a>
+          <a routerLink="/seguimiento" class="font-body text-[13px] text-lv-cream/70 hover:text-lv-gold transition-colors py-3 px-1">Mis pedidos</a>
         </div>
 
         <div class="flex items-center gap-2 sm:gap-3">
@@ -41,14 +41,14 @@ import { CartService } from '../../core/services/cart.service';
           @if (!isCheckout() && cart.itemCount() > 0) {
             <button type="button"
               [attr.aria-label]="'Ver cesta — ' + cart.itemCount() + ' artículos'"
-              class="w-8 h-8 rounded-full bg-lv-gold text-black font-mono text-xs font-bold flex items-center justify-center hover:brightness-110 transition-all [animation:badge-pop_0.35s_ease-out] flex-shrink-0"
+              class="w-8 h-8 rounded-full bg-lv-gold text-black font-body text-[13px] font-bold flex items-center justify-center hover:brightness-110 transition-all [animation:badge-pop_0.35s_ease-out] flex-shrink-0"
               (click)="cart.openDrawer()">
               {{ cart.itemCount() }}
             </button>
           }
           @if (!isCheckout()) {
             <button type="button"
-              class="liquid-glass border border-lv-gold/30 font-mono text-xs uppercase tracking-widest text-lv-gold px-3 sm:px-5 py-2 rounded-full hover:bg-lv-gold hover:text-black transition-all duration-200 whitespace-nowrap"
+              class="liquid-glass border border-lv-gold/30 font-body text-[13px] text-lv-gold px-3 sm:px-5 py-2 rounded-full hover:bg-lv-gold hover:text-black transition-all duration-200 whitespace-nowrap"
               (click)="onOrderClick()">
               <span class="hidden sm:inline">Pedir ahora</span>
               <span class="sm:hidden">Pedir</span>

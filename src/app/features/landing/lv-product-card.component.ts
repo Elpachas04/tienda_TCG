@@ -44,13 +44,13 @@ import { LeaderPickerComponent } from '../../shared/components/leader-picker.com
           />
         }
         @if (product.badge) {
-          <span class="absolute top-2 left-2 bg-lv-black/80 rounded-full px-2.5 py-1 font-mono text-[9px] uppercase tracking-wider text-lv-gold border border-lv-gold/30">
+          <span class="absolute top-2 left-2 bg-lv-black/80 rounded-full px-2.5 py-1 font-body text-xs text-lv-gold border border-lv-gold/30">
             {{ product.badge }}
           </span>
         }
         @if (!product.available) {
           <div class="absolute inset-0 bg-black/80 flex items-center justify-center">
-            <span class="font-mono text-xs uppercase tracking-widest text-lv-cream/40">Agotado</span>
+            <span class="font-body text-[13px] text-lv-cream/40">Agotado</span>
           </div>
         }
         @if (product.colorPickerEnabled && selectedColor()) {
@@ -63,7 +63,7 @@ import { LeaderPickerComponent } from '../../shared/components/leader-picker.com
       <div class="px-4 pt-4 pb-5 flex flex-col flex-1 border-t border-lv-border">
 
         <a [routerLink]="['/product', product.id]" class="block mb-1">
-          <p class="font-mono text-[9px] uppercase tracking-[0.25em] text-lv-gold mb-1">
+          <p class="font-body text-xs text-lv-gold mb-1">
             {{ product.category }}
           </p>
           <h3 class="font-display text-xl text-lv-cream leading-tight group-hover:text-lv-gold transition-colors duration-200">
@@ -71,19 +71,19 @@ import { LeaderPickerComponent } from '../../shared/components/leader-picker.com
           </h3>
           <p class="font-body text-[11px] text-lv-cream/35 mt-1 mb-2 leading-snug">{{ product.tagline }}</p>
           @if (product.id === 'caja-bulk') {
-            <p class="font-mono text-[8px] uppercase tracking-wider text-lv-muted/50 mb-3">Sin cartas incluidas</p>
+            <p class="font-body text-xs text-lv-muted/50 mb-3">Sin cartas incluidas</p>
           }
         </a>
 
         <!-- Variantes -->
         @if (product.variants && product.variants.length > 0) {
           @if (selectedVariant()?.specs?.capacity) {
-            <p class="font-mono text-[8px] text-lv-gold mb-1">{{ selectedVariant()!.specs!.capacity }} cartas</p>
+            <p class="font-body text-xs text-lv-gold mb-1">{{ selectedVariant()!.specs!.capacity }} cartas</p>
           }
           <div class="flex gap-1 flex-wrap mb-3">
             @for (v of product.variants; track v.label) {
               <button
-                class="rounded-full px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-wider border transition-all duration-150"
+                class="rounded-full px-2.5 py-0.5 font-body text-xs border transition-all duration-150"
                 [class]="selectedVariant()?.label === v.label
                   ? 'border-lv-gold bg-lv-gold/10 text-lv-gold'
                   : 'border-white/10 text-lv-cream/40 hover:border-lv-gold/30'"
@@ -101,7 +101,7 @@ import { LeaderPickerComponent } from '../../shared/components/leader-picker.com
           </p>
           <button
             type="button"
-            class="w-9 h-9 rounded-full flex items-center justify-center font-mono font-bold text-lg flex-shrink-0 transition-all duration-200 disabled:opacity-30"
+            class="w-9 h-9 rounded-full flex items-center justify-center font-body font-bold text-lg flex-shrink-0 transition-all duration-200 disabled:opacity-30"
             [class]="justAdded()
               ? 'bg-green-600 text-white scale-90'
               : 'bg-lv-gold hover:scale-110 hover:brightness-110 text-black'"

@@ -23,14 +23,14 @@ const STEPS = [
 
           <!-- ── IZQUIERDA: Colores ── -->
           <div>
-            <p lvReveal class="font-mono text-xs uppercase tracking-wider text-lv-gold/60 mb-4">
+            <p lvReveal class="font-body text-[13px] text-lv-gold/60 mb-4">
               — Elige tu facción
             </p>
-            <h2 lvReveal class="font-display uppercase text-lv-cream leading-[0.88]"
+            <h2 lvReveal class="font-display text-lv-cream leading-[0.88]"
                 style="font-size: clamp(2.8rem, 6vw, 5rem);">
               TU COLOR,<br>TU PIEZA
             </h2>
-            <p lvReveal class="font-mono text-xs uppercase tracking-wide text-lv-cream/40 mt-5 mb-8 max-w-xs leading-relaxed">
+            <p lvReveal class="font-body text-[13px] text-lv-cream/40 mt-5 mb-8 max-w-xs leading-relaxed">
               Los 7 colores oficiales de One Piece TCG. En todos los productos sin coste extra.
             </p>
 
@@ -40,7 +40,7 @@ const STEPS = [
                 <div class="flex flex-col items-center gap-2 w-[56px] sm:w-[64px]">
                   <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-white/[0.07] flex-shrink-0"
                        [style.background]="color.hex"></div>
-                  <span class="font-mono text-[8px] uppercase tracking-wider text-lv-cream/40 text-center leading-tight">
+                  <span class="font-body text-xs text-lv-cream/40 text-center leading-tight">
                     {{ color.name }}
                   </span>
                 </div>
@@ -50,7 +50,7 @@ const STEPS = [
 
           <!-- ── DERECHA: Pasos ── -->
           <div>
-            <p lvReveal class="font-mono text-xs uppercase tracking-wider text-lv-gold/60 mb-4 lg:mb-6">
+            <p lvReveal class="font-body text-[13px] text-lv-gold/60 mb-4 lg:mb-6">
               — Así funciona
             </p>
 
@@ -63,7 +63,7 @@ const STEPS = [
                   </span>
                   <div class="pt-1">
                     <p class="font-display text-lg sm:text-xl text-lv-cream leading-tight mb-1">{{ step.title }}</p>
-                    <p class="font-mono text-[11px] uppercase tracking-wide text-lv-cream/35 leading-relaxed">{{ step.desc }}</p>
+                    <p class="font-body text-[13px] text-lv-cream/35 leading-relaxed">{{ step.desc }}</p>
                   </div>
                 </div>
               }

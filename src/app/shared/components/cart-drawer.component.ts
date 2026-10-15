@@ -30,9 +30,9 @@ import { NOTES_MAX } from '../constants';
         <!-- Header -->
         <div class="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-white/[0.07] flex-shrink-0">
           <div class="flex items-center gap-3">
-            <h2 class="font-display text-2xl sm:text-3xl text-lv-gold tracking-wider leading-none">CESTA</h2>
+            <h2 class="font-display text-2xl sm:text-3xl text-lv-gold leading-none">CESTA</h2>
             @if (cart.itemCount() > 0) {
-              <span class="bg-lv-gold text-black font-mono text-xs font-bold px-2 py-0.5 rounded-full leading-none [animation:badge-pop_0.35s_ease-out]">
+              <span class="bg-lv-gold text-black font-body text-[13px] font-bold px-2 py-0.5 rounded-full leading-none [animation:badge-pop_0.35s_ease-out]">
                 {{ cart.itemCount() }}
               </span>
             }
@@ -58,11 +58,11 @@ import { NOTES_MAX } from '../constants';
                 </svg>
               </div>
               <div>
-                <p class="font-display text-xl text-lv-cream/30 uppercase tracking-wide">Cesta vacía</p>
-                <p class="font-mono text-[9px] uppercase tracking-wider text-lv-cream/15 mt-1">Añade algo del catálogo</p>
+                <p class="font-display text-xl text-lv-cream/30 ">Cesta vacía</p>
+                <p class="font-body text-xs text-lv-cream/15 mt-1">Añade algo del catálogo</p>
               </div>
               <button
-                class="liquid-glass border border-lv-gold/20 text-lv-gold font-mono text-xs uppercase tracking-wider rounded-full px-6 py-2.5 hover:bg-lv-gold hover:text-black transition-all duration-200"
+                class="liquid-glass border border-lv-gold/20 text-lv-gold font-body text-[13px] rounded-full px-6 py-2.5 hover:bg-lv-gold hover:text-black transition-all duration-200"
                 (click)="goToCatalog()">
                 Ver catálogo
               </button>
@@ -72,16 +72,16 @@ import { NOTES_MAX } from '../constants';
               <div class="liquid-glass rounded-[16px] p-3 sm:p-3.5 border border-white/[0.05]">
                 <div class="flex gap-3 items-start">
                   <div class="flex-1 min-w-0">
-                    <h3 class="font-display text-base text-lv-cream leading-tight line-clamp-1 tracking-wide">{{ item.productName }}</h3>
+                    <h3 class="font-display text-base text-lv-cream leading-tight line-clamp-1 ">{{ item.productName }}</h3>
                     <div class="flex gap-2 mt-1 flex-wrap">
                       @if (item.variant) {
-                        <span class="font-mono text-[9px] uppercase tracking-wider text-lv-cream/40 bg-white/[0.04] rounded-full px-2 py-0.5">{{ item.variant }}</span>
+                        <span class="font-body text-xs text-lv-cream/40 bg-white/[0.04] rounded-full px-2 py-0.5">{{ item.variant }}</span>
                       }
                       @if (item.color) {
-                        <span class="font-mono text-[9px] uppercase tracking-wider text-lv-gold/60 bg-lv-gold/[0.06] rounded-full px-2 py-0.5">{{ item.color }}</span>
+                        <span class="font-body text-xs text-lv-gold/60 bg-lv-gold/[0.06] rounded-full px-2 py-0.5">{{ item.color }}</span>
                       }
                     </div>
-                    <p class="font-display text-base text-lv-gold mt-1.5 leading-none">{{ item.unitPrice }}€<span class="font-mono text-[9px] text-lv-cream/25 ml-1">/ud</span></p>
+                    <p class="font-display text-base text-lv-gold mt-1.5 leading-none">{{ item.unitPrice }}€<span class="font-body text-xs text-lv-cream/25 ml-1">/ud</span></p>
                   </div>
 
                   <div class="flex flex-col items-end gap-2 flex-shrink-0">
@@ -97,7 +97,7 @@ import { NOTES_MAX } from '../constants';
                           </svg>
                         } @else { − }
                       </button>
-                      <span class="w-7 text-center font-mono text-xs font-semibold text-lv-cream">{{ item.quantity }}</span>
+                      <span class="w-7 text-center font-body text-[13px] font-semibold text-lv-cream">{{ item.quantity }}</span>
                       <button
                         class="w-7 h-7 flex items-center justify-center text-lv-cream/40 hover:text-lv-cream hover:bg-white/[0.06] transition-colors"
                         (click)="cart.updateQuantity(item, item.quantity + 1)">
@@ -126,8 +126,8 @@ import { NOTES_MAX } from '../constants';
           <div class="flex-shrink-0 border-t border-white/[0.07] px-4 sm:px-6 py-4 sm:py-5 space-y-3 sm:space-y-4 bg-lv-void">
             <div class="flex justify-between items-center">
               <div>
-                <span class="font-display text-xl sm:text-2xl text-lv-cream tracking-wide">TOTAL</span>
-                <span class="font-mono text-[10px] text-lv-cream/30 uppercase tracking-wider ml-2">
+                <span class="font-display text-xl sm:text-2xl text-lv-cream ">TOTAL</span>
+                <span class="font-body text-xs text-lv-cream/30 ml-2">
                   {{ cart.itemCount() }} {{ cart.itemCount() === 1 ? 'artículo' : 'artículos' }}
                 </span>
               </div>
@@ -135,7 +135,7 @@ import { NOTES_MAX } from '../constants';
             </div>
 
             <button
-              class="w-full bg-lv-gold hover:brightness-110 text-black font-mono text-xs uppercase tracking-widest font-semibold rounded-full py-3.5 sm:py-4 transition-all duration-200"
+              class="w-full bg-lv-gold hover:brightness-110 text-black font-body text-[13px] font-semibold rounded-full py-3.5 sm:py-4 transition-all duration-200"
               (click)="goToCheckout()">
               Hacer pedido →
             </button>

@@ -13,7 +13,7 @@ import { CONTACT_EMAIL } from '../../shared/constants';
       <div class="max-w-2xl mx-auto">
 
         <a routerLink="/"
-           class="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-lv-cream/40 hover:text-lv-gold transition-colors duration-200 mb-12">
+           class="inline-flex items-center gap-2 font-body text-[13px] text-lv-cream/40 hover:text-lv-gold transition-colors duration-200 mb-12">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
           </svg>
@@ -23,13 +23,13 @@ import { CONTACT_EMAIL } from '../../shared/constants';
         <!-- Tabs -->
         <div class="flex gap-2 mb-12">
           <button
-            class="font-mono text-xs uppercase tracking-wider rounded-full px-5 py-2 transition-all duration-200"
+            class="font-body text-[13px] rounded-full px-5 py-2 transition-all duration-200"
             [class]="tab() === 'aviso' ? 'bg-lv-gold text-black font-semibold' : 'liquid-glass border border-lv-gold/20 text-lv-cream/50 hover:border-lv-gold/40'"
             (click)="tab.set('aviso')">
             Aviso legal
           </button>
           <button
-            class="font-mono text-xs uppercase tracking-wider rounded-full px-5 py-2 transition-all duration-200"
+            class="font-body text-[13px] rounded-full px-5 py-2 transition-all duration-200"
             [class]="tab() === 'privacidad' ? 'bg-lv-gold text-black font-semibold' : 'liquid-glass border border-lv-gold/20 text-lv-cream/50 hover:border-lv-gold/40'"
             (click)="tab.set('privacidad')">
             Privacidad
@@ -39,39 +39,38 @@ import { CONTACT_EMAIL } from '../../shared/constants';
         @if (tab() === 'aviso') {
           <div class="space-y-8">
             <div>
-              <p class="font-mono text-xs uppercase tracking-[0.3em] text-lv-gold/60 mb-3">— Aviso Legal</p>
-              <h1 class="font-display uppercase text-4xl text-lv-cream leading-none">Información legal</h1>
+              <h1 class="lv-h1 text-lv-cream">Información legal</h1>
             </div>
 
             <section class="space-y-3">
-              <h2 class="font-display text-xl text-lv-gold uppercase">Titular</h2>
+              <h2 class="lv-h3 text-lv-cream">Titular</h2>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
                 En cumplimiento de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y del Comercio Electrónico (LSSICE), se facilitan los siguientes datos:
               </p>
               <ul class="space-y-1.5 font-body text-sm text-lv-cream/60">
-                <li><span class="text-lv-cream/40 font-mono text-[11px] uppercase tracking-wider">Titular:</span> LayerVault</li>
-                <li><span class="text-lv-cream/40 font-mono text-[11px] uppercase tracking-wider">Actividad:</span> Fabricación y venta de accesorios impresos en 3D para juegos de cartas coleccionables</li>
-                <li><span class="text-lv-cream/40 font-mono text-[11px] uppercase tracking-wider">Domicilio:</span> Barcelona, España</li>
-                <li><span class="text-lv-cream/40 font-mono text-[11px] uppercase tracking-wider">Email:</span> {{ email }}</li>
+                <li><span class="text-lv-cream/40 font-body text-[13px] ">Titular:</span> LayerVault</li>
+                <li><span class="text-lv-cream/40 font-body text-[13px] ">Actividad:</span> Fabricación y venta de accesorios impresos en 3D para juegos de cartas coleccionables</li>
+                <li><span class="text-lv-cream/40 font-body text-[13px] ">Domicilio:</span> Barcelona, España</li>
+                <li><span class="text-lv-cream/40 font-body text-[13px] ">Email:</span> {{ email }}</li>
               </ul>
             </section>
 
             <section class="space-y-3">
-              <h2 class="font-display text-xl text-lv-gold uppercase">Objeto y uso del sitio</h2>
+              <h2 class="lv-h3 text-lv-cream">Objeto y uso del sitio</h2>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
                 LayerVault es una tienda de venta directa de accesorios fabricados bajo demanda mediante impresión 3D. Todos los productos se fabrican por encargo, uno a uno, de forma artesanal. El pedido se formaliza a través del formulario web; el pago se realiza por Bizum una vez que confirmamos los detalles contigo por email.
               </p>
             </section>
 
             <section class="space-y-3">
-              <h2 class="font-display text-xl text-lv-gold uppercase">Proceso de pedido y pago</h2>
+              <h2 class="lv-h3 text-lv-cream">Proceso de pedido y pago</h2>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
                 Al enviar el formulario recibirás un email de confirmación con el resumen de tu pedido. Nos pondremos en contacto contigo en menos de 1 hora para coordinar el pago por Bizum y resolver cualquier duda. El pedido no se fabrica hasta que el pago está confirmado.
               </p>
             </section>
 
             <section class="space-y-3">
-              <h2 class="font-display text-xl text-lv-gold uppercase">Envíos y devoluciones</h2>
+              <h2 class="lv-h3 text-lv-cream">Envíos y devoluciones</h2>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
                 Los envíos se realizan únicamente a Península mediante Correos, con entrega en oficina Correos. También es posible la recogida en mano sin coste. El plazo de fabricación es de 3 a 7 días laborables desde la confirmación del pago.
               </p>
@@ -81,14 +80,14 @@ import { CONTACT_EMAIL } from '../../shared/constants';
             </section>
 
             <section class="space-y-3">
-              <h2 class="font-display text-xl text-lv-gold uppercase">Propiedad intelectual</h2>
+              <h2 class="lv-h3 text-lv-cream">Propiedad intelectual</h2>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
                 El diseño, imágenes, textos y modelos 3D publicados en este sitio son propiedad de LayerVault. Queda prohibida su reproducción, distribución o uso comercial sin autorización expresa.
               </p>
             </section>
 
             <section class="space-y-3">
-              <h2 class="font-display text-xl text-lv-gold uppercase">Legislación aplicable</h2>
+              <h2 class="lv-h3 text-lv-cream">Legislación aplicable</h2>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
                 Las presentes condiciones se rigen por la legislación española. Para cualquier controversia, las partes se someten a los juzgados y tribunales de Barcelona.
               </p>
@@ -99,42 +98,41 @@ import { CONTACT_EMAIL } from '../../shared/constants';
         @if (tab() === 'privacidad') {
           <div class="space-y-8">
             <div>
-              <p class="font-mono text-xs uppercase tracking-[0.3em] text-lv-gold/60 mb-3">— Política de Privacidad</p>
-              <h1 class="font-display uppercase text-4xl text-lv-cream leading-none">Privacidad</h1>
+              <h1 class="lv-h1 text-lv-cream">Privacidad</h1>
             </div>
 
             <section class="space-y-3">
-              <h2 class="font-display text-xl text-lv-gold uppercase">Responsable del tratamiento</h2>
+              <h2 class="lv-h3 text-lv-cream">Responsable del tratamiento</h2>
               <ul class="space-y-1.5 font-body text-sm text-lv-cream/60">
-                <li><span class="text-lv-cream/40 font-mono text-[11px] uppercase tracking-wider">Responsable:</span> LayerVault</li>
-                <li><span class="text-lv-cream/40 font-mono text-[11px] uppercase tracking-wider">Email:</span> {{ email }}</li>
+                <li><span class="text-lv-cream/40 font-body text-[13px] ">Responsable:</span> LayerVault</li>
+                <li><span class="text-lv-cream/40 font-body text-[13px] ">Email:</span> {{ email }}</li>
               </ul>
             </section>
 
             <section class="space-y-3">
-              <h2 class="font-display text-xl text-lv-gold uppercase">Datos que recogemos</h2>
+              <h2 class="lv-h3 text-lv-cream">Datos que recogemos</h2>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
                 Únicamente los datos que tú proporcionas al realizar un pedido: nombre, email y teléfono (todos obligatorios) y código postal (solo cuando eliges envío a domicilio). No se recogen datos de navegación, no se usan cookies propias ni ningún sistema de analítica.
               </p>
             </section>
 
             <section class="space-y-3">
-              <h2 class="font-display text-xl text-lv-gold uppercase">Finalidad y base legitimadora</h2>
+              <h2 class="lv-h3 text-lv-cream">Finalidad y base legitimadora</h2>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
                 Tus datos se usan exclusivamente para gestionar, fabricar y entregar tu pedido, y para enviarte la confirmación por email. La base legal es la ejecución del contrato de compraventa (art. 6.1.b RGPD).
               </p>
             </section>
 
             <section class="space-y-3">
-              <h2 class="font-display text-xl text-lv-gold uppercase">Servicios que intervienen</h2>
+              <h2 class="lv-h3 text-lv-cream">Servicios que intervienen</h2>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
                 Para gestionar los pedidos se utilizan los siguientes servicios externos, cada uno con su propia política de privacidad:
               </p>
               <ul class="space-y-1.5 font-body text-sm text-lv-cream/60">
-                <li><span class="text-lv-cream/40 font-mono text-[11px] uppercase tracking-wider">Brevo</span> — envío del email de confirmación al cliente.</li>
-                <li><span class="text-lv-cream/40 font-mono text-[11px] uppercase tracking-wider">Notion</span> — registro interno de pedidos (nombre, email, resumen del pedido).</li>
-                <li><span class="text-lv-cream/40 font-mono text-[11px] uppercase tracking-wider">Telegram</span> — notificación interna al vendedor del nuevo pedido.</li>
-                <li><span class="text-lv-cream/40 font-mono text-[11px] uppercase tracking-wider">Correos España</span> — gestión del envío cuando eliges esta modalidad de entrega.</li>
+                <li><span class="text-lv-cream/40 font-body text-[13px] ">Brevo</span> — envío del email de confirmación al cliente.</li>
+                <li><span class="text-lv-cream/40 font-body text-[13px] ">Notion</span> — registro interno de pedidos (nombre, email, resumen del pedido).</li>
+                <li><span class="text-lv-cream/40 font-body text-[13px] ">Telegram</span> — notificación interna al vendedor del nuevo pedido.</li>
+                <li><span class="text-lv-cream/40 font-body text-[13px] ">Correos España</span> — gestión del envío cuando eliges esta modalidad de entrega.</li>
               </ul>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
                 No se ceden datos a ningún otro tercero ni se usan con fines publicitarios o de perfilado.
@@ -142,14 +140,14 @@ import { CONTACT_EMAIL } from '../../shared/constants';
             </section>
 
             <section class="space-y-3">
-              <h2 class="font-display text-xl text-lv-gold uppercase">Conservación</h2>
+              <h2 class="lv-h3 text-lv-cream">Conservación</h2>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
                 Los datos se conservan durante el tiempo necesario para gestionar el pedido y atender posibles reclamaciones (máximo 1 año desde la entrega).
               </p>
             </section>
 
             <section class="space-y-3">
-              <h2 class="font-display text-xl text-lv-gold uppercase">Tus derechos</h2>
+              <h2 class="lv-h3 text-lv-cream">Tus derechos</h2>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
                 Puedes ejercer tus derechos de acceso, rectificación, supresión, oposición, limitación y portabilidad escribiendo a <a [href]="'mailto:' + email" class="text-lv-gold hover:underline">{{ email }}</a>. Si consideras que el tratamiento no es conforme, puedes reclamar ante la Agencia Española de Protección de Datos (aepd.es).
               </p>
@@ -157,7 +155,7 @@ import { CONTACT_EMAIL } from '../../shared/constants';
           </div>
         }
 
-        <p class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/20 mt-16 pt-8 border-t border-lv-gold/10">
+        <p class="font-body text-xs text-lv-cream/20 mt-16 pt-8 border-t border-lv-gold/10">
           Última actualización: julio 2026
         </p>
 

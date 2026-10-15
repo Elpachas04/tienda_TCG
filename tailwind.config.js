@@ -10,18 +10,21 @@ module.exports = {
         'lv-void':    '#0B0B0F',
         'lv-deep':    '#0e0e0e',
         'lv-surface': '#1a1a1a',
+        'lv-raised':  '#201e1a',
         'lv-border':  '#2a2a2a',
         'lv-gold':    '#C9A84C',
+        'lv-foil':    '#F3DC95',
+        'lv-brass':   '#6B5A26',
         'lv-cream':   '#F5F0E8',
-        'lv-muted':   '#888888',
+        'lv-muted':   '#8F8A80',
       },
       fontFamily: {
-        display: ['"Bebas Neue"', 'cursive'],
-        body:    ['"Barlow"', 'system-ui', 'sans-serif'],
+        display: ['"Bricolage Grotesque Variable"', '"Hanken Grotesk Variable"', 'system-ui', 'sans-serif'],
+        body:    ['"Hanken Grotesk Variable"', 'system-ui', '-apple-system', 'sans-serif'],
         mono:    ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
       },
       borderRadius: {
-        card: '12px',
+        card: '14px',
       },
       zIndex: {
         '60': '60',
@@ -37,4 +40,3 @@ module.exports = {
   ],
   plugins: [],
 }
-

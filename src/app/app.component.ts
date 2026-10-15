@@ -30,17 +30,17 @@ import { SeoService } from './core/services/seo.service';
                class="w-[120px] h-[120px] object-contain select-none" draggable="false"
                style="animation:coin-drop 520ms cubic-bezier(0.34,1.56,0.64,1) 80ms both" />
           <div style="animation:fade-up 300ms ease-out 200ms both">
-            <p class="font-mono text-[10px] uppercase tracking-widest text-lv-gold/50 tracking-[0.3em]">Tienes una</p>
-            <h2 class="font-display text-5xl text-lv-gold uppercase tracking-wide leading-none">₿ERRY</h2>
+            <p class="font-body text-xs text-lv-gold/50 ">Tienes una</p>
+            <h2 class="font-display text-5xl text-lv-gold leading-none">₿ERRY</h2>
             <div class="space-y-1 mt-1">
-              <p class="font-display text-2xl text-lv-cream uppercase tracking-wide">Vale 5€</p>
-              <p class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/40 leading-relaxed">
+              <p class="font-display text-2xl text-lv-cream ">Vale 5€</p>
+              <p class="font-body text-xs text-lv-cream/40 leading-relaxed">
                 Descuento automático en tu pedido<br>al gastar un mínimo de 35€
               </p>
             </div>
           </div>
           <button type="button"
-            class="bg-lv-gold text-black font-mono text-xs uppercase tracking-widest font-semibold rounded-full px-8 py-3 hover:brightness-110 transition-all duration-200"
+            class="bg-lv-gold text-black font-body text-[13px] font-semibold rounded-full px-8 py-3 hover:brightness-110 transition-all duration-200"
             style="animation:fade-up 300ms ease-out 320ms both"
             (click)="closeBerryModal()">
             ¡A LA TIENDA!

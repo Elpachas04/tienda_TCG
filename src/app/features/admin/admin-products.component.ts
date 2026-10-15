@@ -11,18 +11,18 @@ import { AdminProductFormComponent } from './admin-product-form.component';
   imports: [AdminProductFormComponent],
   template: `
     <div class="flex items-center justify-between mb-6">
-      <h1 class="font-display text-3xl text-lv-cream uppercase tracking-wide">Productos</h1>
+      <h1 class="font-display text-3xl text-lv-cream ">Productos</h1>
       <button type="button"
-        class="bg-lv-gold hover:brightness-110 text-black font-mono text-xs uppercase tracking-widest font-semibold rounded-full px-5 py-2.5"
+        class="bg-lv-gold hover:brightness-110 text-black font-body text-[13px] font-semibold rounded-full px-5 py-2.5"
         (click)="openNew()">
         + Nuevo producto
       </button>
     </div>
 
     @if (catalogService.loading()) {
-      <p class="font-mono text-xs text-lv-muted uppercase tracking-wider">Cargando…</p>
+      <p class="font-body text-[13px] text-lv-muted ">Cargando…</p>
     } @else if (saveError()) {
-      <p class="text-red-400/80 font-mono text-[10px] uppercase tracking-wider mb-4">{{ saveError() }}</p>
+      <p class="text-red-400/80 font-body text-xs mb-4">{{ saveError() }}</p>
     }
 
     <div class="space-y-2">
@@ -35,7 +35,7 @@ import { AdminProductFormComponent } from './admin-product-form.component';
           </div>
           <div class="flex-1 min-w-0">
             <p class="font-display text-lg text-lv-cream truncate">{{ product.name }}</p>
-            <p class="font-mono text-[10px] text-lv-muted uppercase tracking-wider">
+            <p class="font-body text-xs text-lv-muted ">
               {{ product.sku || '—' }} · {{ product.category }} · {{ product.price.toFixed(2) }}€
               @if (product.hidden) { <span class="text-red-400/70"> · oculto</span> }
               @if (!product.available) { <span class="text-red-400/70"> · agotado</span> }
@@ -44,13 +44,13 @@ import { AdminProductFormComponent } from './admin-product-form.component';
           <div class="flex items-center gap-1 flex-shrink-0">
             <button type="button" class="text-lv-muted hover:text-lv-cream disabled:opacity-20 px-1" [disabled]="i === 0" (click)="move(i, -1)">↑</button>
             <button type="button" class="text-lv-muted hover:text-lv-cream disabled:opacity-20 px-1" [disabled]="i === products().length - 1" (click)="move(i, 1)">↓</button>
-            <button type="button" class="font-mono text-[10px] uppercase text-lv-gold hover:underline px-2" (click)="openEdit(product)">Editar</button>
-            <button type="button" class="font-mono text-[10px] uppercase text-red-400/70 hover:text-red-400 px-2" (click)="remove(product)">Eliminar</button>
+            <button type="button" class="font-body text-xs text-lv-gold hover:underline px-2" (click)="openEdit(product)">Editar</button>
+            <button type="button" class="font-body text-xs text-red-400/70 hover:text-red-400 px-2" (click)="remove(product)">Eliminar</button>
           </div>
         </div>
       }
       @if (products().length === 0 && !catalogService.loading()) {
-        <p class="font-mono text-xs text-lv-muted uppercase tracking-wider">No hay productos todavía.</p>
+        <p class="font-body text-[13px] text-lv-muted ">No hay productos todavía.</p>
       }
     </div>
 

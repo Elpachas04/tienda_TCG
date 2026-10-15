@@ -23,12 +23,12 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
         <!-- Header -->
         <div lvReveal class="flex items-baseline justify-between mb-10 sm:mb-14">
           <div>
-            <p class="font-mono text-[10px] uppercase tracking-[0.35em] text-lv-gold/60 mb-3">— Catálogo</p>
-            <h2 class="font-display uppercase leading-[0.9] text-lv-cream"
+            <p class="font-body text-xs text-lv-gold/60 mb-3">— Catálogo</p>
+            <h2 class="font-display leading-[0.9] text-lv-cream"
                 style="font-size: clamp(2.4rem, 6vw, 5rem)">CADA PIEZA, UN PROPÓSITO</h2>
           </div>
           <a routerLink="/catalog"
-             class="font-mono text-[10px] uppercase tracking-widest text-lv-gold/70 hover:text-lv-gold transition-colors hidden sm:block">
+             class="font-body text-xs text-lv-gold/70 hover:text-lv-gold transition-colors hidden sm:block">
             Ver todo →
           </a>
         </div>
@@ -69,7 +69,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
                    class="flex flex-col items-center justify-center gap-4 rounded-card border border-lv-gold
                           min-h-[260px] transition-colors hover:bg-lv-gold/5">
                   <span class="font-display text-5xl text-lv-gold leading-none">→</span>
-                  <span class="font-display text-2xl tracking-widest text-lv-gold">VER TODO</span>
+                  <span class="font-display text-2xl text-lv-gold">VER TODO</span>
                 </a>
               </div>
 
@@ -91,7 +91,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
         <!-- Ver todo link móvil -->
         <div class="sm:hidden mt-6 text-center">
           <a routerLink="/catalog"
-             class="font-mono text-[10px] uppercase tracking-widest text-lv-gold/70 hover:text-lv-gold transition-colors">
+             class="font-body text-xs text-lv-gold/70 hover:text-lv-gold transition-colors">
             Ver catálogo completo →
           </a>
         </div>

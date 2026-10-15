@@ -12,9 +12,9 @@ import { RouterLink } from '@angular/router';
       <div class="max-w-[1600px] mx-auto flex flex-wrap items-center gap-x-6 gap-y-2">
 
         <span class="font-display text-lv-gold text-base">LayerVault</span>
-        <span class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/25">2026</span>
-<a routerLink="/legal"      class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/25 hover:text-lv-gold transition-colors">Legal</a>
-        <a routerLink="/privacidad" class="font-mono text-[10px] uppercase tracking-wider text-lv-cream/25 hover:text-lv-gold transition-colors">Privacidad</a>
+        <span class="font-body text-xs text-lv-cream/25">2026</span>
+<a routerLink="/legal"      class="font-body text-xs text-lv-cream/25 hover:text-lv-gold transition-colors">Legal</a>
+        <a routerLink="/privacidad" class="font-body text-xs text-lv-cream/25 hover:text-lv-gold transition-colors">Privacidad</a>
 
       </div>
     </footer>

@@ -22,7 +22,7 @@ function blankLeader(): Leader {
 const CATEGORIES: ProductCategory[] = ['deckbox', 'storage', 'tools', 'accessories'];
 const BADGE_STYLES = ['gold', 'teal', 'purple', 'coral'] as const;
 const INPUT = 'w-full bg-white/[0.03] border border-lv-border rounded-xl px-3 py-2 font-body text-sm text-lv-cream focus:outline-none focus:border-lv-gold/40 transition-colors';
-const LABEL = 'block font-mono text-[10px] uppercase tracking-widest text-lv-muted mb-1.5';
+const LABEL = 'block font-body text-xs font-medium text-lv-muted mb-1.5';
 
 @Component({
   selector: 'app-admin-product-form',
@@ -33,12 +33,12 @@ const LABEL = 'block font-mono text-[10px] uppercase tracking-widest text-lv-mut
     <div class="fixed inset-0 bg-black/70 flex items-start justify-center overflow-y-auto z-50 py-8 px-4">
       <div class="liquid-glass rounded-card border border-lv-border w-full max-w-2xl p-6 sm:p-8">
         <div class="flex items-center justify-between mb-6">
-          <h2 class="font-display text-2xl text-lv-cream uppercase tracking-wide">{{ isNew ? 'Nuevo producto' : 'Editar producto' }}</h2>
+          <h2 class="font-display text-2xl text-lv-cream ">{{ isNew ? 'Nuevo producto' : 'Editar producto' }}</h2>
           <button type="button" class="text-lv-muted hover:text-lv-cream" (click)="cancelled.emit()">✕</button>
         </div>
 
         @if (error()) {
-          <p class="text-red-400/80 font-mono text-[10px] uppercase tracking-wider mb-4">{{ error() }}</p>
+          <p class="text-red-400/80 font-body text-xs mb-4">{{ error() }}</p>
         }
 
         <div class="grid grid-cols-2 gap-4">
@@ -93,7 +93,7 @@ const LABEL = 'block font-mono text-[10px] uppercase tracking-widest text-lv-mut
         <div class="mt-6">
           <div class="flex items-center justify-between mb-2">
             <label [class]="LABEL + ' mb-0'">Características</label>
-            <button type="button" class="font-mono text-[10px] uppercase text-lv-gold hover:underline" (click)="addFeature()">+ Añadir</button>
+            <button type="button" class="font-body text-xs text-lv-gold hover:underline" (click)="addFeature()">+ Añadir</button>
           </div>
           <div class="space-y-2">
             @for (f of form.features; track $index) {
@@ -109,18 +109,18 @@ const LABEL = 'block font-mono text-[10px] uppercase tracking-widest text-lv-mut
         <div class="mt-6">
           <div class="flex items-center justify-between mb-2">
             <label [class]="LABEL + ' mb-0'">Imágenes</label>
-            <label class="font-mono text-[10px] uppercase text-lv-gold hover:underline cursor-pointer">
+            <label class="font-body text-xs text-lv-gold hover:underline cursor-pointer">
               {{ uploading() ? 'Subiendo...' : '+ Subir imagen' }}
               <input type="file" accept="image/*" class="hidden" (change)="onImageSelected($event)" [disabled]="uploading() || !form.id" />
             </label>
           </div>
           @if (!form.id) {
-            <p class="font-mono text-[10px] text-lv-muted/60">Define el ID del producto antes de subir imágenes.</p>
+            <p class="font-body text-xs text-lv-muted/60">Define el ID del producto antes de subir imágenes.</p>
           }
           <div class="space-y-2">
             @for (img of form.images; track img; let i = $index) {
               <div class="flex items-center gap-2 bg-white/[0.02] rounded-lg px-3 py-2">
-                <span class="font-mono text-[11px] text-lv-cream/70 flex-1 truncate">{{ img }}</span>
+                <span class="font-body text-[13px] text-lv-cream/70 flex-1 truncate">{{ img }}</span>
                 <button type="button" class="text-lv-muted hover:text-lv-cream disabled:opacity-20" [disabled]="i === 0" (click)="moveImage(i, -1)">↑</button>
                 <button type="button" class="text-lv-muted hover:text-lv-cream disabled:opacity-20" [disabled]="i === form.images.length - 1" (click)="moveImage(i, 1)">↓</button>
                 <button type="button" class="text-red-400/70 hover:text-red-400 px-1" (click)="removeImage(i)">✕</button>
@@ -131,16 +131,16 @@ const LABEL = 'block font-mono text-[10px] uppercase tracking-widest text-lv-mut
 
         <!-- Toggles -->
         <div class="mt-6 grid grid-cols-2 gap-3">
-          <label class="flex items-center gap-2 font-mono text-xs text-lv-cream/80">
+          <label class="flex items-center gap-2 font-body text-[13px] text-lv-cream/80">
             <input type="checkbox" [(ngModel)]="form.available" name="available" /> Disponible
           </label>
-          <label class="flex items-center gap-2 font-mono text-xs text-lv-cream/80">
+          <label class="flex items-center gap-2 font-body text-[13px] text-lv-cream/80">
             <input type="checkbox" [(ngModel)]="form.hidden" name="hidden" /> Oculto en catálogo
           </label>
-          <label class="flex items-center gap-2 font-mono text-xs text-lv-cream/80">
+          <label class="flex items-center gap-2 font-body text-[13px] text-lv-cream/80">
             <input type="checkbox" [(ngModel)]="form.colorPickerEnabled" name="colorPickerEnabled" /> Selector de color
           </label>
-          <label class="flex items-center gap-2 font-mono text-xs text-lv-cream/80">
+          <label class="flex items-center gap-2 font-body text-[13px] text-lv-cream/80">
             <input type="checkbox" [ngModel]="!!form.leaderPickerEnabled" (ngModelChange)="form.leaderPickerEnabled = $event" name="leaderPickerEnabled" /> Selector de líder
           </label>
         </div>
@@ -151,7 +151,7 @@ const LABEL = 'block font-mono text-[10px] uppercase tracking-widest text-lv-mut
             <label [class]="LABEL">Addons disponibles</label>
             <div class="flex flex-wrap gap-3">
               @for (addon of availableAddons; track addon.id) {
-                <label class="flex items-center gap-1.5 font-mono text-[11px] text-lv-cream/70">
+                <label class="flex items-center gap-1.5 font-body text-[13px] text-lv-cream/70">
                   <input type="checkbox" [checked]="isAddonSelected(addon.id)" (change)="toggleAddon(addon.id)" /> {{ addon.name }}
                 </label>
               }
@@ -163,7 +163,7 @@ const LABEL = 'block font-mono text-[10px] uppercase tracking-widest text-lv-mut
         <div class="mt-6">
           <div class="flex items-center justify-between mb-2">
             <label [class]="LABEL + ' mb-0'">Variantes</label>
-            <button type="button" class="font-mono text-[10px] uppercase text-lv-gold hover:underline" (click)="addVariant()">+ Añadir variante</button>
+            <button type="button" class="font-body text-xs text-lv-gold hover:underline" (click)="addVariant()">+ Añadir variante</button>
           </div>
           <div class="space-y-3">
             @for (variant of form.variants ?? []; track $index) {
@@ -171,12 +171,12 @@ const LABEL = 'block font-mono text-[10px] uppercase tracking-widest text-lv-mut
                 <div class="grid grid-cols-3 gap-2">
                   <input [class]="INPUT" placeholder="Etiqueta" [(ngModel)]="variant.label" [name]="'vlabel' + $index" />
                   <input type="number" step="0.01" [class]="INPUT" placeholder="Precio" [(ngModel)]="variant.price" [name]="'vprice' + $index" />
-                  <label class="flex items-center gap-1.5 font-mono text-[11px] text-lv-cream/70">
+                  <label class="flex items-center gap-1.5 font-body text-[13px] text-lv-cream/70">
                     <input type="radio" name="defaultVariant" [checked]="!!variant.default" (change)="setDefaultVariant($index)" /> Por defecto
                   </label>
                 </div>
                 <div class="flex justify-end">
-                  <button type="button" class="text-red-400/70 hover:text-red-400 font-mono text-[10px] uppercase" (click)="removeVariant($index)">Eliminar variante</button>
+                  <button type="button" class="text-red-400/70 hover:text-red-400 font-body text-xs " (click)="removeVariant($index)">Eliminar variante</button>
                 </div>
               </div>
             }
@@ -188,30 +188,30 @@ const LABEL = 'block font-mono text-[10px] uppercase tracking-widest text-lv-mut
           <div class="mt-6">
             <div class="flex items-center justify-between mb-2">
               <label [class]="LABEL + ' mb-0'">Líderes</label>
-              <button type="button" class="font-mono text-[10px] uppercase text-lv-gold hover:underline" (click)="addLeader()">+ Añadir líder</button>
+              <button type="button" class="font-body text-xs text-lv-gold hover:underline" (click)="addLeader()">+ Añadir líder</button>
             </div>
             <div class="space-y-2">
               @for (leader of form.leaders ?? []; track $index) {
                 <div class="flex gap-2 items-center">
                   <input [class]="INPUT" placeholder="ID" [(ngModel)]="leader.id" [name]="'lid' + $index" />
                   <input [class]="INPUT" placeholder="Nombre" [(ngModel)]="leader.name" [name]="'lname' + $index" />
-                  <label class="flex items-center gap-1 font-mono text-[10px] text-lv-cream/70 whitespace-nowrap">
+                  <label class="flex items-center gap-1 font-body text-xs text-lv-cream/70 whitespace-nowrap">
                     <input type="checkbox" [(ngModel)]="leader.available" [name]="'lavail' + $index" /> Disp.
                   </label>
                   <button type="button" class="text-red-400/70 hover:text-red-400 px-1" (click)="removeLeader($index)">✕</button>
                 </div>
               }
             </div>
-            <label class="flex items-center gap-2 font-mono text-xs text-lv-cream/80 mt-2">
+            <label class="flex items-center gap-2 font-body text-[13px] text-lv-cream/80 mt-2">
               <input type="checkbox" [ngModel]="!!form.customLeaderRequest" (ngModelChange)="form.customLeaderRequest = $event" name="customLeaderRequest" /> Permitir solicitud de líder personalizado
             </label>
           </div>
         }
 
         <div class="flex justify-end gap-3 mt-8">
-          <button type="button" class="font-mono text-xs uppercase tracking-widest text-lv-muted hover:text-lv-cream px-4 py-2.5" (click)="cancelled.emit()">Cancelar</button>
+          <button type="button" class="font-body text-[13px] text-lv-muted hover:text-lv-cream px-4 py-2.5" (click)="cancelled.emit()">Cancelar</button>
           <button type="button"
-            class="bg-lv-gold hover:brightness-110 text-black font-mono text-xs uppercase tracking-widest font-semibold rounded-full px-6 py-2.5 disabled:opacity-50"
+            class="bg-lv-gold hover:brightness-110 text-black font-body text-[13px] font-semibold rounded-full px-6 py-2.5 disabled:opacity-50"
             [disabled]="!isValid()"
             (click)="save()">
             Guardar
