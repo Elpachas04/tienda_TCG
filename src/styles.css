@@ -8,7 +8,10 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    /* Desplegables, checkboxes y scrollbars nativos en oscuro: sin esto las opciones de <select> salen blancas */
+    color-scheme: dark;
   }
+  select option { background-color: #1a1a1a; color: #F5F0E8; }
   body {
     @apply bg-lv-black text-lv-cream font-body;
     font-size: 16px;
