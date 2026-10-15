@@ -1,6 +1,6 @@
 # LayerVault — Ficha Técnica del Proyecto
 
-**Tienda web de accesorios impresos en 3D para One Piece TCG.**  
+**Tienda web de accesorios impresos en 3D para TCG.**  
 Vendedor único (Barcelona). Los pedidos se gestionan por Telegram y email.  
 Producción: [layervault.es](https://layervault.es)
 

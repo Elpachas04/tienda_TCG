@@ -1,6 +1,6 @@
 # LayerVault — Tienda TCG 3D · Barcelona
 
-Tienda web de accesorios impresos en 3D para One Piece TCG.
+Tienda web de accesorios impresos en 3D para TCG.
 Vendedor único. Los pedidos llegan por Telegram (notificación) y Brevo (email al cliente).
 
 ---

@@ -35,8 +35,8 @@ import { gsap, prefersReducedMotion } from '../../core/motion/motion';
 
         <div class="hero-copy flex flex-col items-start gap-8 lg:col-start-1 lg:row-start-2 lg:self-start">
           <p class="lv-lede hero-reveal">
-            No les decepciones. Deckboxes, expositores y organizadores para One Piece TCG,
-            impresos en 3D en Barcelona y en el color de tu líder.
+            No les decepciones. Deckboxes, expositores y organizadores para TCG,
+            impresos en 3D en Barcelona.
           </p>
 
           <div class="flex gap-3 flex-wrap hero-reveal">

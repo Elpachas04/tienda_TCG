@@ -21,9 +21,6 @@ const STEPS = [
 
         <div>
           <h2 data-split class="lv-h2 text-lv-cream">Tu color, tu pieza</h2>
-          <p class="lv-note mt-4 max-w-sm">
-            Los siete colores de One Piece TCG, en todos los productos y sin coste extra.
-          </p>
 
           <ul class="mt-10 grid grid-cols-4 sm:grid-cols-7 gap-x-3 gap-y-6 max-w-xl">
             @for (color of colors; track color.id) {

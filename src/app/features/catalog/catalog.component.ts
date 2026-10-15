@@ -26,7 +26,7 @@ const SKELETONS = [1,2,3,4,5,6,7,8];
           <div>
             <h1 data-split class="lv-h1 text-lv-cream">Catálogo</h1>
             <p class="lv-lede mt-4">
-              Accesorios para One Piece TCG impresos en 3D. Cada pieza se fabrica cuando la pides, en el color que elijas.
+              Accesorios para TCG. Cada pieza se fabrica cuando la pides, en el color que elijas.
             </p>
           </div>
 
