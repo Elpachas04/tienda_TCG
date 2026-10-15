@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject
 import { FormsModule } from '@angular/forms';
 import { Product, ProductVariant, Leader, ProductCategory } from '../../core/models/product.model';
 import { AdminCatalogService } from '../../core/services/admin-catalog.service';
-import { CloudinaryService } from '../../core/services/cloudinary.service';
+import { AdminPhotoGridComponent } from './admin-photo-grid.component';
 
 function blankProduct(): Product {
   return {
@@ -35,11 +35,6 @@ export const CATEGORY_LABELS: Record<ProductCategory, string> = {
   accessories: 'Accesorios',
 };
 
-// Netlify rechaza cuerpos de más de ~6 MB (y la foto viaja en base64, +33%):
-// se reduce en el navegador para que cualquier foto del móvil entre de sobra
-const MAX_SIDE = 2000;
-const UPLOAD_AS_IS_BYTES = 1_500_000;
-
 const INPUT = 'w-full bg-white/[0.03] border border-lv-border rounded-xl px-3 py-2.5 font-body text-sm text-lv-cream placeholder:text-lv-cream/25 focus:outline-none focus:border-lv-gold/50 transition-colors';
 const LABEL = 'block font-body text-[13px] font-medium text-lv-cream/70 mb-1.5';
 const SECTION = 'font-display text-lg text-lv-cream';
@@ -49,7 +44,7 @@ const HINT = 'font-body text-xs text-lv-muted mt-1';
   selector: 'app-admin-product-form',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule],
+  imports: [FormsModule, AdminPhotoGridComponent],
   template: `
     <div class="fixed inset-0 bg-black/75 flex items-start justify-center overflow-y-auto z-[70] sm:py-8 sm:px-4"
          (keydown.escape)="cancelled.emit()">
@@ -67,70 +62,36 @@ const HINT = 'font-body text-xs text-lv-muted mt-1';
         <div class="flex-1 px-5 sm:px-8 py-6 space-y-10">
 
           <!-- Fotos -->
-          <section>
-            <div class="flex items-baseline justify-between gap-4 mb-3">
-              <h3 [class]="SECTION">Fotos</h3>
-              <p class="font-body text-xs text-lv-muted">La primera es la portada de la tarjeta</p>
-            </div>
-
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              @for (img of form.images; track img; let i = $index; let first = $first; let last = $last) {
-                <figure class="group relative rounded-xl overflow-hidden border bg-lv-surface aspect-square"
-                        [class]="first ? 'border-lv-gold' : 'border-lv-border'">
-                  @if (broken().has(img)) {
-                    <div class="absolute inset-0 flex flex-col items-center justify-center gap-1 px-3 text-center">
-                      <span class="font-body text-[13px] text-amber-300">No encontrada</span>
-                      <span class="font-body text-[11px] text-lv-muted break-all">{{ img }}</span>
-                    </div>
-                  } @else {
-                    <img [src]="cloudinary.card(img)" [alt]="'Foto ' + (i + 1)" class="w-full h-full object-cover" loading="lazy" (error)="markBroken(img)" />
-                  }
-                  @if (first) {
-                    <span class="absolute top-2 left-2 rounded-full bg-lv-gold text-lv-black font-body text-[11px] font-semibold px-2 py-0.5">Portada</span>
-                  }
-                  <div class="absolute inset-x-0 bottom-0 flex items-center justify-between gap-1 p-1.5 bg-gradient-to-t from-black/85 to-transparent pt-6">
-                    <div class="flex gap-1">
-                      <button type="button" class="w-8 h-8 grid place-items-center rounded-lg bg-black/50 text-lv-cream hover:bg-black/80 disabled:opacity-25"
-                              aria-label="Mover a la izquierda" [disabled]="first" (click)="moveImage(i, -1)">←</button>
-                      <button type="button" class="w-8 h-8 grid place-items-center rounded-lg bg-black/50 text-lv-cream hover:bg-black/80 disabled:opacity-25"
-                              aria-label="Mover a la derecha" [disabled]="last" (click)="moveImage(i, 1)">→</button>
-                    </div>
-                    <div class="flex gap-1">
-                      @if (!first) {
-                        <button type="button" class="h-8 px-2 rounded-lg bg-black/50 text-lv-cream hover:bg-black/80 font-body text-[11px]"
-                                (click)="makeCover(i)">Portada</button>
-                      }
-                      <button type="button" class="w-8 h-8 grid place-items-center rounded-lg bg-black/50 text-red-300 hover:bg-red-500/80 hover:text-white"
-                              aria-label="Quitar foto" (click)="removeImage(i)">✕</button>
-                    </div>
-                  </div>
-                </figure>
+          <section class="space-y-8">
+            <div>
+              <div class="flex items-baseline justify-between gap-4 mb-3">
+                <h3 [class]="SECTION">Fotos</h3>
+                <p class="font-body text-xs text-lv-muted">
+                  {{ form.leaderPickerEnabled ? 'La primera es la portada en el catálogo' : 'La primera es la portada de la tarjeta' }}
+                </p>
+              </div>
+              <app-admin-photo-grid [images]="form.images" (imagesChange)="form.images = $event"
+                                    [productId]="form.id" (uploadingChange)="uploading.set($event)" />
+              @if (!form.id) {
+                <p [class]="HINT">Escribe primero el nombre del producto para poder subir fotos.</p>
               }
-
-              <label class="aspect-square rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-1 text-center px-3 transition-colors"
-                     [class]="dragOver() ? 'border-lv-gold bg-lv-gold/5' : 'border-lv-border hover:border-lv-gold/50'"
-                     [class.cursor-pointer]="!!form.id && !uploading()"
-                     [class.opacity-50]="!form.id"
-                     (dragover)="onDragOver($event)" (dragleave)="dragOver.set(false)" (drop)="onDrop($event)">
-                @if (uploading()) {
-                  <span class="font-body text-sm text-lv-cream">Subiendo {{ uploadProgress() }}…</span>
-                } @else {
-                  <span class="text-2xl text-lv-gold leading-none">+</span>
-                  <span class="font-body text-[13px] text-lv-cream/80">Añadir fotos</span>
-                  <span class="font-body text-[11px] text-lv-muted">o arrástralas aquí</span>
-                }
-                <input type="file" accept="image/*" multiple class="hidden"
-                       [disabled]="uploading() || !form.id" (change)="onFilesSelected($event)" />
-              </label>
             </div>
-            @if (!form.id) {
-              <p [class]="HINT">Escribe primero el nombre del producto para poder subir fotos.</p>
+
+            @if (form.leaderPickerEnabled) {
+              @for (leader of form.leaders ?? []; track $index) {
+                <div>
+                  <div class="flex items-baseline justify-between gap-4 mb-3">
+                    <h4 class="font-display text-base text-lv-cream">Fotos de {{ leader.name || 'líder sin nombre' }}</h4>
+                    <p class="font-body text-xs text-lv-muted">Salen en la ficha al elegir este líder</p>
+                  </div>
+                  <app-admin-photo-grid [images]="leaderImages(leader)" (imagesChange)="leader.images = $event"
+                                        [productId]="form.id" coverLabel="Primera" (uploadingChange)="uploading.set($event)" />
+                </div>
+              } @empty {
+                <p [class]="HINT">Añade líderes en Opciones avanzadas para gestionar sus fotos.</p>
+              }
             }
-            @if (broken().size) {
-              <p class="font-body text-xs text-amber-300 mt-2">
-                {{ broken().size === 1 ? 'Hay 1 foto que no existe' : 'Hay ' + broken().size + ' fotos que no existen' }} en Cloudinary. Quítala{{ broken().size === 1 ? '' : 's' }} con ✕ y guarda.
-              </p>
-            }
+
             <p [class]="HINT">Quitar una foto la saca del producto, pero no la borra de Cloudinary.</p>
           </section>
 
@@ -315,7 +276,6 @@ const HINT = 'font-body text-xs text-lv-muted mt-1';
 })
 export class AdminProductFormComponent {
   private readonly catalogService = inject(AdminCatalogService);
-  protected readonly cloudinary = inject(CloudinaryService);
 
   protected readonly LABEL = LABEL;
   protected readonly INPUT = INPUT;
@@ -341,15 +301,7 @@ export class AdminProductFormComponent {
   isNew = true;
   idTouched = false;
   uploading      = signal(false);
-  uploadProgress = signal('');
-  dragOver       = signal(false);
   error          = signal('');
-  broken         = signal<ReadonlySet<string>>(new Set());
-
-  markBroken(img: string): void {
-    this.broken.update(set => new Set(set).add(img));
-  }
-
   get availableAddons() {
     return this.catalogService.catalog()?.addons ?? [];
   }
@@ -372,101 +324,18 @@ export class AdminProductFormComponent {
   addFeature(): void { this.form.features = [...this.form.features, '']; }
   removeFeature(i: number): void { this.form.features = this.form.features.filter((_, idx) => idx !== i); }
 
-  removeImage(i: number): void {
-    const [removed] = this.form.images.slice(i, i + 1);
-    this.form.images = this.form.images.filter((_, idx) => idx !== i);
-    if (this.broken().has(removed)) this.broken.update(set => { const next = new Set(set); next.delete(removed); return next; });
-  }
-  moveImage(i: number, dir: -1 | 1): void {
-    const images = [...this.form.images];
-    const target = i + dir;
-    if (target < 0 || target >= images.length) return;
-    [images[i], images[target]] = [images[target], images[i]];
-    this.form.images = images;
-  }
-  makeCover(i: number): void {
-    const images = [...this.form.images];
-    const [img] = images.splice(i, 1);
-    this.form.images = [img, ...images];
-  }
-
-  onDragOver(event: DragEvent): void {
-    event.preventDefault();
-    if (this.form.id && !this.uploading()) this.dragOver.set(true);
-  }
-
-  onDrop(event: DragEvent): void {
-    event.preventDefault();
-    this.dragOver.set(false);
-    void this.uploadFiles(Array.from(event.dataTransfer?.files ?? []));
-  }
-
-  onFilesSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const files = Array.from(input.files ?? []);
-    input.value = '';
-    void this.uploadFiles(files);
-  }
-
-  private async uploadFiles(files: File[]): Promise<void> {
-    const images = files.filter(f => f.type.startsWith('image/'));
-    if (!images.length || !this.form.id || this.uploading()) return;
-
-    this.uploading.set(true);
-    this.error.set('');
-    let failed = 0;
-    try {
-      // Una a una: el nombre en Cloudinary sale de la hora de subida, así ninguna pisa a otra
-      for (const [i, file] of images.entries()) {
-        this.uploadProgress.set(images.length > 1 ? `${i + 1} de ${images.length}` : '');
-        try {
-          const dataBase64 = await this.prepareImage(file);
-          const publicId = await this.catalogService.uploadImage(this.form.id, dataBase64);
-          if (publicId) this.form.images = [...this.form.images, publicId];
-          else failed++;
-        } catch {
-          failed++;
-        }
-      }
-    } finally {
-      this.uploading.set(false);
-      this.uploadProgress.set('');
-    }
-    if (failed) {
-      this.error.set(failed === images.length
-        ? 'No se pudo subir. Prueba con una foto JPG o PNG.'
-        : `${failed} de ${images.length} fotos no se pudieron subir.`);
-    }
-  }
-
-  private async prepareImage(file: File): Promise<string> {
-    const bitmap = await createImageBitmap(file);
-    const scale = Math.min(1, MAX_SIDE / Math.max(bitmap.width, bitmap.height));
-    if (scale === 1 && file.size <= UPLOAD_AS_IS_BYTES) {
-      bitmap.close();
-      return this.readAsDataUrl(file);
-    }
-    const canvas = document.createElement('canvas');
-    canvas.width = Math.round(bitmap.width * scale);
-    canvas.height = Math.round(bitmap.height * scale);
-    canvas.getContext('2d')!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-    bitmap.close();
-    return canvas.toDataURL('image/jpeg', 0.88);
-  }
-
-  private readAsDataUrl(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = () => reject(reader.error);
-      reader.readAsDataURL(file);
-    });
-  }
-
   addVariant(): void { this.form.variants = [...(this.form.variants ?? []), blankVariant()]; }
   removeVariant(i: number): void { this.form.variants = (this.form.variants ?? []).filter((_, idx) => idx !== i); }
   setDefaultVariant(i: number): void {
     this.form.variants = (this.form.variants ?? []).map((v, idx) => ({ ...v, default: idx === i }));
+  }
+
+  /** Mismas fotos que muestra la tienda: las del líder o, si no tiene, las generadas por nombre */
+  leaderImages(leader: Leader): string[] {
+    if (leader.images?.length) return leader.images;
+    const key = this.form.leaderImageKey;
+    if (!key || !leader.id) return [];
+    return [1, 2, 3, 4, 5].map(i => `${key}_${leader.id}_${String(i).padStart(2, '0')}`);
   }
 
   addLeader(): void { this.form.leaders = [...(this.form.leaders ?? []), blankLeader()]; }
