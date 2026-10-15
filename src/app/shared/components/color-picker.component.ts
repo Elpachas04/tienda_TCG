@@ -27,10 +27,10 @@ import { Color } from '../../core/models/product.model';
             <span class="w-5 h-5 rounded-full flex-shrink-0 border-2 border-dashed border-lv-border/70"></span>
           }
           <span class="flex-1 text-sm font-body text-left truncate"
-                [class]="selected ? 'text-lv-cream' : 'text-lv-muted/60'">
+                [class]="selected ? 'text-lv-cream' : 'text-lv-muted'">
             {{ selected?.name ?? 'Elige un color' }}
           </span>
-          <svg class="w-4 h-4 text-lv-muted/50 flex-shrink-0 transition-transform duration-200"
+          <svg class="w-4 h-4 text-lv-muted flex-shrink-0 transition-transform duration-200"
                [class.rotate-180]="isOpen()"
                fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -64,10 +64,10 @@ import { Color } from '../../core/models/product.model';
             <span class="w-5 h-5 rounded-full flex-shrink-0 border-2 border-dashed border-lv-border/70"></span>
           }
           <span class="text-xs font-body truncate max-w-[5.5rem]"
-                [class]="selected ? 'text-lv-cream' : 'text-lv-muted/60'">
+                [class]="selected ? 'text-lv-cream' : 'text-lv-muted'">
             {{ selected?.name ?? 'Color' }}
           </span>
-          <svg class="w-3 h-3 text-lv-muted/50 flex-shrink-0 transition-transform duration-200"
+          <svg class="w-3 h-3 text-lv-muted flex-shrink-0 transition-transform duration-200"
                [class.rotate-180]="isOpen()"
                fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -118,7 +118,7 @@ import { Color } from '../../core/models/product.model';
         <div class="border-t border-lv-border px-3 py-2">
           <button
             type="button"
-            class="w-full text-xs font-body text-lv-muted/40 hover:text-lv-muted transition-colors text-center"
+            class="w-full text-xs font-body text-lv-muted hover:text-lv-muted transition-colors text-center"
             (click)="pick(null)">
             Quitar selección
           </button>

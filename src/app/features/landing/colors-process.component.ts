@@ -37,7 +37,7 @@ const STEPS = [
           <ol class="mt-6 border-t border-lv-cream/10">
             @for (step of steps; track step.n) {
               <li class="grid grid-cols-[3rem_1fr] gap-x-3 py-5 border-b border-lv-cream/10">
-                <span class="lv-price font-display text-[2rem] font-semibold leading-none tracking-[-0.04em] text-lv-gold/70">{{ step.n }}</span>
+                <span class="lv-price font-display text-[2rem] font-semibold leading-none tracking-[-0.04em] text-lv-gold">{{ step.n }}</span>
                 <div>
                   <p class="text-[17px] font-semibold text-lv-cream leading-snug">{{ step.title }}</p>
                   <p class="lv-note mt-1">{{ step.desc }}</p>

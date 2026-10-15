@@ -27,7 +27,7 @@ import { WHATSAPP_URL, CONTACT_EMAIL } from '../../shared/constants';
         </nav>
       </div>
       <div class="max-w-7xl mx-auto px-4 sm:px-6 pb-8">
-        <p class="text-xs text-lv-cream/35">© 2026 LayerVault</p>
+        <p class="text-xs text-lv-cream/60">© 2026 LayerVault</p>
       </div>
     </footer>
   `,

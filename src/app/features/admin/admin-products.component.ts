@@ -85,7 +85,7 @@ import { AdminProductFormComponent, CATEGORY_LABELS } from './admin-product-form
                           aria-label="Bajar en el orden" [disabled]="last || busy()" (click)="move(i, 1)">↓</button>
                 </div>
                 <div class="flex gap-1">
-                  <button type="button" class="rounded-lg px-3 py-2 font-body text-sm text-red-300/80 hover:text-red-300 hover:bg-white/[0.04]"
+                  <button type="button" class="rounded-lg px-3 py-2 font-body text-sm text-red-300 hover:text-red-300 hover:bg-white/[0.04]"
                           [disabled]="busy()" (click)="remove(product)">Eliminar</button>
                   <button type="button" class="rounded-lg px-4 py-2 font-body text-sm font-semibold bg-white/[0.06] text-lv-cream hover:bg-white/[0.1]"
                           (click)="openEdit(product)">Editar</button>

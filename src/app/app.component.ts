@@ -34,11 +34,11 @@ import { SmoothScrollService } from './core/motion/smooth-scroll.service';
                class="w-[120px] h-[120px] object-contain select-none" draggable="false"
                style="animation:coin-drop 520ms cubic-bezier(0.34,1.56,0.64,1) 80ms both" />
           <div style="animation:fade-up 300ms ease-out 200ms both">
-            <p class="font-body text-xs text-lv-gold/50 ">Tienes una</p>
+            <p class="font-body text-xs text-lv-gold ">Tienes una</p>
             <h2 class="font-display text-5xl text-lv-gold leading-none">₿ERRY</h2>
             <div class="space-y-1 mt-1">
               <p class="font-display text-2xl text-lv-cream ">Vale 5€</p>
-              <p class="font-body text-xs text-lv-cream/40 leading-relaxed">
+              <p class="font-body text-xs text-lv-cream/60 leading-relaxed">
                 Descuento automático en tu pedido<br>al gastar un mínimo de 35€
               </p>
             </div>

@@ -30,7 +30,7 @@ interface OrderListItem {
     @if (loading()) {
       <p class="font-body text-[13px] text-lv-muted ">Cargando…</p>
     } @else if (error()) {
-      <p class="text-red-400/80 font-body text-xs mb-4">{{ error() }}</p>
+      <p class="text-red-400 font-body text-xs mb-4">{{ error() }}</p>
     }
 
     <div class="space-y-2">

@@ -21,7 +21,7 @@ import { RouterLink } from '@angular/router';
 
         <div class="-mt-8">
           <p class="lv-h1 text-lv-cream">Pieza no encontrada</p>
-          <p class="font-body text-[13px] text-lv-cream/30 mt-4">
+          <p class="font-body text-[13px] text-lv-cream/60 mt-4">
             Esta página no existe o se ha movido.
           </p>
         </div>

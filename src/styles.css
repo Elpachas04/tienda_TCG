@@ -21,7 +21,6 @@
   h1, h2, h3, h4 { text-wrap: balance; }
   p { text-wrap: pretty; }
   ::selection { background: #C9A84C; color: #121212; }
-  :focus-visible { outline: 2px solid #C9A84C; outline-offset: 3px; border-radius: 4px; }
   img, video {
     -webkit-user-drag: none;
     user-select: none;
@@ -98,6 +97,9 @@
   /* Filete dorado de 1px que se desvanece en los extremos */
   .lv-rule { height: 1px; background: linear-gradient(90deg, transparent, rgb(201 168 76 / .45) 20%, rgb(201 168 76 / .45) 80%, transparent); }
 }
+
+/* Foco de teclado siempre visible: gana a los focus:outline-none heredados de las clases */
+:focus-visible { outline: 2px solid #C9A84C !important; outline-offset: 2px !important; }
 
 /* Panel sobrio (antes "liquid glass"): superficie cálida con filete superior de luz */
 .liquid-glass {

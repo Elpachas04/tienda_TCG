@@ -13,7 +13,7 @@ import { CONTACT_EMAIL } from '../../shared/constants';
       <div class="max-w-2xl mx-auto">
 
         <a routerLink="/"
-           class="inline-flex items-center gap-2 font-body text-[13px] text-lv-cream/40 hover:text-lv-gold transition-colors duration-200 mb-12">
+           class="inline-flex items-center gap-2 font-body text-[13px] text-lv-cream/60 hover:text-lv-gold transition-colors duration-200 mb-12">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
           </svg>
@@ -24,13 +24,13 @@ import { CONTACT_EMAIL } from '../../shared/constants';
         <div class="flex gap-2 mb-12">
           <button
             class="font-body text-[13px] rounded-full px-5 py-2 transition-all duration-200"
-            [class]="tab() === 'aviso' ? 'bg-lv-gold text-black font-semibold' : 'liquid-glass border border-lv-gold/20 text-lv-cream/50 hover:border-lv-gold/40'"
+            [class]="tab() === 'aviso' ? 'bg-lv-gold text-black font-semibold' : 'liquid-glass border border-lv-gold/20 text-lv-cream/60 hover:border-lv-gold/40'"
             (click)="tab.set('aviso')">
             Aviso legal
           </button>
           <button
             class="font-body text-[13px] rounded-full px-5 py-2 transition-all duration-200"
-            [class]="tab() === 'privacidad' ? 'bg-lv-gold text-black font-semibold' : 'liquid-glass border border-lv-gold/20 text-lv-cream/50 hover:border-lv-gold/40'"
+            [class]="tab() === 'privacidad' ? 'bg-lv-gold text-black font-semibold' : 'liquid-glass border border-lv-gold/20 text-lv-cream/60 hover:border-lv-gold/40'"
             (click)="tab.set('privacidad')">
             Privacidad
           </button>
@@ -48,10 +48,10 @@ import { CONTACT_EMAIL } from '../../shared/constants';
                 En cumplimiento de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y del Comercio Electrónico (LSSICE), se facilitan los siguientes datos:
               </p>
               <ul class="space-y-1.5 font-body text-sm text-lv-cream/60">
-                <li><span class="text-lv-cream/40 font-body text-[13px] ">Titular:</span> LayerVault</li>
-                <li><span class="text-lv-cream/40 font-body text-[13px] ">Actividad:</span> Fabricación y venta de accesorios impresos en 3D para juegos de cartas coleccionables</li>
-                <li><span class="text-lv-cream/40 font-body text-[13px] ">Domicilio:</span> Barcelona, España</li>
-                <li><span class="text-lv-cream/40 font-body text-[13px] ">Email:</span> {{ email }}</li>
+                <li><span class="text-lv-cream/60 font-body text-[13px] ">Titular:</span> LayerVault</li>
+                <li><span class="text-lv-cream/60 font-body text-[13px] ">Actividad:</span> Fabricación y venta de accesorios impresos en 3D para juegos de cartas coleccionables</li>
+                <li><span class="text-lv-cream/60 font-body text-[13px] ">Domicilio:</span> Barcelona, España</li>
+                <li><span class="text-lv-cream/60 font-body text-[13px] ">Email:</span> {{ email }}</li>
               </ul>
             </section>
 
@@ -104,8 +104,8 @@ import { CONTACT_EMAIL } from '../../shared/constants';
             <section class="space-y-3">
               <h2 class="lv-h3 text-lv-cream">Responsable del tratamiento</h2>
               <ul class="space-y-1.5 font-body text-sm text-lv-cream/60">
-                <li><span class="text-lv-cream/40 font-body text-[13px] ">Responsable:</span> LayerVault</li>
-                <li><span class="text-lv-cream/40 font-body text-[13px] ">Email:</span> {{ email }}</li>
+                <li><span class="text-lv-cream/60 font-body text-[13px] ">Responsable:</span> LayerVault</li>
+                <li><span class="text-lv-cream/60 font-body text-[13px] ">Email:</span> {{ email }}</li>
               </ul>
             </section>
 
@@ -129,10 +129,10 @@ import { CONTACT_EMAIL } from '../../shared/constants';
                 Para gestionar los pedidos se utilizan los siguientes servicios externos, cada uno con su propia política de privacidad:
               </p>
               <ul class="space-y-1.5 font-body text-sm text-lv-cream/60">
-                <li><span class="text-lv-cream/40 font-body text-[13px] ">Brevo</span> — envío del email de confirmación al cliente.</li>
-                <li><span class="text-lv-cream/40 font-body text-[13px] ">Notion</span> — registro interno de pedidos (nombre, email, resumen del pedido).</li>
-                <li><span class="text-lv-cream/40 font-body text-[13px] ">Telegram</span> — notificación interna al vendedor del nuevo pedido.</li>
-                <li><span class="text-lv-cream/40 font-body text-[13px] ">Correos España</span> — gestión del envío cuando eliges esta modalidad de entrega.</li>
+                <li><span class="text-lv-cream/60 font-body text-[13px] ">Brevo</span> — envío del email de confirmación al cliente.</li>
+                <li><span class="text-lv-cream/60 font-body text-[13px] ">Notion</span> — registro interno de pedidos (nombre, email, resumen del pedido).</li>
+                <li><span class="text-lv-cream/60 font-body text-[13px] ">Telegram</span> — notificación interna al vendedor del nuevo pedido.</li>
+                <li><span class="text-lv-cream/60 font-body text-[13px] ">Correos España</span> — gestión del envío cuando eliges esta modalidad de entrega.</li>
               </ul>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
                 No se ceden datos a ningún otro tercero ni se usan con fines publicitarios o de perfilado.
@@ -155,7 +155,7 @@ import { CONTACT_EMAIL } from '../../shared/constants';
           </div>
         }
 
-        <p class="font-body text-xs text-lv-cream/20 mt-16 pt-8 border-t border-lv-gold/10">
+        <p class="font-body text-xs text-lv-cream/60 mt-16 pt-8 border-t border-lv-gold/10">
           Última actualización: julio 2026
         </p>
 

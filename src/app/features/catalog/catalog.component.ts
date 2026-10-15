@@ -46,9 +46,10 @@ const SKELETONS = [1,2,3,4,5,6,7,8];
           El usuario puede navegar, hacer clic en pills y leer el header
           mientras el grid de tarjetas se construye en segundo plano.
         -->
+        <h2 class="sr-only">Productos</h2>
         @defer (on idle) {
           @if (filteredProducts().length === 0) {
-            <p class="font-body text-[13px] text-lv-cream/25 text-center py-28">
+            <p class="font-body text-[13px] text-lv-cream/60 text-center py-28">
               Sin productos en esta categoría
             </p>
           } @else {

@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy, Component, DestroyRef, ElementRef, NgZone,
   afterNextRender, inject, input, signal, viewChild,
 } from '@angular/core';
+import { EurPipe } from '../pipes/eur.pipe';
 
 type OrientationEventCtor = typeof DeviceOrientationEvent & {
   requestPermission?: () => Promise<'granted' | 'denied'>;
@@ -15,6 +16,7 @@ const TILT_RANGE = 36;
 @Component({
   selector: 'lv-foil-card',
   standalone: true,
+  imports: [EurPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
   template: `
@@ -28,7 +30,7 @@ const TILT_RANGE = 36;
         </div>
         <div class="foil-bottom">
           <strong class="font-display">{{ name() }}</strong>
-          <em class="font-body">{{ price() }} €</em>
+          <em class="font-body">{{ price() | eur }}</em>
         </div>
       </div>
     </div>

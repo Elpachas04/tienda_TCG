@@ -14,7 +14,7 @@ import { AdminAuthService } from '../../core/services/admin-auth.service';
       <nav class="md:w-56 flex-shrink-0 bg-lv-deep border-b md:border-b-0 md:border-r border-lv-border flex md:flex-col items-center md:items-stretch gap-2 md:gap-0 px-3 md:px-0 py-2 md:py-0 md:sticky md:top-0 md:h-screen">
         <div class="md:px-5 md:py-6 pr-2">
           <a routerLink="/" class="font-display text-lv-cream text-lg md:text-xl hover:text-lv-foil" title="Ver la tienda">LayerVault</a>
-          <p class="hidden md:block font-body text-xs text-lv-gold/70">Admin</p>
+          <p class="hidden md:block font-body text-xs text-lv-gold">Admin</p>
         </div>
         <div class="flex-1 flex md:block md:px-3 gap-1 md:space-y-1">
           <a routerLink="/admin/productos" routerLinkActive="bg-lv-gold/10 text-lv-gold" #productosLink="routerLinkActive"

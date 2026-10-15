@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal, DestroyRef } from '@angular/core';
+import { EurPipe } from '../../shared/pipes/eur.pipe';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal, toObservable, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { map, tap } from 'rxjs';
@@ -17,7 +18,7 @@ type DetailData = { product: Product | null; colors: Color[] };
   selector: 'app-product-detail',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, LeaderPickerComponent, CustomLeaderRequestComponent, FoilHoverDirective],
+  imports: [RouterLink, LeaderPickerComponent, CustomLeaderRequestComponent, FoilHoverDirective, EurPipe],
   host: { class: 'block' },
   template: `
     @let data = productData();
@@ -31,7 +32,7 @@ type DetailData = { product: Product | null; colors: Color[] };
         <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-4 pb-20 sm:pt-10 lg:pt-12">
 
           <a routerLink="/catalog"
-             class="inline-flex items-center gap-2 text-sm text-lv-cream/60 hover:text-lv-cream transition-colors duration-200 mb-6 sm:mb-8">
+             class="inline-flex items-center gap-2 py-2.5 -my-2.5 text-sm text-lv-cream/60 hover:text-lv-cream transition-colors duration-200 mb-6 sm:mb-8">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
             </svg>
@@ -67,17 +68,18 @@ type DetailData = { product: Product | null; colors: Color[] };
               @if (data.product.video || readyThumbs().length > 1) {
                 <div class="flex gap-3 flex-wrap">
                   @if (data.product.video) {
-                    <button
+                    <button type="button" aria-label="Ver vídeo" [attr.aria-pressed]="showVideo()"
                       class="w-14 h-14 sm:w-20 sm:h-20 rounded-xl overflow-hidden border-2 transition-colors duration-200 bg-black flex items-center justify-center flex-shrink-0"
                       [class]="showVideo() ? 'border-lv-gold' : 'border-white/10 hover:border-lv-gold/40'"
                       (click)="showVideo.set(true); showColorImage.set(false)">
-                      <svg class="w-6 h-6 text-lv-gold/80" fill="currentColor" viewBox="0 0 24 24">
+                      <svg class="w-6 h-6 text-lv-gold" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z"/>
                       </svg>
                     </button>
                   }
-                  @for (img of readyThumbs(); track img) {
-                    <button
+                  @for (img of readyThumbs(); track img; let t = $index) {
+                    <button type="button" [attr.aria-label]="'Ver foto ' + (t + 1)"
+                      [attr.aria-pressed]="!showVideo() && currentImageIndex() === thumbIndex(img, data.product)"
                       class="w-14 h-14 sm:w-20 sm:h-20 rounded-xl overflow-hidden border-2 transition-colors duration-200 flex-shrink-0"
                       [class]="!showVideo() && currentImageIndex() === thumbIndex(img, data.product) ? 'border-lv-gold' : 'border-white/10 hover:border-lv-gold/40'"
                       (click)="showVideo.set(false); showColorImage.set(false); currentImageIndex.set(thumbIndex(img, data.product)); mainImageLoaded.set(false)">
@@ -113,7 +115,9 @@ type DetailData = { product: Product | null; colors: Color[] };
                       <button
                         type="button"
                         [title]="color.name"
-                        class="w-8 h-8 rounded-full border-2 transition-all duration-150 flex-shrink-0"
+                        [attr.aria-label]="color.name"
+                        [attr.aria-pressed]="selectedColor()?.id === color.id"
+                        class="w-9 h-9 rounded-full border-2 transition-all duration-150 flex-shrink-0"
                         [style.background-color]="color.hex"
                         [class]="selectedColor()?.id === color.id
                           ? 'border-lv-gold scale-110 ring-2 ring-lv-gold/30 ring-offset-2 ring-offset-lv-black'
@@ -147,11 +151,11 @@ type DetailData = { product: Product | null; colors: Color[] };
                   <p class="text-sm font-semibold text-lv-cream mb-3">Tamaño</p>
                   <div class="grid grid-cols-3 gap-2">
                     @for (variant of data.product.variants; track variant.label) {
-                      <button
+                      <button type="button" [attr.aria-pressed]="selectedVariant()?.label === variant.label"
                         class="flex flex-col items-center text-center px-2 py-3 rounded-card border transition-all duration-200"
                         [class]="selectedVariant()?.label === variant.label
                           ? 'border-lv-gold bg-lv-gold/8 text-lv-gold'
-                          : 'border-white/10 text-lv-cream/50 hover:border-lv-gold/40 hover:text-lv-cream/80'"
+                          : 'border-white/10 text-lv-cream/60 hover:border-lv-gold/40 hover:text-lv-cream/80'"
                         (click)="selectVariant(variant)">
                         <span class="font-display text-2xl leading-none mb-1"
                               [class]="selectedVariant()?.label === variant.label ? 'text-lv-gold' : 'text-lv-cream'">
@@ -165,7 +169,7 @@ type DetailData = { product: Product | null; colors: Color[] };
                         }
                         <span class="font-body text-[13px] font-semibold"
                               [class]="selectedVariant()?.label === variant.label ? 'text-lv-gold' : 'text-lv-muted'">
-                          {{ variant.price }}€
+                          {{ variant.price | eur }}
                         </span>
                       </button>
                     }
@@ -184,7 +188,7 @@ type DetailData = { product: Product | null; colors: Color[] };
                     <div class="text-center">
                       <p class="font-display text-2xl text-lv-cream leading-none">{{ stat.value }}</p>
                       <p class="font-body text-xs text-lv-muted mt-0.5">{{ stat.unit }}</p>
-                      <p class="font-body text-xs text-lv-gold/50 mt-0.5">{{ stat.label }}</p>
+                      <p class="font-body text-xs text-lv-gold mt-0.5">{{ stat.label }}</p>
                     </div>
                   }
                 </div>
@@ -201,7 +205,7 @@ type DetailData = { product: Product | null; colors: Color[] };
                   <p class="text-sm font-semibold text-lv-cream mb-3">Ideal para</p>
                   <div class="flex flex-wrap gap-2">
                     @for (use of uses; track use) {
-                      <span class="rounded-full px-3 py-1.5 font-body text-[13px] border border-lv-gold/20 text-lv-gold/70 bg-lv-gold/5">
+                      <span class="rounded-full px-3 py-1.5 font-body text-[13px] border border-lv-gold/20 text-lv-gold bg-lv-gold/5">
                         {{ use }}
                       </span>
                     }
@@ -210,7 +214,7 @@ type DetailData = { product: Product | null; colors: Color[] };
               } @else {
                 <ul class="space-y-2 mb-5">
                   @for (feature of data.product.features; track feature) {
-                    <li class="flex items-start gap-2 text-lv-cream/40 text-sm font-body">
+                    <li class="flex items-start gap-2 text-lv-cream/60 text-sm font-body">
                       <span class="text-lv-gold mt-0.5 flex-shrink-0">✓</span>
                       {{ feature }}
                     </li>
@@ -222,10 +226,12 @@ type DetailData = { product: Product | null; colors: Color[] };
               @if (productAddons(data.product).length > 0) {
                 <div class="border-t border-white/[0.06] pt-5 mb-5">
                   @for (addon of productAddons(data.product); track addon.id) {
-                    <label class="flex items-center gap-3 cursor-pointer group">
+                    <div class="flex items-center gap-3 cursor-pointer group min-h-[44px]">
                       <button
-                        type="button"
-                        class="w-5 h-5 rounded flex-shrink-0 border transition-all duration-150 flex items-center justify-center"
+                        type="button" role="checkbox"
+                        [attr.aria-checked]="selectedAddonIds().has(addon.id)"
+                        [attr.aria-label]="addon.name + ', ' + addon.price + ' € más'"
+                        class="w-6 h-6 rounded flex-shrink-0 border transition-all duration-150 flex items-center justify-center"
                         [class]="selectedAddonIds().has(addon.id)
                           ? 'border-lv-gold bg-lv-gold/15'
                           : 'border-white/20 hover:border-lv-gold/50'"
@@ -240,15 +246,15 @@ type DetailData = { product: Product | null; colors: Color[] };
                             (click)="toggleAddon(addon.id)">
                         {{ addon.name }}
                       </span>
-                      <span class="font-body text-sm text-lv-gold">+{{ addon.price }}€</span>
-                    </label>
+                      <span class="lv-price font-body text-sm text-lv-gold">+{{ addon.price | eur }}</span>
+                    </div>
                   }
                 </div>
               }
 
               @if (data.product.id === 'caja-bulk') {
                 <div class="flex items-center gap-2.5 bg-lv-surface border border-lv-border rounded-card px-3.5 py-2.5 mb-5">
-                  <svg class="w-4 h-4 text-lv-gold/60 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-4 h-4 text-lv-gold flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                   </svg>
                   <p class="font-body text-xs text-lv-muted">Las cartas <strong class="text-lv-cream/70">no están incluidas</strong>, solo el accesorio impreso en 3D.</p>
@@ -257,11 +263,11 @@ type DetailData = { product: Product | null; colors: Color[] };
 
               <!-- Precio + botón -->
               <div class="flex items-center justify-between pt-4 sm:pt-5 border-t border-white/[0.06] mt-auto gap-3">
-                <span class="lv-price font-display text-4xl sm:text-5xl font-semibold tracking-[-0.03em] text-lv-cream leading-none">{{ currentPrice(data.product) }} €</span>
+                <span class="lv-price font-display text-4xl sm:text-5xl font-semibold tracking-[-0.03em] text-lv-cream leading-none">{{ currentPrice(data.product) | eur }}</span>
                 <button
                   class="lv-btn flex-shrink-0 disabled:opacity-40"
                   [class]="!data.product.available
-                    ? 'bg-white/5 text-lv-cream/30 cursor-not-allowed'
+                    ? 'bg-white/5 text-lv-cream/60 cursor-not-allowed'
                     : justAdded()
                       ? 'lv-btn-gold'
                       : 'lv-btn-primary'"
@@ -509,6 +515,8 @@ export class ProductDetailComponent {
     });
     this.selectedColor.set(colors.find(c => c.id === 'negro') ?? colors[0] ?? null);
     this.justAdded.set(true);
+    // Abrir la cesta confirma lo añadido y deja "Hacer pedido" a un toque
+    this.cartService.openDrawer();
     if (this.addTimer) clearTimeout(this.addTimer);
     this.addTimer = setTimeout(() => this.justAdded.set(false), 1500);
   }

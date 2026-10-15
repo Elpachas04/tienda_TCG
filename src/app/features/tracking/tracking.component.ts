@@ -58,7 +58,7 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
 
         <div class="mb-8 sm:mb-10">
           <a routerLink="/catalog"
-             class="inline-flex items-center gap-2 font-body text-[13px] text-lv-cream/40 hover:text-lv-gold transition-colors duration-200 mb-6 sm:mb-8">
+             class="inline-flex items-center gap-2 py-2.5 -my-2.5 font-body text-[13px] text-lv-cream/60 hover:text-lv-gold transition-colors duration-200 mb-6 sm:mb-8">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
             </svg>
@@ -69,13 +69,13 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
 
         <!-- Search form -->
         <div class="liquid-glass rounded-[20px] p-4 sm:p-6 border border-white/[0.05] mb-6">
-          <label class="block font-body text-xs text-lv-cream/40 mb-2">
+          <label class="block font-body text-xs text-lv-cream/60 mb-2">
             Número de pedido
           </label>
           <div class="flex gap-2 sm:gap-3">
             <input
               type="text"
-              class="flex-1 min-w-0 bg-white/[0.03] border border-white/[0.07] rounded-xl px-3 sm:px-4 py-3 font-body text-base text-lv-cream placeholder-lv-cream/20 focus:outline-none focus:border-lv-gold/40 transition-colors "
+              class="flex-1 min-w-0 bg-white/[0.03] border border-white/[0.07] rounded-xl px-3 sm:px-4 py-3 font-body text-base text-lv-cream placeholder-lv-cream/45 focus:outline-none focus:border-lv-gold/40 transition-colors "
               placeholder="LV-240604-A3K7"
               maxlength="14"
               [(ngModel)]="inputId"
@@ -85,7 +85,7 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
               class="px-4 sm:px-6 py-3 rounded-xl font-body text-[13px] font-semibold transition-all duration-200 flex-shrink-0"
               [class]="canSearch()
                 ? 'bg-lv-gold hover:brightness-110 text-black'
-                : 'bg-white/[0.04] text-lv-cream/20 cursor-not-allowed'"
+                : 'bg-white/[0.04] text-lv-cream/60 cursor-not-allowed'"
               [disabled]="!canSearch() || state() === 'loading'"
               (click)="search()">
               @if (state() === 'loading') {
@@ -96,7 +96,7 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
             </button>
           </div>
           @if (state() === 'invalid') {
-            <p class="font-body text-xs text-red-400/80 mt-2">
+            <p class="font-body text-xs text-red-400 mt-2">
               Formato inválido — debe ser LV-YYMMDD-XXXX
             </p>
           }
@@ -108,7 +108,7 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
           <div class="liquid-glass rounded-[20px] p-8 border border-white/[0.05] text-center space-y-3">
             <div class="text-4xl">🔍</div>
             <p class="font-display text-xl text-lv-cream ">Pedido no encontrado</p>
-            <p class="font-body text-[13px] text-lv-cream/30 leading-relaxed">
+            <p class="font-body text-[13px] text-lv-cream/60 leading-relaxed">
               Comprueba que el ID es correcto. Si acabas de hacer el pedido, puede tardar unos minutos en aparecer.
             </p>
           </div>
@@ -118,7 +118,7 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
           <div class="liquid-glass rounded-[20px] p-8 border border-lv-gold/10 text-center space-y-3">
             <div class="text-4xl">⚙️</div>
             <p class="font-display text-xl text-lv-cream ">Activando sistema</p>
-            <p class="font-body text-[13px] text-lv-cream/30 leading-relaxed">
+            <p class="font-body text-[13px] text-lv-cream/60 leading-relaxed">
               El seguimiento de pedidos está siendo configurado. Escríbenos a hola@layervault.es para consultar el estado.
             </p>
           </div>
@@ -131,11 +131,11 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
             <div class="liquid-glass rounded-[20px] p-4 sm:p-6 border border-lv-gold/20">
               <div class="flex items-start justify-between gap-4 flex-wrap">
                 <div>
-                  <p class="font-body text-xs text-lv-gold/60 mb-1">Pedido</p>
+                  <p class="font-body text-xs text-lv-gold mb-1">Pedido</p>
                   <p class="font-display text-lg sm:text-2xl text-lv-gold sm: break-all">{{ order()!.orderId }}</p>
                 </div>
                 <div class="text-right">
-                  <p class="font-body text-xs text-lv-cream/30 mb-1">Realizado el</p>
+                  <p class="font-body text-xs text-lv-cream/60 mb-1">Realizado el</p>
                   <p class="font-body text-[13px] text-lv-cream/60">{{ formatDate(order()!.createdAt) }}</p>
                 </div>
               </div>
@@ -143,7 +143,7 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
 
             <!-- Status timeline -->
             <div class="liquid-glass rounded-[20px] p-4 sm:p-6 border border-white/[0.05]">
-              <p class="font-body text-xs text-lv-cream/40 mb-5">Estado</p>
+              <p class="font-body text-xs text-lv-cream/60 mb-5">Estado</p>
               <div class="space-y-0">
                 @for (step of steps; track step.key; let last = $last) {
                   <div class="flex gap-3 sm:gap-4 items-start">
@@ -170,14 +170,14 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
                     <!-- Label -->
                     <div class="pb-4 sm:pb-5 pt-1 flex-1 min-w-0">
                       <p class="font-body text-[13px] transition-colors duration-300"
-                        [class]="isCurrent(step.key) ? 'text-lv-gold' : isCompleted(step.key) ? 'text-lv-cream/70' : 'text-lv-cream/20'">
+                        [class]="isCurrent(step.key) ? 'text-lv-gold' : isCompleted(step.key) ? 'text-lv-cream/70' : 'text-lv-cream/60'">
                         {{ step.icon }} {{ step.label }}
                       </p>
                       @if (stepDate(step.key)) {
-                        <span class="font-body text-xs text-lv-cream/30 block mt-0.5">{{ stepDate(step.key) }}</span>
+                        <span class="font-body text-xs text-lv-cream/60 block mt-0.5">{{ stepDate(step.key) }}</span>
                       }
                       @if (isCurrent(step.key) && step.key === 'shipped' && order()!.trackingNumber) {
-                        <p class="font-body text-xs text-lv-gold/60 mt-1">
+                        <p class="font-body text-xs text-lv-gold mt-1">
                           Tracking: {{ order()!.trackingNumber }}
                         </p>
                       }
@@ -189,7 +189,7 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
 
             <!-- Items -->
             <div class="liquid-glass rounded-[20px] p-4 sm:p-6 border border-white/[0.05]">
-              <p class="font-body text-xs text-lv-cream/40 mb-4">Productos</p>
+              <p class="font-body text-xs text-lv-cream/60 mb-4">Productos</p>
               <div class="space-y-3">
                 @for (item of order()!.items; track item.productId + (item.variant ?? '') + (item.color ?? '')) {
                   <div class="flex items-center gap-3 py-2.5 border-b border-white/[0.05] last:border-0">
@@ -199,10 +199,10 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
                       </p>
                       <div class="flex gap-1.5 mt-1 flex-wrap items-center">
                         @if (item.productSku) {
-                          <span class="font-body text-xs text-lv-cream/30 bg-white/[0.04] rounded-full px-2 py-0.5">{{ item.productSku }}</span>
+                          <span class="font-body text-xs text-lv-cream/60 bg-white/[0.04] rounded-full px-2 py-0.5">{{ item.productSku }}</span>
                         }
                         @if (item.variant) {
-                          <span class="font-body text-xs text-lv-cream/50 bg-white/[0.06] rounded-full px-2 py-0.5">{{ item.variant }}</span>
+                          <span class="font-body text-xs text-lv-cream/60 bg-white/[0.06] rounded-full px-2 py-0.5">{{ item.variant }}</span>
                         }
                         @if (item.color) {
                           <span class="font-body text-xs text-lv-gold bg-lv-gold/[0.10] rounded-full px-2 py-0.5">{{ item.color }}</span>
@@ -217,7 +217,7 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
             <!-- Seller note -->
             @if (order()!.sellerNote) {
               <div class="liquid-glass rounded-[20px] p-5 border border-lv-gold/10 flex items-start gap-3">
-                <span class="text-lv-gold/50 flex-shrink-0">📝</span>
+                <span class="text-lv-gold flex-shrink-0">📝</span>
                 <p class="font-body text-sm text-lv-cream/60 leading-relaxed">{{ order()!.sellerNote }}</p>
               </div>
             }
@@ -310,8 +310,8 @@ export class TrackingComponent implements OnInit {
 
   stepClass(key: OrderStatus): string {
     if (this.isCurrent(key))   return 'border-lv-gold bg-lv-gold/10 text-lv-gold';
-    if (this.isCompleted(key)) return 'border-lv-gold/50 bg-lv-gold/[0.06] text-lv-gold/70';
-    return 'border-white/[0.08] bg-white/[0.02] text-lv-cream/20';
+    if (this.isCompleted(key)) return 'border-lv-gold/50 bg-lv-gold/[0.06] text-lv-gold';
+    return 'border-white/[0.08] bg-white/[0.02] text-lv-cream/60';
   }
 
   stepDate(key: OrderStatus): string {

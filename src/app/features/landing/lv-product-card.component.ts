@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, signal, inject, DestroyRef } from '@angular/core';
+import { EurPipe } from '../../shared/pipes/eur.pipe';
 import { RouterLink } from '@angular/router';
 import { Product, ProductVariant, Color, Leader } from '../../core/models/product.model';
 import { CartItem } from '../../core/models/cart-item.model';
@@ -11,7 +12,7 @@ import { LeaderPickerComponent } from '../../shared/components/leader-picker.com
   selector: 'app-lv-product-card',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, FoilHoverDirective, LeaderPickerComponent],
+  imports: [RouterLink, FoilHoverDirective, LeaderPickerComponent, EurPipe],
   host: { class: 'block h-full' },
   template: `
     <article class="group relative h-full flex flex-col">
@@ -75,29 +76,31 @@ import { LeaderPickerComponent } from '../../shared/components/leader-picker.com
               </button>
             }
             @if (selectedVariant()?.specs?.capacity) {
-              <span class="text-[13px] text-lv-cream/45 ml-1">{{ selectedVariant()!.specs!.capacity }} cartas</span>
+              <span class="text-[13px] text-lv-cream/60 ml-1">{{ selectedVariant()!.specs!.capacity }} cartas</span>
             }
           </div>
         }
 
         @if (product.colorPickerEnabled && colors.length > 0) {
-          <div class="flex gap-2 flex-wrap items-center mt-3" role="group" aria-label="Color">
+          <div class="flex gap-0.5 flex-wrap items-center mt-2 -ml-[5px]" role="group" aria-label="Color">
             @for (color of colors; track color.id) {
+              <!-- El botón mide 28 px para el dedo; el círculo visible, 18 px -->
               <button
                 type="button"
-                class="w-[18px] h-[18px] rounded-full flex-shrink-0 transition-shadow duration-150"
+                class="w-7 h-7 grid place-items-center rounded-full flex-shrink-0"
                 [title]="color.name"
                 [attr.aria-label]="color.name"
                 [attr.aria-pressed]="selectedColor()?.id === color.id"
-                [style.background]="color.hex"
-                [style.box-shadow]="selectedColor()?.id === color.id
-                  ? '0 0 0 2px #121212, 0 0 0 3.5px #C9A84C'
-                  : 'inset 0 0 0 1px rgba(255,255,255,.14)'"
                 (click)="selectColor(color, $event)">
+                <span class="block w-[18px] h-[18px] rounded-full transition-shadow duration-150"
+                      [style.background]="color.hex"
+                      [style.box-shadow]="selectedColor()?.id === color.id
+                        ? '0 0 0 2px #121212, 0 0 0 3.5px #C9A84C'
+                        : 'inset 0 0 0 1px rgba(255,255,255,.14)'"></span>
               </button>
             }
             @if (selectedColor()) {
-              <span class="text-[13px] text-lv-cream/45 ml-1">{{ selectedColor()!.name }}</span>
+              <span class="text-[13px] text-lv-cream/60 ml-1">{{ selectedColor()!.name }}</span>
             }
           </div>
         }
@@ -115,7 +118,7 @@ import { LeaderPickerComponent } from '../../shared/components/leader-picker.com
 
         <div class="flex items-center justify-between gap-3 mt-auto pt-4">
           <p class="lv-price font-display text-[1.375rem] font-semibold tracking-[-0.02em] text-lv-cream leading-none">
-            {{ currentPrice() }} €
+            {{ currentPrice() | eur }}
           </p>
           <button
             type="button"

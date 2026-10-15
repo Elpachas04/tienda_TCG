@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal, computed, OnInit, PLATFORM_ID } from '@angular/core';
+import { EurPipe } from '../../shared/pipes/eur.pipe';
 import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -10,7 +11,7 @@ import { NOTES_MAX, CONTACT_EMAIL } from '../../shared/constants';
 const NAME_MAX  = 100;
 const EMAIL_MAX = 254;
 const PHONE_MAX = 9;
-const INPUT = 'w-full bg-white/[0.03] border rounded-xl px-4 py-3 font-body text-base text-lv-cream placeholder-lv-cream/20 focus:outline-none transition-colors';
+const INPUT = 'w-full bg-white/[0.03] border rounded-xl px-4 py-3 font-body text-base text-lv-cream placeholder-lv-cream/45 focus:outline-none transition-colors';
 
 function isSpanishPhone(v: string): boolean {
   return /^[6789]\d{8}$/.test(v.replace(/[\s\-\.\(\)]/g, ''));
@@ -31,7 +32,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
   selector: 'app-checkout',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, EurPipe],
   host: { class: 'block animate-fade-up' },
   template: `
     <div class="bg-lv-black min-h-screen relative overflow-x-hidden">
@@ -42,7 +43,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
 
           <div class="mb-8 sm:mb-10">
             <a routerLink="/catalog"
-               class="inline-flex items-center gap-2 font-body text-[13px] text-lv-cream/40 hover:text-lv-gold transition-colors duration-200 mb-6 sm:mb-8">
+               class="inline-flex items-center gap-2 py-2.5 -my-2.5 font-body text-[13px] text-lv-cream/60 hover:text-lv-gold transition-colors duration-200 mb-6 sm:mb-8">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
               </svg>
@@ -81,8 +82,8 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                 </span>
               </div>
               <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                <span class="font-display text-base sm:text-xl text-lv-gold whitespace-nowrap">{{ grandTotal().toFixed(2) }}€</span>
-                <svg class="w-4 h-4 text-lv-cream/40 transition-transform duration-200"
+                <span class="font-display text-base sm:text-xl text-lv-gold whitespace-nowrap">{{ grandTotal() | eur }}</span>
+                <svg class="w-4 h-4 text-lv-cream/60 transition-transform duration-200"
                      [class.rotate-180]="summaryOpen()"
                      fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -101,7 +102,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                         </p>
                         <div class="flex gap-1.5 mt-1 flex-wrap">
                           @if (item.variant) {
-                            <span class="font-body text-xs text-lv-cream/50 bg-white/[0.06] rounded-full px-2 py-0.5">{{ item.variant }}</span>
+                            <span class="font-body text-xs text-lv-cream/60 bg-white/[0.06] rounded-full px-2 py-0.5">{{ item.variant }}</span>
                           }
                           @if (item.color) {
                             <span class="font-body text-xs text-lv-gold bg-lv-gold/[0.10] rounded-full px-2 py-0.5">{{ item.color }}</span>
@@ -111,29 +112,29 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                           }
                         </div>
                         @if (item.notes) {
-                          <p class="font-body text-[10px] text-lv-cream/40 mt-1 italic leading-snug">{{ item.notes }}</p>
+                          <p class="font-body text-[10px] text-lv-cream/60 mt-1 italic leading-snug">{{ item.notes }}</p>
                         }
                       </div>
-                      <span class="font-display text-lg text-lv-gold flex-shrink-0">{{ (item.unitPrice * item.quantity).toFixed(2) }}€</span>
+                      <span class="font-display text-lg text-lv-gold flex-shrink-0">{{ item.unitPrice * item.quantity | eur }}</span>
                     </div>
                   }
                 </div>
 
                 @if (form.deliveryMethod === 'shipping' && shippingInfo()) {
                   <div class="flex justify-between items-center pt-3 border-t border-white/[0.06]">
-                    <span class="font-body text-xs text-lv-cream/50">
+                    <span class="font-body text-xs text-lv-cream/60">
                       Envío — {{ shippingInfo()!.zone }}
                     </span>
-                    <span class="font-display text-base text-lv-cream/80">{{ shippingInfo()!.price.toFixed(2) }}€</span>
+                    <span class="font-display text-base text-lv-cream/80">{{ shippingInfo()!.price | eur }}</span>
                   </div>
                 }
                 @if (berryDiscount() > 0) {
                   <div class="flex justify-between items-center pt-2 border-t border-white/[0.06]">
-                    <span class="font-body text-xs text-lv-gold/70 flex items-center gap-1.5">
+                    <span class="font-body text-xs text-lv-gold flex items-center gap-1.5">
                       <img src="https://res.cloudinary.com/dew1whfdu/image/upload/v1781902915/berrycoin.png" alt="₿" width="14" height="14" class="w-3.5 h-3.5 object-contain">
                       Descuento ₿erry
                     </span>
-                    <span class="font-display text-base text-lv-gold">−5.00€</span>
+                    <span class="font-display text-base text-lv-gold">−5,00 €</span>
                   </div>
                 }
 
@@ -147,23 +148,25 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
               <h2 class="font-display text-xl sm:text-2xl text-lv-cream ">Tus datos</h2>
 
               <div>
-                <label class="block font-body text-xs text-lv-cream/40 mb-2">Nombre *</label>
-                <input type="text"
+                <label for="co-name" class="block font-body text-sm text-lv-cream/75 mb-2">Nombre *</label>
+                <input id="co-name" type="text"
                   [class]="inputClass(touched.name && !form.customerName.trim())"
+                  [attr.aria-invalid]="touched.name && !form.customerName.trim()"
                   placeholder="Tu nombre completo"
                   [attr.maxlength]="NAME_MAX"
                   autocomplete="name"
                   [(ngModel)]="form.customerName"
                   (blur)="touched.name = true" />
                 @if (touched.name && !form.customerName.trim()) {
-                  <p class="text-red-400/80 font-body text-xs mt-1.5">Obligatorio</p>
+                  <p class="text-red-400 font-body text-xs mt-1.5">Obligatorio</p>
                 }
               </div>
 
               <div>
-                <label class="block font-body text-xs text-lv-cream/40 mb-2">Email *</label>
-                <input type="email"
+                <label for="co-email" class="block font-body text-sm text-lv-cream/75 mb-2">Email *</label>
+                <input id="co-email" type="email"
                   [class]="inputClass(touched.email && !isEmailValid())"
+                  [attr.aria-invalid]="touched.email && !isEmailValid()"
                   placeholder="tu@email.com"
                   [attr.maxlength]="EMAIL_MAX"
                   autocomplete="email"
@@ -171,63 +174,67 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                   (input)="onEmailInput($event)"
                   (blur)="touched.email = true" />
                 @if (touched.email && !isEmailValid()) {
-                  <p class="text-red-400/80 font-body text-xs mt-1.5">
+                  <p class="text-red-400 font-body text-xs mt-1.5">
                     {{ form.customerEmail.trim() ? 'Email no válido' : 'Obligatorio' }}
                   </p>
                 }
               </div>
 
               <div>
-                <label class="block font-body text-xs text-lv-cream/40 mb-2">
+                <label for="co-phone" class="block font-body text-sm text-lv-cream/75 mb-2">
                   Teléfono *
                 </label>
-                <input type="tel"
+                <input id="co-phone" type="tel"
                   [class]="inputClass(touched.phone && !isPhoneValid())"
+                  [attr.aria-invalid]="touched.phone && !isPhoneValid()"
                   placeholder="612 345 678"
                   autocomplete="tel"
                   [value]="form.customerPhone"
                   (input)="onPhoneInput($event)"
                   (blur)="touched.phone = true" />
                 @if (touched.phone && !isPhoneValid()) {
-                  <p class="text-red-400/80 font-body text-xs mt-1.5">
+                  <p class="text-red-400 font-body text-xs mt-1.5">
                     {{ form.customerPhone.trim() ? 'Teléfono español no válido (ej: 612 345 678)' : 'Obligatorio' }}
                   </p>
                 }
               </div>
 
               <div>
-                <label class="block font-body text-xs text-lv-cream/40 mb-3">Método de entrega *</label>
-                <div class="grid grid-cols-2 gap-2 sm:gap-3">
+                <p id="co-delivery" class="block font-body text-sm text-lv-cream/75 mb-3">Método de entrega *</p>
+                <div class="grid grid-cols-2 gap-2 sm:gap-3" role="group" aria-labelledby="co-delivery">
                   <button type="button"
                     class="p-3 sm:p-4 rounded-[16px] border-2 transition-all duration-200 text-left"
                     [class]="form.deliveryMethod === 'pickup' ? 'border-lv-gold bg-lv-gold/[0.08]' : 'border-white/[0.06] hover:border-lv-gold/30 bg-white/[0.02]'"
+                    [attr.aria-pressed]="form.deliveryMethod === 'pickup'"
                     (click)="selectPickup()">
-                    <div class="mb-1.5 sm:mb-2 text-lv-gold/70"><svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg></div>
+                    <div class="mb-1.5 sm:mb-2 text-lv-gold"><svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg></div>
                     <div class="font-display text-sm sm:text-base text-lv-cream ">En mano</div>
-                    <div class="font-body text-xs sm:text-xs text-lv-cream/30 mt-0.5">Sin coste</div>
+                    <div class="font-body text-xs sm:text-xs text-lv-cream/60 mt-0.5">Sin coste</div>
                   </button>
                   <button type="button"
                     class="p-3 sm:p-4 rounded-[16px] border-2 transition-all duration-200 text-left"
                     [class]="form.deliveryMethod === 'shipping' ? 'border-lv-gold bg-lv-gold/[0.08]' : 'border-white/[0.06] hover:border-lv-gold/30 bg-white/[0.02]'"
+                    [attr.aria-pressed]="form.deliveryMethod === 'shipping'"
                     (click)="form.deliveryMethod = 'shipping'">
-                    <div class="mb-1.5 sm:mb-2 text-lv-gold/70"><svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg></div>
+                    <div class="mb-1.5 sm:mb-2 text-lv-gold"><svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg></div>
                     <div class="font-display text-sm sm:text-base text-lv-cream ">Envío</div>
-                    <div class="font-body text-xs sm:text-xs text-lv-cream/30 mt-0.5">Correos · Península</div>
+                    <div class="font-body text-xs sm:text-xs text-lv-cream/60 mt-0.5">Correos · Península</div>
                   </button>
                 </div>
               </div>
 
               @if (form.deliveryMethod === 'shipping') {
                 <div>
-                  <label class="block font-body text-xs text-lv-cream/40 mb-2">País</label>
-                  <input type="text" readonly
-                    class="w-full bg-white/[0.02] border border-white/[0.05] rounded-xl px-4 py-3 font-body text-sm text-lv-cream/40 cursor-not-allowed select-none"
+                  <label for="co-country" class="block font-body text-sm text-lv-cream/75 mb-2">País</label>
+                  <input id="co-country" type="text" readonly
+                    class="w-full bg-white/[0.02] border border-white/[0.05] rounded-xl px-4 py-3 font-body text-sm text-lv-cream/60 cursor-not-allowed select-none"
                     value="España" />
                 </div>
                 <div>
-                  <label class="block font-body text-xs text-lv-cream/40 mb-2">Código postal *</label>
-                  <input type="text" inputmode="numeric"
+                  <label for="co-cp" class="block font-body text-sm text-lv-cream/75 mb-2">Código postal *</label>
+                  <input id="co-cp" type="text" inputmode="numeric"
                     [class]="inputClass(touched.cp && form.postalCode.length > 0 && !isPostalCodeValid())"
+                    [attr.aria-invalid]="touched.cp && !isPostalCodeValid()"
                     placeholder="28001"
                     maxlength="5"
                     [value]="form.postalCode"
@@ -239,16 +246,16 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                       <span class="text-red-400 flex-shrink-0 mt-0.5">✕</span>
                       <div>
                         <p class="font-body text-[13px] text-red-400">Zona no disponible</p>
-                        <p class="font-body text-xs text-lv-cream/30 mt-0.5 leading-relaxed">De momento solo enviamos a Península. Escríbenos a hola@layervault.es si necesitas otro destino.</p>
+                        <p class="font-body text-xs text-lv-cream/60 mt-0.5 leading-relaxed">De momento solo enviamos a Península. Escríbenos a hola@layervault.es si necesitas otro destino.</p>
                       </div>
                     </div>
                   } @else if (shippingInfo()) {
                     <div class="mt-3 flex items-center justify-between px-3 sm:px-4 py-3 rounded-xl border border-lv-gold/30 bg-lv-gold/[0.07]">
                       <div>
-                        <p class="font-display text-lv-gold text-xl sm:text-2xl leading-none">{{ shippingInfo()!.price.toFixed(2) }}€</p>
-                        <p class="font-body text-xs text-lv-cream/40 mt-0.5">Correos · {{ shippingInfo()!.zone }}</p>
+                        <p class="font-display text-lv-gold text-xl sm:text-2xl leading-none">{{ shippingInfo()!.price | eur }}</p>
+                        <p class="font-body text-xs text-lv-cream/60 mt-0.5">Correos · {{ shippingInfo()!.zone }}</p>
                       </div>
-                      <svg class="w-6 h-6 text-lv-gold/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg class="w-6 h-6 text-lv-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                       </svg>
                     </div>
@@ -256,7 +263,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
 
                   @if (oficinas().length > 0) {
                     <div class="mt-4">
-                      <label class="block font-body text-xs text-lv-cream/40 mb-2">
+                      <label class="block font-body text-xs text-lv-cream/60 mb-2">
                         Oficina de Correos
                         @if (!oficinasExactas()) {
                           <span class="normal-case opacity-50 ml-1">— zona aproximada</span>
@@ -271,16 +278,16 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                               : 'border-white/[0.06] hover:border-lv-gold/30 bg-white/[0.02]'"
                             (click)="onOficinaClick(o)">
                             <p class="font-display text-sm text-lv-cream leading-tight">{{ o.nombre }}</p>
-                            <p class="font-body text-xs text-lv-cream/40 mt-0.5 leading-snug">{{ o.direccion }} · {{ o.telefono }}</p>
+                            <p class="font-body text-xs text-lv-cream/60 mt-0.5 leading-snug">{{ o.direccion }} · {{ o.telefono }}</p>
                           </button>
                         }
                       </div>
                       @if (touched.oficina && oficinas().length > 0 && !selectedOficina()) {
-                        <p class="text-red-400/80 font-body text-xs mt-2">Selecciona una Oficina de Correos</p>
+                        <p class="text-red-400 font-body text-xs mt-2">Selecciona una Oficina de Correos</p>
                       }
                       @if (selectedOficina() && oficinas().length > 1) {
                         <button type="button"
-                          class="mt-2 font-body text-xs text-lv-cream/30 hover:text-lv-cream/60 transition-colors"
+                          class="mt-2 font-body text-xs text-lv-cream/60 hover:text-lv-cream/60 transition-colors"
                           (click)="selectedOficina.set(null)">
                           × Quitar selección
                         </button>
@@ -291,17 +298,17 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
               }
 
               <div>
-                <label class="block font-body text-xs text-lv-cream/40 mb-2">
-                  Notas <span class="normal-case opacity-50">(opcional)</span>
+                <label for="co-notes" class="block font-body text-sm text-lv-cream/75 mb-2">
+                  Notas <span class="text-lv-cream/60">(opcional)</span>
                 </label>
-                <textarea
+                <textarea id="co-notes"
                   [class]="inputClass(false) + ' resize-none'"
                   rows="2"
                   [attr.maxlength]="NOTES_MAX"
                   placeholder="Colores, detalles especiales, preferencias..."
                   [(ngModel)]="form.notes">
                 </textarea>
-                <p class="text-right font-body text-xs text-lv-cream/20 mt-1">{{ form.notes.length }}/{{ NOTES_MAX }}</p>
+                <p class="text-right font-body text-xs text-lv-cream/60 mt-1">{{ form.notes.length }}/{{ NOTES_MAX }}</p>
               </div>
             </div>
 
@@ -315,7 +322,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
               class="w-full font-body text-[15px] font-semibold rounded-full min-h-[52px] transition-colors duration-200 flex items-center justify-center gap-2"
               [class]="isFormValid() && !submitting()
                 ? 'bg-lv-cream hover:bg-white text-lv-black'
-                : submitting() ? 'bg-white/[0.05] text-lv-cream/20 cursor-not-allowed' : 'bg-white/[0.05] text-lv-cream/40 hover:bg-white/[0.08] cursor-pointer'"
+                : submitting() ? 'bg-white/[0.05] text-lv-cream/60 cursor-not-allowed' : 'bg-white/[0.05] text-lv-cream/60 hover:bg-white/[0.08] cursor-pointer'"
               [disabled]="submitting()"
               (click)="submitOrder()">
               @if (submitting()) {
@@ -325,6 +332,11 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                 <span>Confirmar pedido</span>
               }
             </button>
+            @if (!submitting() && missingFields().length) {
+              <p class="font-body text-sm text-lv-cream/60 text-center" aria-live="polite">
+                Para confirmar falta: {{ missingFields().join(', ') }}.
+              </p>
+            }
 
           </div>
 
@@ -335,14 +347,14 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
               <h1 class="lv-h1 mb-3">
                 <span class="block text-lv-cream">Pedido enviado</span>
               </h1>
-              <p class="font-body text-[13px] text-lv-cream/30">Te respondemos en menos de 1 hora</p>
+              <p class="font-body text-[13px] text-lv-cream/60">Te respondemos en menos de 1 hora</p>
             </div>
 
             @if (orderId()) {
               <div class="liquid-glass rounded-[20px] p-6 border border-lv-gold/20 max-w-sm mx-auto">
-                <p class="font-body text-xs text-lv-gold/60 mb-2">Tu número de pedido</p>
+                <p class="font-body text-xs text-lv-gold mb-2">Tu número de pedido</p>
                 <p class="font-display text-xl sm:text-3xl text-lv-gold sm: break-all">{{ orderId() }}</p>
-                <p class="font-body text-xs text-lv-cream/30 mt-2 leading-relaxed">
+                <p class="font-body text-xs text-lv-cream/60 mt-2 leading-relaxed">
                   Guárdalo para consultar el estado en cualquier momento.
                 </p>
                 <a routerLink="/seguimiento" [queryParams]="{id: orderId()}"
@@ -356,8 +368,8 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
               <p class="font-body text-xs text-lv-gold mb-3">Próximos pasos</p>
               @for (step of steps; track step.n) {
                 <div class="flex items-start gap-3">
-                  <span class="font-display text-lv-gold/40 text-lg leading-none flex-shrink-0">{{ step.n }}</span>
-                  <p class="font-body text-xs text-lv-cream/50 leading-relaxed">{{ step.text }}</p>
+                  <span class="font-display text-lv-gold text-lg leading-none flex-shrink-0">{{ step.n }}</span>
+                  <p class="font-body text-xs text-lv-cream/60 leading-relaxed">{{ step.text }}</p>
                 </div>
               }
             </div>
@@ -511,6 +523,19 @@ export class CheckoutComponent implements OnInit {
     }
   }
 
+  /** Lo que impide confirmar, en palabras del cliente */
+  missingFields(): string[] {
+    const missing: string[] = [];
+    if (!this.form.customerName.trim()) missing.push('tu nombre');
+    if (!this.isEmailValid()) missing.push(this.form.customerEmail.trim() ? 'un email válido' : 'tu email');
+    if (!this.isPhoneValid()) missing.push(this.form.customerPhone.trim() ? 'un teléfono válido' : 'tu teléfono');
+    if (this.form.deliveryMethod === 'shipping') {
+      if (!this.isPostalCodeValid()) missing.push('el código postal');
+      else if (this.oficinas().length > 0 && !this.selectedOficina()) missing.push('la oficina de Correos');
+    }
+    return missing;
+  }
+
   isFormValid(): boolean {
     if (this.form._hp) return false; // bot detected
     if (!this.form.customerName.trim() || !this.isEmailValid()) return false;
@@ -583,7 +608,15 @@ export class CheckoutComponent implements OnInit {
           document.getElementById('oficinas-list')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
       } else if (isPlatformBrowser(this.platformId)) {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Lleva al primer campo que falta en vez de subir arriba del todo
+        // Espera a que se pinten los errores recién marcados
+        setTimeout(() => {
+          const first = ['co-name', 'co-email', 'co-phone', 'co-cp']
+            .map(id => document.getElementById(id) as HTMLInputElement | null)
+            .find(el => el && el.getAttribute('aria-invalid') === 'true');
+          if (first) { first.focus(); first.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+          else window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
       }
       return;
     }

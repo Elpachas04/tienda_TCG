@@ -35,7 +35,7 @@ export const CATEGORY_LABELS: Record<ProductCategory, string> = {
   accessories: 'Accesorios',
 };
 
-const INPUT = 'w-full bg-white/[0.03] border border-lv-border rounded-xl px-3 py-2.5 font-body text-sm text-lv-cream placeholder:text-lv-cream/25 focus:outline-none focus:border-lv-gold/50 transition-colors';
+const INPUT = 'w-full bg-white/[0.03] border border-lv-border rounded-xl px-3 py-2.5 font-body text-sm text-lv-cream placeholder:text-lv-cream/60 focus:outline-none focus:border-lv-gold/50 transition-colors';
 const LABEL = 'block font-body text-[13px] font-medium text-lv-cream/70 mb-1.5';
 const SECTION = 'font-display text-lg text-lv-cream';
 const HINT = 'font-body text-xs text-lv-muted mt-1';
@@ -128,7 +128,7 @@ const HINT = 'font-body text-xs text-lv-muted mt-1';
                 @for (f of form.features; track $index) {
                   <div class="flex gap-2">
                     <input [class]="INPUT" [(ngModel)]="form.features[$index]" [name]="'feature' + $index" [attr.aria-label]="'Característica ' + ($index + 1)" />
-                    <button type="button" class="px-3 rounded-xl text-red-300/80 hover:text-red-300 hover:bg-white/[0.04]" aria-label="Quitar característica" (click)="removeFeature($index)">✕</button>
+                    <button type="button" class="px-3 rounded-xl text-red-300 hover:text-red-300 hover:bg-white/[0.04]" aria-label="Quitar característica" (click)="removeFeature($index)">✕</button>
                   </div>
                 } @empty {
                   <p class="font-body text-xs text-lv-muted">Sin características. Salen como lista en la ficha del producto.</p>
@@ -231,7 +231,7 @@ const HINT = 'font-body text-xs text-lv-muted mt-1';
                       <label class="flex items-center gap-1.5 font-body text-xs text-lv-cream/70 whitespace-nowrap">
                         <input type="radio" name="defaultVariant" [checked]="!!variant.default" (change)="setDefaultVariant($index)" /> Por defecto
                       </label>
-                      <button type="button" class="px-2 text-red-300/80 hover:text-red-300" aria-label="Quitar variante" (click)="removeVariant($index)">✕</button>
+                      <button type="button" class="px-2 text-red-300 hover:text-red-300" aria-label="Quitar variante" (click)="removeVariant($index)">✕</button>
                     </div>
                   } @empty {
                     <p class="font-body text-xs text-lv-muted">Sin variantes: se vende al precio base.</p>
@@ -253,7 +253,7 @@ const HINT = 'font-body text-xs text-lv-muted mt-1';
                         <label class="flex items-center gap-1 font-body text-xs text-lv-cream/70 whitespace-nowrap">
                           <input type="checkbox" [(ngModel)]="leader.available" [name]="'lavail' + $index" /> Disponible
                         </label>
-                        <button type="button" class="px-2 text-red-300/80 hover:text-red-300" aria-label="Quitar líder" (click)="removeLeader($index)">✕</button>
+                        <button type="button" class="px-2 text-red-300 hover:text-red-300" aria-label="Quitar líder" (click)="removeLeader($index)">✕</button>
                       </div>
                     }
                   </div>
