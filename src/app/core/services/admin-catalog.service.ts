@@ -1,8 +1,11 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { Product, ProductCatalog } from '../models/product.model';
+import { CatalogService } from './catalog.service';
 
 @Injectable({ providedIn: 'root' })
 export class AdminCatalogService {
+  private readonly shopCatalog = inject(CatalogService);
+
   // Catálogo completo sin filtrar (incluye productos ocultos) — solo para el panel
   readonly catalog = signal<ProductCatalog | null>(null);
   readonly loading = signal(false);
@@ -10,7 +13,7 @@ export class AdminCatalogService {
   async load(): Promise<void> {
     this.loading.set(true);
     try {
-      const res = await fetch('/api/products');
+      const res = await fetch('/api/products', { cache: 'no-cache' });
       if (!res.ok) throw new Error('fetch_failed');
       this.catalog.set(await res.json() as ProductCatalog);
     } finally {
@@ -26,7 +29,7 @@ export class AdminCatalogService {
     });
     if (res.ok) {
       const current = this.catalog();
-      if (current) this.catalog.set({ ...current, products });
+      if (current) this.publish({ ...current, products });
     }
     return res.ok;
   }
@@ -39,7 +42,7 @@ export class AdminCatalogService {
     });
     if (res.ok) {
       const current = this.catalog();
-      if (current) this.catalog.set({ ...current, ...updates });
+      if (current) this.publish({ ...current, ...updates });
     }
     return res.ok;
   }
@@ -53,5 +56,10 @@ export class AdminCatalogService {
     if (!res.ok) return null;
     const data = await res.json() as { publicId: string };
     return data.publicId;
+  }
+
+  private publish(catalog: ProductCatalog): void {
+    this.catalog.set(catalog);
+    this.shopCatalog.apply(catalog);
   }
 }

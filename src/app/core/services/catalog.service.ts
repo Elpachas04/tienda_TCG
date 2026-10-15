@@ -16,18 +16,23 @@ export class CatalogService {
   /** Se llama desde el APP_INITIALIZER — si falla, se mantiene el seed local */
   async load(): Promise<void> {
     try {
-      const res = await fetch('/api/products');
+      // no-cache: revalida siempre, para que un cambio hecho en el admin se vea al recargar
+      const res = await fetch('/api/products', { cache: 'no-cache' });
       if (!res.ok) return;
-      const data = await res.json() as ProductCatalog;
-      this.catalog    = data;
-      this.products   = data.products.filter(p => !p.hidden);
-      this.categories = data.categories;
-      this.colors     = data.colors;
-      this.addons     = data.addons ?? [];
-      this.settings   = data.settings;
+      this.apply(await res.json() as ProductCatalog);
     } catch {
       // sin conexión con /api/products — se mantiene el seed local
     }
+  }
+
+  /** También lo usa el admin al guardar, para que la tienda refleje el cambio sin recargar */
+  apply(data: ProductCatalog): void {
+    this.catalog    = data;
+    this.products   = data.products.filter(p => !p.hidden);
+    this.categories = data.categories;
+    this.colors     = data.colors;
+    this.addons     = data.addons ?? [];
+    this.settings   = data.settings;
   }
 
   getProductById(id: string): Product | undefined {
