@@ -27,6 +27,9 @@ const UPLOAD_AS_IS_BYTES = 1_500_000;
           @if (first && coverLabel) {
             <span class="absolute top-2 left-2 rounded-full bg-lv-gold text-lv-black font-body text-[11px] font-semibold px-2 py-0.5">{{ coverLabel }}</span>
           }
+          @if (max && i >= max) {
+            <span class="absolute top-2 left-2 rounded-full bg-amber-400 text-lv-black font-body text-[11px] font-semibold px-2 py-0.5">No se usa</span>
+          }
           <div class="absolute inset-x-0 bottom-0 flex items-center justify-between gap-1 p-1.5 bg-gradient-to-t from-black/85 to-transparent pt-6">
             <div class="flex gap-1">
               <button type="button" class="w-8 h-8 grid place-items-center rounded-lg bg-black/50 text-lv-cream hover:bg-black/80 disabled:opacity-25"
@@ -54,11 +57,11 @@ const UPLOAD_AS_IS_BYTES = 1_500_000;
         @if (uploading()) {
           <span class="font-body text-sm text-lv-cream">Subiendo {{ progress() }}…</span>
         } @else {
-          <span class="text-2xl text-lv-gold leading-none">+</span>
-          <span class="font-body text-[13px] text-lv-cream/80">Añadir fotos</span>
-          <span class="font-body text-[11px] text-lv-muted">o arrástralas aquí</span>
+          <span class="text-2xl text-lv-gold leading-none">{{ full ? '↻' : '+' }}</span>
+          <span class="font-body text-[13px] text-lv-cream/80">{{ full ? 'Cambiar foto' : (max === 1 ? 'Añadir foto' : 'Añadir fotos') }}</span>
+          <span class="font-body text-[11px] text-lv-muted">o arrástrala{{ max === 1 ? '' : 's' }} aquí</span>
         }
-        <input type="file" accept="image/*" multiple class="hidden"
+        <input type="file" accept="image/*" [multiple]="max !== 1" class="hidden"
                [disabled]="uploading() || !productId" (change)="onFilesSelected($event)" />
       </label>
     </div>
@@ -82,6 +85,8 @@ export class AdminPhotoGridComponent {
   @Input() productId = '';
   /** Texto de la etiqueta de la primera foto; vacío = sin portada */
   @Input() coverLabel = 'Portada';
+  /** Máximo de fotos útiles (0 = sin límite). Con 1, subir otra sustituye a la actual */
+  @Input() max = 0;
   @Output() imagesChange = new EventEmitter<string[]>();
   @Output() uploadingChange = new EventEmitter<boolean>();
 
@@ -90,6 +95,10 @@ export class AdminPhotoGridComponent {
   protected readonly dragOver  = signal(false);
   protected readonly error     = signal('');
   protected readonly broken    = signal<ReadonlySet<string>>(new Set());
+
+  protected get full(): boolean {
+    return this.max === 1 && this.images.length >= 1;
+  }
 
   markBroken(img: string): void {
     this.broken.update(set => new Set(set).add(img));
@@ -141,7 +150,7 @@ export class AdminPhotoGridComponent {
   }
 
   private async upload(files: File[]): Promise<void> {
-    const pictures = files.filter(f => f.type.startsWith('image/'));
+    const pictures = files.filter(f => f.type.startsWith('image/')).slice(0, this.max === 1 ? 1 : undefined);
     if (!pictures.length || !this.productId || this.uploading()) return;
 
     this.setUploading(true);
@@ -153,7 +162,7 @@ export class AdminPhotoGridComponent {
         this.progress.set(pictures.length > 1 ? `${i + 1} de ${pictures.length}` : '');
         try {
           const publicId = await this.catalogService.uploadImage(this.productId, await prepareImage(file));
-          if (publicId) this.emit([...this.images, publicId]);
+          if (publicId) this.emit(this.max === 1 ? [publicId, ...this.images.slice(1)] : [...this.images, publicId]);
           else failed++;
         } catch {
           failed++;

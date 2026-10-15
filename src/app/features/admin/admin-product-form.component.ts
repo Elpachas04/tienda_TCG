@@ -64,14 +64,23 @@ const HINT = 'font-body text-xs text-lv-muted mt-1';
           <!-- Fotos -->
           <section class="space-y-8">
             <div>
-              <div class="flex items-baseline justify-between gap-4 mb-3">
-                <h3 [class]="SECTION">Fotos</h3>
-                <p class="font-body text-xs text-lv-muted">
-                  {{ form.leaderPickerEnabled ? 'La primera es la portada en el catálogo' : 'La primera es la portada de la tarjeta' }}
-                </p>
-              </div>
+              @if (form.leaderPickerEnabled) {
+                <div class="mb-3">
+                  <h3 [class]="SECTION">Portada del catálogo</h3>
+                  <p [class]="HINT">Una sola foto, común a todos los líderes: es la que sale en la tarjeta del catálogo y del inicio. Las fotos de cada líder van debajo.</p>
+                </div>
+              } @else {
+                <div class="flex items-baseline justify-between gap-4 mb-3">
+                  <h3 [class]="SECTION">Fotos</h3>
+                  <p class="font-body text-xs text-lv-muted">La primera es la portada de la tarjeta</p>
+                </div>
+              }
               <app-admin-photo-grid [images]="form.images" (imagesChange)="form.images = $event"
-                                    [productId]="form.id" (uploadingChange)="uploading.set($event)" />
+                                    [productId]="form.id" [max]="form.leaderPickerEnabled ? 1 : 0"
+                                    (uploadingChange)="uploading.set($event)" />
+              @if (form.leaderPickerEnabled && form.images.length > 1) {
+                <p class="font-body text-xs text-amber-300 mt-2">Solo se usa la portada. Las fotos marcadas "No se usa" no se ven en la tienda: quítalas o súbelas en la galería de un líder.</p>
+              }
               @if (!form.id) {
                 <p [class]="HINT">Escribe primero el nombre del producto para poder subir fotos.</p>
               }
