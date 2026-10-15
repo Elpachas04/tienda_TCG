@@ -9,13 +9,14 @@ import { AdminAuthService } from '../../core/services/admin-auth.service';
   imports: [RouterLink, RouterLinkActive, RouterOutlet],
   host: { class: 'block animate-fade-up' },
   template: `
-    <div class="bg-lv-black min-h-screen flex">
-      <nav class="w-56 flex-shrink-0 bg-lv-deep border-r border-lv-border flex flex-col">
-        <div class="px-5 py-6">
-          <p class="font-display text-lv-cream text-xl ">LayerVault</p>
-          <p class="font-body text-xs text-lv-gold/60">Admin</p>
+    <!-- Móvil: barra superior. Escritorio: menú lateral -->
+    <div class="bg-lv-black min-h-screen flex flex-col md:flex-row">
+      <nav class="md:w-56 flex-shrink-0 bg-lv-deep border-b md:border-b-0 md:border-r border-lv-border flex md:flex-col items-center md:items-stretch gap-2 md:gap-0 px-3 md:px-0 py-2 md:py-0 md:sticky md:top-0 md:h-screen">
+        <div class="md:px-5 md:py-6 pr-2">
+          <a routerLink="/" class="font-display text-lv-cream text-lg md:text-xl hover:text-lv-foil" title="Ver la tienda">LayerVault</a>
+          <p class="hidden md:block font-body text-xs text-lv-gold/70">Admin</p>
         </div>
-        <div class="flex-1 px-3 space-y-1">
+        <div class="flex-1 flex md:block md:px-3 gap-1 md:space-y-1">
           <a routerLink="/admin/productos" routerLinkActive="bg-lv-gold/10 text-lv-gold" #productosLink="routerLinkActive"
              class="block font-body text-[13px] rounded-xl px-3 py-2.5 transition-colors"
              [class]="productosLink.isActive ? '' : 'text-lv-muted hover:text-lv-cream hover:bg-white/[0.03]'">
@@ -27,15 +28,18 @@ import { AdminAuthService } from '../../core/services/admin-auth.service';
             Pedidos
           </a>
         </div>
-        <div class="px-3 py-4 border-t border-lv-border">
+        <div class="md:px-3 md:py-4 md:border-t border-lv-border md:space-y-1">
+          <a routerLink="/" class="hidden md:block font-body text-[13px] rounded-xl px-3 py-2.5 text-lv-muted hover:text-lv-cream hover:bg-white/[0.03] transition-colors">
+            ← Ver la tienda
+          </a>
           <button type="button"
-            class="w-full text-left font-body text-[13px] rounded-xl px-3 py-2.5 text-lv-muted hover:text-red-400 hover:bg-white/[0.03] transition-colors"
+            class="w-full text-left font-body text-[13px] rounded-xl px-3 py-2.5 text-lv-muted hover:text-red-400 hover:bg-white/[0.03] transition-colors whitespace-nowrap"
             (click)="logout()">
             Cerrar sesión
           </button>
         </div>
       </nav>
-      <main class="flex-1 min-w-0 px-6 py-8 sm:px-10 sm:py-10">
+      <main class="flex-1 min-w-0 px-4 py-6 sm:px-10 sm:py-10">
         <router-outlet></router-outlet>
       </main>
     </div>

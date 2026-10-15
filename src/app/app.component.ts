@@ -13,11 +13,14 @@ import { SmoothScrollService } from './core/motion/smooth-scroll.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterOutlet, LvNavbarComponent, CartDrawerComponent],
   template: `
-    <app-lv-navbar />
-    <main [class.min-h-screen]="!isLanding()" [class.pt-20]="!isLanding()">
+    <!-- El panel admin lleva su propio menú (con enlace a la tienda) -->
+    @if (!isAdmin()) {
+      <app-lv-navbar />
+    }
+    <main [class.min-h-screen]="!isLanding()" [class.pt-20]="!isLanding() && !isAdmin()">
       <router-outlet />
     </main>
-    @if (!isCheckout()) {
+    @if (!isCheckout() && !isAdmin()) {
       <app-cart-drawer />
     }
 
@@ -70,6 +73,7 @@ export class AppComponent {
     return url === '/' || url === '' || url.startsWith('/#');
   });
   readonly isCheckout = computed(() => this.currentUrl().startsWith('/checkout'));
+  readonly isAdmin    = computed(() => this.currentUrl().startsWith('/admin'));
 
   readonly showBerryModal = signal(false);
   readonly bannerItems = Array(14).fill(0);
