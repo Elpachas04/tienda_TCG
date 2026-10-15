@@ -1,5 +1,5 @@
 import type { Handler } from "@netlify/functions";
-import { getStore } from "@netlify/blobs";
+import { connectLambda, getStore } from "@netlify/blobs";
 import { originOk } from "./_guard";
 import { verifyAdminSession } from "./_admin-auth";
 
@@ -37,6 +37,8 @@ const handler: Handler = async (event) => {
   }
 
   try {
+    // Funciones en formato Lambda: Blobs necesita el contexto que viene en el evento
+    connectLambda(event as Parameters<typeof connectLambda>[0]);
     const store    = getStore(STORE_NAME);
     const existing = (await store.get(BLOB_KEY, { type: "json" })) as Record<string, unknown> | null;
     const catalog  = { ...(existing ?? {}), ...updates };

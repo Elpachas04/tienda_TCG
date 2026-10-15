@@ -1,5 +1,5 @@
 import type { Handler } from "@netlify/functions";
-import { getStore } from "@netlify/blobs";
+import { connectLambda, getStore } from "@netlify/blobs";
 import { requestOk } from "./_guard";
 import seedCatalog from "../../src/assets/data/products.json";
 
@@ -20,6 +20,8 @@ const handler: Handler = async (event) => {
   }
 
   try {
+    // Funciones en formato Lambda: Blobs necesita el contexto que viene en el evento
+    connectLambda(event as Parameters<typeof connectLambda>[0]);
     const store    = getStore(STORE_NAME);
     const existing = await store.get(BLOB_KEY, { type: "json" });
 
