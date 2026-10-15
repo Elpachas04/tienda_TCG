@@ -19,7 +19,7 @@ const UPLOAD_AS_IS_BYTES = 1_500_000;
           @if (broken().has(img)) {
             <div class="absolute inset-0 flex flex-col items-center justify-center gap-1 px-3 text-center">
               <span class="font-body text-[13px] text-amber-300">No encontrada</span>
-              <span class="font-body text-[11px] text-lv-muted break-all">{{ img }}</span>
+              <span class="font-body text-xs text-lv-cream/60 break-all">{{ img }}</span>
             </div>
           } @else {
             <img [src]="cloudinary.card(img)" [alt]="'Foto ' + (i + 1)" class="w-full h-full object-cover" loading="lazy" (error)="markBroken(img)" />
@@ -33,23 +33,26 @@ const UPLOAD_AS_IS_BYTES = 1_500_000;
           <div class="absolute inset-x-0 bottom-0 flex items-center justify-between gap-1 p-1.5 bg-gradient-to-t from-black/85 to-transparent pt-6">
             <div class="flex gap-1">
               <button type="button" class="w-8 h-8 grid place-items-center rounded-lg bg-black/50 text-lv-cream hover:bg-black/80 disabled:opacity-25"
-                      aria-label="Mover a la izquierda" [disabled]="first" (click)="move(i, -1)">←</button>
+                      aria-label="Mover a la izquierda" title="Mover a la izquierda" [disabled]="first" (click)="move(i, -1)">←</button>
               <button type="button" class="w-8 h-8 grid place-items-center rounded-lg bg-black/50 text-lv-cream hover:bg-black/80 disabled:opacity-25"
-                      aria-label="Mover a la derecha" [disabled]="last" (click)="move(i, 1)">→</button>
+                      aria-label="Mover a la derecha" title="Mover a la derecha" [disabled]="last" (click)="move(i, 1)">→</button>
             </div>
             <div class="flex gap-1">
               @if (!first && coverLabel) {
-                <button type="button" class="h-8 px-2 rounded-lg bg-black/50 text-lv-cream hover:bg-black/80 font-body text-[11px]"
-                        (click)="makeFirst(i)">{{ coverLabel }}</button>
+                <button type="button" class="w-8 h-8 grid place-items-center rounded-lg bg-black/50 text-lv-gold hover:bg-black/80"
+                        [attr.aria-label]="'Usar como ' + coverLabel.toLowerCase()" [title]="'Usar como ' + coverLabel.toLowerCase()"
+                        (click)="makeFirst(i)">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linejoin="round" d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9L12 3.5z"/></svg>
+                </button>
               }
               <button type="button" class="w-8 h-8 grid place-items-center rounded-lg bg-black/50 text-red-300 hover:bg-red-500/80 hover:text-white"
-                      aria-label="Quitar foto" (click)="remove(i)">✕</button>
+                      aria-label="Quitar foto" title="Quitar foto" (click)="remove(i)">✕</button>
             </div>
           </div>
         </figure>
       }
 
-      <label class="aspect-square rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-1 text-center px-3 transition-colors"
+      <label class="aspect-square rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-1 text-center px-3 transition-colors focus-within:outline focus-within:outline-2 focus-within:outline-lv-gold"
              [class]="dragOver() ? 'border-lv-gold bg-lv-gold/5' : 'border-lv-border hover:border-lv-gold/50'"
              [class.cursor-pointer]="!!productId && !uploading()"
              [class.opacity-50]="!productId"
@@ -59,9 +62,9 @@ const UPLOAD_AS_IS_BYTES = 1_500_000;
         } @else {
           <span class="text-2xl text-lv-gold leading-none">{{ full ? '↻' : '+' }}</span>
           <span class="font-body text-[13px] text-lv-cream/80">{{ full ? 'Cambiar foto' : (max === 1 ? 'Añadir foto' : 'Añadir fotos') }}</span>
-          <span class="font-body text-[11px] text-lv-muted">o arrástrala{{ max === 1 ? '' : 's' }} aquí</span>
+          <span class="font-body text-xs text-lv-cream/60">o arrástrala{{ max === 1 ? '' : 's' }} aquí</span>
         }
-        <input type="file" accept="image/*" [multiple]="max !== 1" class="hidden"
+        <input type="file" accept="image/*" [multiple]="max !== 1" class="sr-only"
                [disabled]="uploading() || !productId" (change)="onFilesSelected($event)" />
       </label>
     </div>

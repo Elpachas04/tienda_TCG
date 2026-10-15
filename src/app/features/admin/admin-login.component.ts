@@ -13,10 +13,10 @@ import { AdminAuthService } from '../../core/services/admin-auth.service';
     <div class="bg-lv-black min-h-screen flex items-center justify-center px-4">
       <form class="w-full max-w-sm liquid-glass rounded-card border border-lv-border p-8" (submit)="onSubmit($event)">
         <h1 class="font-display text-lv-cream text-3xl mb-1">LayerVault</h1>
-        <p class="font-body text-[13px] text-lv-gold mb-6">Panel de administración</p>
+        <p class="font-body text-sm text-lv-cream/60 mb-6">Panel de administración</p>
 
-        <label class="block font-body text-xs text-lv-muted mb-2">Contraseña</label>
-        <input type="password"
+        <label for="admin-password" class="block font-body text-sm text-lv-cream/75 mb-2">Contraseña</label>
+        <input id="admin-password" type="password"
           class="w-full bg-white/[0.03] border border-lv-border rounded-xl px-4 py-3 font-body text-base text-lv-cream focus:outline-none focus:border-lv-gold/40 transition-colors"
           [(ngModel)]="password"
           name="password"
@@ -24,11 +24,11 @@ import { AdminAuthService } from '../../core/services/admin-auth.service';
           autofocus />
 
         @if (error()) {
-          <p class="text-red-400 font-body text-xs mt-2">{{ error() }}</p>
+          <p class="text-red-400 font-body text-sm mt-2" role="alert">{{ error() }}</p>
         }
 
         <button type="submit"
-          class="w-full mt-6 bg-lv-gold hover:brightness-110 text-black font-body text-[13px] font-semibold rounded-full py-3.5 transition-all duration-200 disabled:opacity-50"
+          class="lv-btn lv-btn-primary w-full mt-6 disabled:opacity-50"
           [disabled]="submitting() || !password">
           {{ submitting() ? 'Entrando...' : 'Entrar' }}
         </button>

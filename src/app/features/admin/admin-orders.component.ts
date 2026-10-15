@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { SlicePipe } from '@angular/common';
+import { EurPipe } from '../../shared/pipes/eur.pipe';
 import { ORDER_STATUSES } from '../../shared/constants/order-status';
+
+const DATE_FORMAT = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
 
 interface OrderListItem {
   orderId:        string;
@@ -16,54 +18,79 @@ interface OrderListItem {
   selector: 'app-admin-orders',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, SlicePipe],
+  imports: [FormsModule, EurPipe],
   template: `
-    <div class="flex items-center justify-between mb-6">
-      <h1 class="font-display text-3xl text-lv-cream ">Pedidos</h1>
-      <select class="bg-white/[0.03] border border-lv-border rounded-xl px-3 py-2 font-body text-[13px] text-lv-cream"
-        [(ngModel)]="statusFilter" (ngModelChange)="load()">
-        <option value="">Todos los estados</option>
-        @for (status of statuses; track status) { <option [value]="status">{{ status }}</option> }
-      </select>
+    <div class="flex flex-wrap items-end justify-between gap-4 mb-6">
+      <h1 class="font-display text-3xl text-lv-cream">Pedidos</h1>
+      <label class="flex items-center gap-2 font-body text-sm text-lv-cream/70">
+        Mostrar
+        <select class="bg-white/[0.03] border border-lv-border rounded-xl px-3 py-2.5 font-body text-sm text-lv-cream"
+          [(ngModel)]="statusFilter" (ngModelChange)="load()">
+          <option value="">Todos los estados</option>
+          @for (status of statuses; track status) { <option [value]="status">{{ status }}</option> }
+        </select>
+      </label>
     </div>
 
-    @if (loading()) {
-      <p class="font-body text-[13px] text-lv-muted ">Cargando…</p>
-    } @else if (error()) {
-      <p class="text-red-400 font-body text-xs mb-4">{{ error() }}</p>
-    }
+    <div aria-live="polite">
+      @if (loading()) {
+        <p class="font-body text-sm text-lv-muted">Cargando pedidos…</p>
+      } @else if (error()) {
+        <p class="rounded-xl border border-red-400/30 bg-red-400/5 text-red-300 font-body text-sm px-4 py-3 mb-4">{{ error() }}</p>
+      }
+    </div>
 
-    <div class="space-y-2">
+    <ul class="space-y-2">
       @for (order of orders(); track order.orderId) {
-        <div class="liquid-glass border border-lv-border rounded-xl px-4 py-3 flex items-center gap-4">
+        <li class="rounded-xl border border-lv-border bg-lv-surface/60 px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
           <div class="flex-1 min-w-0">
-            <p class="font-display text-lg text-lv-gold">{{ order.orderId }}</p>
-            <p class="font-body text-xs text-lv-muted ">
-              {{ order.customerName }} · {{ order.total.toFixed(2) }}€ · {{ order.deliveryMethod }} · {{ order.createdAt | slice:0:10 }}
+            <p class="font-display text-lg text-lv-cream">{{ order.orderId }}</p>
+            <p class="font-body text-sm text-lv-cream/70 mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5">
+              <span>{{ order.customerName }}</span>
+              <span class="lv-price">{{ order.total | eur }}</span>
+              <span>{{ deliveryLabel(order.deliveryMethod) }}</span>
+              <span>{{ formatDate(order.createdAt) }}</span>
             </p>
           </div>
-          <select class="bg-white/[0.03] border border-lv-border rounded-lg px-3 py-2 font-body text-[13px] text-lv-cream flex-shrink-0"
-            [ngModel]="order.status" (ngModelChange)="updateStatus(order, $event)">
-            @for (status of statuses; track status) { <option [value]="status">{{ status }}</option> }
-          </select>
-        </div>
+          <div class="flex items-center gap-3 flex-shrink-0">
+            @if (savedId() === order.orderId) {
+              <span class="font-body text-sm text-emerald-300" role="status">Guardado</span>
+            }
+            <select class="bg-white/[0.03] border border-lv-border rounded-lg px-3 py-2.5 font-body text-sm text-lv-cream"
+              [attr.aria-label]="'Estado del pedido ' + order.orderId"
+              [ngModel]="order.status" (ngModelChange)="updateStatus(order, $event)">
+              @for (status of statuses; track status) { <option [value]="status">{{ status }}</option> }
+            </select>
+          </div>
+        </li>
       }
-      @if (orders().length === 0 && !loading()) {
-        <p class="font-body text-[13px] text-lv-muted ">No hay pedidos.</p>
-      }
-    </div>
+    </ul>
+    @if (orders().length === 0 && !loading() && !error()) {
+      <p class="font-body text-sm text-lv-muted">{{ statusFilter ? 'No hay pedidos en este estado.' : 'Todavía no hay pedidos.' }}</p>
+    }
   `,
 })
 export class AdminOrdersComponent implements OnInit {
   protected readonly statuses = ORDER_STATUSES;
 
   orders  = signal<OrderListItem[]>([]);
+  savedId = signal<string | null>(null);
+  private savedTimer: ReturnType<typeof setTimeout> | null = null;
   loading = signal(false);
   error   = signal('');
   statusFilter = '';
 
   ngOnInit(): void {
     this.load();
+  }
+
+  deliveryLabel(method: string): string {
+    return method === 'shipping' ? 'Envío' : method === 'pickup' ? 'En mano' : method;
+  }
+
+  formatDate(iso: string): string {
+    const d = new Date(iso);
+    return isNaN(d.getTime()) ? iso : DATE_FORMAT.format(d);
   }
 
   async load(): Promise<void> {
@@ -76,7 +103,7 @@ export class AdminOrdersComponent implements OnInit {
       const data = await res.json() as { orders: OrderListItem[] };
       this.orders.set(data.orders);
     } catch {
-      this.error.set('No se pudieron cargar los pedidos');
+      this.error.set('No se pudieron cargar los pedidos. Recarga la página para reintentarlo.');
     } finally {
       this.loading.set(false);
     }
@@ -93,9 +120,13 @@ export class AdminOrdersComponent implements OnInit {
         body: JSON.stringify({ orderId: order.orderId, status }),
       });
       if (!res.ok) throw new Error('update_failed');
+      this.error.set('');
+      this.savedId.set(order.orderId);
+      if (this.savedTimer) clearTimeout(this.savedTimer);
+      this.savedTimer = setTimeout(() => this.savedId.set(null), 2500);
     } catch {
       this.orders.update(list => list.map(o => o.orderId === order.orderId ? { ...o, status: previous } : o));
-      this.error.set('No se pudo actualizar el estado del pedido');
+      this.error.set(`No se pudo cambiar el estado de ${order.orderId}. Se ha dejado como estaba.`);
     }
   }
 }

@@ -33,13 +33,13 @@ import { AdminProductFormComponent, CATEGORY_LABELS } from './admin-product-form
     } @else {
       <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
         @for (product of products(); track product.id; let i = $index; let first = $first; let last = $last) {
-          <article class="rounded-card border border-lv-border bg-lv-surface/60 overflow-hidden flex flex-col"
-                   [class.opacity-60]="product.hidden">
+          <article class="rounded-card border border-lv-border bg-lv-surface/60 overflow-hidden flex flex-col">
             <button type="button" class="relative block aspect-[4/3] bg-lv-black overflow-hidden" (click)="openEdit(product)"
                     [attr.aria-label]="'Editar ' + product.name">
               @if (product.images[0] && !brokenCovers().has(product.id)) {
                 <img [src]="cloudinary.card(product.images[0])" [alt]="product.name"
                      class="w-full h-full object-cover hover:scale-[1.03] transition-transform duration-300" loading="lazy"
+                     [class.opacity-40]="product.hidden"
                      (error)="markBrokenCover(product.id)" />
               } @else {
                 <span class="absolute inset-0 grid place-items-center font-body text-sm"
@@ -48,6 +48,9 @@ import { AdminProductFormComponent, CATEGORY_LABELS } from './admin-product-form
                 </span>
               }
               <span class="absolute top-2 left-2 rounded-full bg-black/70 text-lv-cream font-body text-xs px-2 py-0.5">{{ i + 1 }}</span>
+              @if (product.hidden) {
+                <span class="absolute bottom-2 left-2 rounded-full bg-black/80 text-lv-cream font-body text-xs font-semibold px-2.5 py-1">Oculto en la tienda</span>
+              }
               @if (product.images.length > 1) {
                 <span class="absolute top-2 right-2 rounded-full bg-black/70 text-lv-cream font-body text-xs px-2 py-0.5">{{ product.images.length }} fotos</span>
               }
@@ -62,19 +65,23 @@ import { AdminProductFormComponent, CATEGORY_LABELS } from './admin-product-form
                 <p class="lv-price font-body text-lg font-semibold text-lv-cream whitespace-nowrap">{{ formatPrice(product.price) }}</p>
               </div>
 
-              <div class="flex flex-wrap gap-2">
-                <button type="button" class="rounded-full border px-3 py-1 font-body text-xs transition-colors"
-                        [class]="product.hidden ? 'border-lv-border text-lv-muted hover:text-lv-cream' : 'border-emerald-400/40 text-emerald-300 hover:bg-emerald-400/10'"
-                        [disabled]="busy()" (click)="toggle(product, 'hidden')"
-                        [attr.aria-label]="product.hidden ? 'Mostrar en la tienda' : 'Ocultar de la tienda'">
-                  {{ product.hidden ? 'Oculto' : 'Visible' }}
-                </button>
-                <button type="button" class="rounded-full border px-3 py-1 font-body text-xs transition-colors"
-                        [class]="product.available ? 'border-emerald-400/40 text-emerald-300 hover:bg-emerald-400/10' : 'border-amber-400/40 text-amber-300 hover:bg-amber-400/10'"
-                        [disabled]="busy()" (click)="toggle(product, 'available')"
-                        [attr.aria-label]="product.available ? 'Marcar como agotado' : 'Marcar como disponible'">
-                  {{ product.available ? 'Disponible' : 'Agotado' }}
-                </button>
+              <!-- Interruptores: el texto dice qué controla y la posición, si está activo -->
+              <div class="flex flex-col gap-1">
+                @for (sw of [
+                  { field: 'hidden', label: 'En la tienda', on: !product.hidden },
+                  { field: 'available', label: 'Se puede comprar', on: product.available }
+                ]; track sw.field) {
+                  <button type="button" role="switch" [attr.aria-checked]="sw.on"
+                          class="flex items-center justify-between gap-3 rounded-lg px-1 py-1.5 -mx-1 text-left hover:bg-white/[0.03] disabled:opacity-50"
+                          [disabled]="busy()" (click)="toggle(product, $any(sw.field))">
+                    <span class="font-body text-sm text-lv-cream/80">{{ sw.label }}</span>
+                    <span class="relative w-10 h-6 rounded-full transition-colors flex-shrink-0"
+                          [class]="sw.on ? 'bg-emerald-500/80' : 'bg-white/15'">
+                      <span class="absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform"
+                            [class.translate-x-4]="sw.on"></span>
+                    </span>
+                  </button>
+                }
               </div>
 
               <div class="mt-auto flex items-center justify-between gap-2 pt-3 border-t border-lv-border">
@@ -85,8 +92,6 @@ import { AdminProductFormComponent, CATEGORY_LABELS } from './admin-product-form
                           aria-label="Bajar en el orden" [disabled]="last || busy()" (click)="move(i, 1)">↓</button>
                 </div>
                 <div class="flex gap-1">
-                  <button type="button" class="rounded-lg px-3 py-2 font-body text-sm text-red-300 hover:text-red-300 hover:bg-white/[0.04]"
-                          [disabled]="busy()" (click)="remove(product)">Eliminar</button>
                   <button type="button" class="rounded-lg px-4 py-2 font-body text-sm font-semibold bg-white/[0.06] text-lv-cream hover:bg-white/[0.1]"
                           (click)="openEdit(product)">Editar</button>
                 </div>
@@ -104,6 +109,7 @@ import { AdminProductFormComponent, CATEGORY_LABELS } from './admin-product-form
         [product]="editing() ?? null"
         [saveError]="saveError()"
         (saved)="onSave($event)"
+        (deleted)="removeEditing()"
         (cancelled)="closeForm()" />
     }
   `,
@@ -161,9 +167,14 @@ export class AdminProductsComponent implements OnInit {
     await this.persist(current, 'No se pudo cambiar el estado.');
   }
 
-  async remove(product: Product): Promise<void> {
-    if (!confirm(`¿Eliminar "${product.name}"? Esta acción no se puede deshacer.`)) return;
-    await this.persist(this.products().filter(p => p.id !== product.id), 'No se pudo eliminar el producto.');
+  async remove(product: Product): Promise<boolean> {
+    if (!confirm(`¿Eliminar "${product.name}"? Esta acción no se puede deshacer.`)) return false;
+    return this.persist(this.products().filter(p => p.id !== product.id), 'No se pudo eliminar el producto.');
+  }
+
+  async removeEditing(): Promise<void> {
+    const product = this.editing();
+    if (product && await this.remove(product)) this.closeForm();
   }
 
   async move(i: number, dir: -1 | 1): Promise<void> {

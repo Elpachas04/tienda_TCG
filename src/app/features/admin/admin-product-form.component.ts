@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, Output, afterNextRender, inject, signal, viewChild } from '@angular/core';
+import { OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Product, ProductVariant, Leader, ProductCategory } from '../../core/models/product.model';
 import { AdminCatalogService } from '../../core/services/admin-catalog.service';
@@ -47,16 +48,18 @@ const HINT = 'font-body text-xs text-lv-muted mt-1';
   imports: [FormsModule, AdminPhotoGridComponent],
   template: `
     <div class="fixed inset-0 bg-black/75 flex items-start justify-center overflow-y-auto z-[70] sm:py-8 sm:px-4"
-         (keydown.escape)="cancelled.emit()">
-      <div class="bg-lv-deep sm:rounded-card border border-lv-border w-full max-w-3xl min-h-screen sm:min-h-0 flex flex-col">
+         (click)="$event.target === $event.currentTarget && requestClose()">
+      <div #dialog role="dialog" aria-modal="true" aria-labelledby="pf-title" tabindex="-1"
+           (keydown.tab)="trapFocus($event)" (keydown.shift.tab)="trapFocus($event)"
+           class="bg-lv-deep sm:rounded-card border border-lv-border w-full max-w-3xl min-h-screen sm:min-h-0 flex flex-col">
 
         <header class="flex items-center justify-between gap-4 px-5 sm:px-8 py-5 border-b border-lv-border">
           <div class="min-w-0">
-            <h2 class="font-display text-2xl text-lv-cream truncate">{{ isNew ? 'Nuevo producto' : (form.name || 'Editar producto') }}</h2>
+            <h2 id="pf-title" class="font-display text-2xl text-lv-cream truncate">{{ isNew ? 'Nuevo producto' : (form.name || 'Editar producto') }}</h2>
             @if (!isNew) { <p class="font-body text-xs text-lv-muted">ID: {{ form.id }}</p> }
           </div>
           <button type="button" class="w-10 h-10 grid place-items-center rounded-full text-lv-muted hover:text-lv-cream hover:bg-white/[0.05]"
-                  aria-label="Cerrar" (click)="cancelled.emit()">✕</button>
+                  aria-label="Cerrar" (click)="requestClose()">✕</button>
         </header>
 
         <div class="flex-1 px-5 sm:px-8 py-6 space-y-10">
@@ -122,7 +125,7 @@ const HINT = 'font-body text-xs text-lv-muted mt-1';
             <div>
               <div class="flex items-center justify-between mb-1.5">
                 <span [class]="LABEL + ' mb-0'">Características</span>
-                <button type="button" class="font-body text-xs text-lv-gold hover:underline" (click)="addFeature()">+ Añadir</button>
+                <button type="button" class="font-body text-sm text-lv-gold hover:underline px-2 py-2 -my-2 -mr-2" (click)="addFeature()">+ Añadir</button>
               </div>
               <div class="space-y-2">
                 @for (f of form.features; track $index) {
@@ -159,22 +162,22 @@ const HINT = 'font-body text-xs text-lv-muted mt-1';
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <label class="flex items-start gap-3 rounded-xl border border-lv-border p-3 cursor-pointer hover:border-lv-gold/40">
-                <input type="checkbox" class="mt-1" [ngModel]="!form.hidden" (ngModelChange)="form.hidden = !$event" name="visible" />
+                <input type="checkbox" class="mt-0.5 w-5 h-5 flex-shrink-0 accent-[#C9A84C]" [ngModel]="!form.hidden" (ngModelChange)="form.hidden = !$event" name="visible" />
                 <span><span class="block font-body text-sm text-lv-cream">Visible en la tienda</span>
                   <span [class]="HINT">Si lo desmarcas, el producto desaparece del catálogo.</span></span>
               </label>
               <label class="flex items-start gap-3 rounded-xl border border-lv-border p-3 cursor-pointer hover:border-lv-gold/40">
-                <input type="checkbox" class="mt-1" [(ngModel)]="form.available" name="available" />
+                <input type="checkbox" class="mt-0.5 w-5 h-5 flex-shrink-0 accent-[#C9A84C]" [(ngModel)]="form.available" name="available" />
                 <span><span class="block font-body text-sm text-lv-cream">Disponible para comprar</span>
                   <span [class]="HINT">Si lo desmarcas, se ve pero sale como agotado.</span></span>
               </label>
               <label class="flex items-start gap-3 rounded-xl border border-lv-border p-3 cursor-pointer hover:border-lv-gold/40">
-                <input type="checkbox" class="mt-1" [(ngModel)]="form.colorPickerEnabled" name="colorPickerEnabled" />
+                <input type="checkbox" class="mt-0.5 w-5 h-5 flex-shrink-0 accent-[#C9A84C]" [(ngModel)]="form.colorPickerEnabled" name="colorPickerEnabled" />
                 <span><span class="block font-body text-sm text-lv-cream">El cliente elige color</span>
                   <span [class]="HINT">Muestra el selector de colores.</span></span>
               </label>
               <label class="flex items-start gap-3 rounded-xl border border-lv-border p-3 cursor-pointer hover:border-lv-gold/40">
-                <input type="checkbox" class="mt-1" [ngModel]="!!form.leaderPickerEnabled" (ngModelChange)="form.leaderPickerEnabled = $event" name="leaderPickerEnabled" />
+                <input type="checkbox" class="mt-0.5 w-5 h-5 flex-shrink-0 accent-[#C9A84C]" [ngModel]="!!form.leaderPickerEnabled" (ngModelChange)="form.leaderPickerEnabled = $event" name="leaderPickerEnabled" />
                 <span><span class="block font-body text-sm text-lv-cream">El cliente elige líder</span>
                   <span [class]="HINT">Los líderes se configuran en Opciones avanzadas.</span></span>
               </label>
@@ -211,7 +214,7 @@ const HINT = 'font-body text-xs text-lv-muted mt-1';
                   <div class="flex flex-wrap gap-2">
                     @for (addon of availableAddons; track addon.id) {
                       <label class="flex items-center gap-2 rounded-full border border-lv-border px-3 py-1.5 font-body text-[13px] text-lv-cream/80 cursor-pointer hover:border-lv-gold/40">
-                        <input type="checkbox" [checked]="isAddonSelected(addon.id)" (change)="toggleAddon(addon.id)" /> {{ addon.name }}
+                        <input type="checkbox" class="w-4 h-4 accent-[#C9A84C]" [checked]="isAddonSelected(addon.id)" (change)="toggleAddon(addon.id)" /> {{ addon.name }}
                       </label>
                     }
                   </div>
@@ -221,7 +224,7 @@ const HINT = 'font-body text-xs text-lv-muted mt-1';
               <div>
                 <div class="flex items-center justify-between mb-2">
                   <span [class]="LABEL + ' mb-0'">Variantes</span>
-                  <button type="button" class="font-body text-xs text-lv-gold hover:underline" (click)="addVariant()">+ Añadir variante</button>
+                  <button type="button" class="font-body text-sm text-lv-gold hover:underline px-2 py-2 -my-2 -mr-2" (click)="addVariant()">+ Añadir variante</button>
                 </div>
                 <div class="space-y-2">
                   @for (variant of form.variants ?? []; track $index) {
@@ -229,7 +232,7 @@ const HINT = 'font-body text-xs text-lv-muted mt-1';
                       <input [class]="INPUT" placeholder="Nombre de la variante" [(ngModel)]="variant.label" [name]="'vlabel' + $index" />
                       <input type="number" step="0.01" [class]="INPUT" placeholder="Precio" [(ngModel)]="variant.price" [name]="'vprice' + $index" />
                       <label class="flex items-center gap-1.5 font-body text-xs text-lv-cream/70 whitespace-nowrap">
-                        <input type="radio" name="defaultVariant" [checked]="!!variant.default" (change)="setDefaultVariant($index)" /> Por defecto
+                        <input type="radio" class="w-4 h-4 accent-[#C9A84C]" name="defaultVariant" [checked]="!!variant.default" (change)="setDefaultVariant($index)" /> Por defecto
                       </label>
                       <button type="button" class="px-2 text-red-300 hover:text-red-300" aria-label="Quitar variante" (click)="removeVariant($index)">✕</button>
                     </div>
@@ -243,7 +246,7 @@ const HINT = 'font-body text-xs text-lv-muted mt-1';
                 <div>
                   <div class="flex items-center justify-between mb-2">
                     <span [class]="LABEL + ' mb-0'">Líderes</span>
-                    <button type="button" class="font-body text-xs text-lv-gold hover:underline" (click)="addLeader()">+ Añadir líder</button>
+                    <button type="button" class="font-body text-sm text-lv-gold hover:underline px-2 py-2 -my-2 -mr-2" (click)="addLeader()">+ Añadir líder</button>
                   </div>
                   <div class="space-y-2">
                     @for (leader of form.leaders ?? []; track $index) {
@@ -251,14 +254,14 @@ const HINT = 'font-body text-xs text-lv-muted mt-1';
                         <input [class]="INPUT" placeholder="ID (yamato)" [(ngModel)]="leader.id" [name]="'lid' + $index" />
                         <input [class]="INPUT" placeholder="Nombre (Yamato)" [(ngModel)]="leader.name" [name]="'lname' + $index" />
                         <label class="flex items-center gap-1 font-body text-xs text-lv-cream/70 whitespace-nowrap">
-                          <input type="checkbox" [(ngModel)]="leader.available" [name]="'lavail' + $index" /> Disponible
+                          <input type="checkbox" class="w-5 h-5 accent-[#C9A84C]" [(ngModel)]="leader.available" [name]="'lavail' + $index" /> Disponible
                         </label>
                         <button type="button" class="px-2 text-red-300 hover:text-red-300" aria-label="Quitar líder" (click)="removeLeader($index)">✕</button>
                       </div>
                     }
                   </div>
                   <label class="flex items-center gap-2 font-body text-[13px] text-lv-cream/80 mt-3">
-                    <input type="checkbox" [ngModel]="!!form.customLeaderRequest" (ngModelChange)="form.customLeaderRequest = $event" name="customLeaderRequest" />
+                    <input type="checkbox" class="w-5 h-5 accent-[#C9A84C]" [ngModel]="!!form.customLeaderRequest" (ngModelChange)="form.customLeaderRequest = $event" name="customLeaderRequest" />
                     Permitir pedir un líder personalizado
                   </label>
                 </div>
@@ -267,10 +270,18 @@ const HINT = 'font-body text-xs text-lv-muted mt-1';
           </details>
         </div>
 
-        <footer class="sticky bottom-0 flex items-center justify-between gap-3 px-5 sm:px-8 py-4 border-t border-lv-border bg-lv-deep/95 backdrop-blur sm:rounded-b-card">
-          <p class="font-body text-xs text-red-300 min-w-0">{{ error() || saveError }}</p>
-          <div class="flex gap-2 flex-shrink-0">
-            <button type="button" class="font-body text-sm text-lv-cream/70 hover:text-lv-cream px-4 py-2.5" (click)="cancelled.emit()">Cancelar</button>
+        <footer class="sticky bottom-0 flex flex-wrap items-center justify-between gap-3 px-5 sm:px-8 py-4 border-t border-lv-border bg-lv-deep/95 backdrop-blur sm:rounded-b-card">
+          <div class="flex items-center gap-3 min-w-0">
+            @if (!isNew) {
+              <button type="button" class="font-body text-sm text-red-300 hover:text-red-200 rounded-lg px-3 py-2.5 -ml-3 hover:bg-white/[0.04]"
+                      (click)="deleted.emit()">Eliminar producto</button>
+            }
+            <p class="font-body text-sm min-w-0" [class]="error() || saveError ? 'text-red-300' : 'text-lv-cream/60'" aria-live="polite">
+              {{ error() || saveError || (uploading() ? 'Espera a que terminen de subir las fotos.' : missing()) }}
+            </p>
+          </div>
+          <div class="flex gap-2 flex-shrink-0 ml-auto">
+            <button type="button" class="font-body text-sm text-lv-cream/70 hover:text-lv-cream px-4 py-2.5" (click)="requestClose()">Cancelar</button>
             <button type="button"
               class="bg-lv-cream hover:bg-white text-lv-black font-body text-sm font-semibold rounded-full px-6 py-2.5 disabled:opacity-40"
               [disabled]="!isValid() || uploading()"
@@ -283,7 +294,7 @@ const HINT = 'font-body text-xs text-lv-muted mt-1';
     </div>
   `,
 })
-export class AdminProductFormComponent {
+export class AdminProductFormComponent implements OnDestroy {
   private readonly catalogService = inject(AdminCatalogService);
 
   protected readonly LABEL = LABEL;
@@ -305,6 +316,56 @@ export class AdminProductFormComponent {
 
   @Output() saved     = new EventEmitter<Product>();
   @Output() cancelled = new EventEmitter<void>();
+  @Output() deleted   = new EventEmitter<void>();
+
+  private readonly dialog = viewChild.required<ElementRef<HTMLElement>>('dialog');
+  private snapshot = '';
+  private readonly returnFocus = typeof document !== 'undefined' ? document.activeElement as HTMLElement | null : null;
+
+  constructor() {
+    afterNextRender(() => {
+      this.snapshot = JSON.stringify(this.form);
+      const first = this.dialog().nativeElement.querySelector<HTMLElement>('#pf-name');
+      (first ?? this.dialog().nativeElement).focus();
+      document.addEventListener('keydown', this.onEscape);
+    });
+  }
+
+  ngOnDestroy(): void {
+    document.removeEventListener('keydown', this.onEscape);
+    this.returnFocus?.focus();
+  }
+
+  private readonly onEscape = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') { e.preventDefault(); this.requestClose(); }
+  };
+
+  /** Cierra, pero pregunta antes si hay cambios sin guardar */
+  requestClose(): void {
+    const dirty = JSON.stringify(this.form) !== this.snapshot;
+    if (dirty && !confirm('Tienes cambios sin guardar. ¿Salir sin guardar?')) return;
+    this.cancelled.emit();
+  }
+
+  trapFocus(event: Event): void {
+    const e = event as KeyboardEvent;
+    const root = this.dialog().nativeElement;
+    const items = Array.from(root.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), a[href], input:not([disabled]):not([type=file]), select, textarea, summary, label[tabindex]'))
+      .filter(el => el.offsetParent !== null);
+    if (!items.length) return;
+    const first = items[0], last = items[items.length - 1];
+    if (e.shiftKey && (document.activeElement === first || document.activeElement === root)) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+
+  /** Qué falta para poder guardar */
+  missing(): string {
+    if (!this.form.name.trim()) return 'Falta el nombre.';
+    if (!this.form.id.trim()) return 'Falta el ID (Opciones avanzadas).';
+    if (this.form.price == null || this.form.price < 0) return 'Falta el precio.';
+    return '';
+  }
 
   form: Product = blankProduct();
   isNew = true;
@@ -351,7 +412,7 @@ export class AdminProductFormComponent {
   removeLeader(i: number): void { this.form.leaders = (this.form.leaders ?? []).filter((_, idx) => idx !== i); }
 
   isValid(): boolean {
-    return this.form.id.trim().length > 0 && this.form.name.trim().length > 0 && this.form.price >= 0;
+    return this.form.id.trim().length > 0 && this.form.name.trim().length > 0 && this.form.price != null && this.form.price >= 0;
   }
 
   save(): void {
