@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, HostListener, inject, signal, computed, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, afterNextRender, inject, signal, computed, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive, NavigationEnd } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs';
 import { CartService } from '../../core/services/cart.service';
+import { AdminAuthService } from '../../core/services/admin-auth.service';
 
 @Component({
   selector: 'app-lv-navbar',
@@ -25,9 +26,15 @@ import { CartService } from '../../core/services/cart.service';
           <a routerLink="/" fragment="colores" class="hover:text-lv-cream transition-colors">Colores</a>
           <a routerLink="/" fragment="contacto" class="hover:text-lv-cream transition-colors">Contacto</a>
           <a routerLink="/seguimiento" routerLinkActive="!text-lv-cream" class="hover:text-lv-cream transition-colors">Mis pedidos</a>
+          @if (admin.authenticated()) {
+            <a routerLink="/admin" routerLinkActive="!text-lv-foil" class="text-lv-gold hover:text-lv-foil transition-colors">Admin</a>
+          }
         </div>
 
         <div class="flex items-center gap-1 sm:gap-2">
+          @if (admin.authenticated()) {
+            <a routerLink="/admin" class="md:hidden px-2 py-2 text-[15px] text-lv-gold hover:text-lv-foil">Admin</a>
+          }
           <a routerLink="/catalog" class="md:hidden px-3 py-2 text-[15px] text-lv-cream/75 hover:text-lv-cream">Catálogo</a>
           <a routerLink="/seguimiento"
              class="md:hidden flex items-center justify-center w-11 h-11 text-lv-cream/60 hover:text-lv-cream transition-colors"
@@ -55,9 +62,14 @@ import { CartService } from '../../core/services/cart.service';
 })
 export class LvNavbarComponent {
   protected cart = inject(CartService);
+  protected admin = inject(AdminAuthService);
   private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
   readonly scrolled = signal(false);
+
+  constructor() {
+    afterNextRender(() => this.admin.restore());
+  }
 
   private currentUrl = toSignal(
     this.router.events.pipe(
