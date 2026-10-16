@@ -20,11 +20,12 @@ import { ReviewsService } from '../../core/services/reviews.service';
             </p>
           </div>
 
-          <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <!-- Columnas según cuántas haya: con 1 o 2 no quedan huecos vacíos -->
+          <ul class="mt-8 grid gap-4" [class]="cols()">
             @for (r of visible(); track r.createdAt + r.name) {
               <li class="rounded-card border border-lv-cream/10 bg-white/[0.02] p-6 flex flex-col gap-4">
-                <p class="text-lv-gold tracking-[2px] text-[15px]" [attr.aria-label]="r.rating + ' de 5 estrellas'">
-                  {{ stars(r.rating) }}
+                <p class="tracking-[2px] text-[15px]" role="img" [attr.aria-label]="r.rating + ' de 5 estrellas'">
+                  <span class="text-lv-gold">{{ stars(r.rating) }}</span><span class="text-lv-cream/25">{{ stars(5 - r.rating) }}</span>
                 </p>
                 @if (r.text) {
                   <p class="text-[16px] leading-relaxed text-lv-cream/85">{{ r.text }}</p>
@@ -51,6 +52,10 @@ export class ReviewsSectionComponent {
     return id ? all.filter(r => r.productIds.includes(id)) : all;
   });
   readonly visible = computed(() => this.list().filter(r => r.text).concat(this.list().filter(r => !r.text)).slice(0, 6));
+  readonly cols = computed(() => {
+    const n = this.visible().length;
+    return n === 1 ? 'max-w-md' : n === 2 || n === 4 ? 'sm:grid-cols-2 max-w-4xl' : 'sm:grid-cols-2 lg:grid-cols-3';
+  });
   readonly average = computed(() => {
     const l = this.list();
     return (l.reduce((s, r) => s + r.rating, 0) / l.length).toFixed(1).replace('.', ',');
@@ -61,7 +66,7 @@ export class ReviewsSectionComponent {
   }
 
   stars(n: number): string {
-    return '★'.repeat(n) + '☆'.repeat(5 - n);
+    return '★'.repeat(n);
   }
 
   date(iso: string): string {

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal, afterNextRender } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { WHATSAPP_URL } from '../../shared/constants';
 
 type View = 'loading' | 'form' | 'sending' | 'done' | 'invalid' | 'error';
 
@@ -19,15 +20,22 @@ type View = 'loading' | 'form' | 'sending' | 'done' | 'invalid' | 'error';
         }
 
         @case ('invalid') {
-          <h1 class="lv-h1 text-lv-cream">Este enlace no funciona</h1>
-          <p class="lv-lede mt-5">Puede que esté incompleto. Ábrelo desde el email del pedido o escríbenos y te mandamos uno nuevo.</p>
-          <a routerLink="/" class="lv-btn lv-btn-ghost mt-8">Ir a la tienda</a>
+          <h1 class="lv-h1 text-lv-cream">No encontramos este enlace</h1>
+          <p class="lv-lede mt-5">Puede que se haya cortado al copiarlo. Ábrelo directamente desde el email de tu pedido o escríbenos y te mandamos otro.</p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a [href]="whatsappUrl" target="_blank" rel="noopener noreferrer" class="lv-btn lv-btn-primary">Escribir por WhatsApp</a>
+            <a routerLink="/" class="lv-btn lv-btn-ghost">Ir a la tienda</a>
+          </div>
         }
 
         @case ('done') {
           <h1 class="lv-h1 text-lv-cream">Gracias{{ firstName() ? ', ' + firstName() : '' }}</h1>
-          <p class="lv-lede mt-5">Hemos recibido tu valoración. Si quieres cambiarla, vuelve a abrir el enlace del email.</p>
-          <a routerLink="/catalog" class="lv-btn lv-btn-primary mt-8">Ver el catálogo</a>
+          <p class="lv-lede mt-5">Hemos recibido tu valoración. La revisamos y la publicamos en unos días. Si quieres cambiarla, vuelve a abrir el enlace del email.</p>
+          <p class="mt-8 text-[16px] leading-relaxed text-lv-cream/80">
+            ¿Tienes una foto de la pieza en uso? Nos encanta verlas:
+            <a [href]="photoUrl()" target="_blank" rel="noopener noreferrer" class="lv-link">mándanosla por WhatsApp</a>.
+          </p>
+          <a routerLink="/catalog" class="lv-btn lv-btn-ghost mt-8">Ver el catálogo</a>
         }
 
         @default {
@@ -45,7 +53,7 @@ type View = 'loading' | 'form' | 'sending' | 'done' | 'invalid' | 'error';
                   <button type="button" role="radio" [attr.aria-checked]="rating() === n" [attr.aria-label]="n + (n === 1 ? ' estrella' : ' estrellas')"
                           (click)="rating.set(n)" (mouseenter)="hover.set(n)" (mouseleave)="hover.set(0)"
                           class="w-12 h-12 grid place-items-center text-[30px] leading-none transition-colors"
-                          [class]="n <= (hover() || rating()) ? 'text-lv-gold' : 'text-lv-cream/20 hover:text-lv-cream/40'">
+                          [class]="n <= (hover() || rating()) ? 'text-lv-gold' : 'text-lv-cream/40'">
                     ★
                   </button>
                 }
@@ -54,9 +62,9 @@ type View = 'loading' | 'form' | 'sending' | 'done' | 'invalid' | 'error';
             </fieldset>
 
             <div>
-              <label for="rv-text" class="block text-[15px] font-semibold text-lv-cream mb-2">Cuéntanos algo <span class="font-normal text-lv-cream/50">(opcional)</span></label>
+              <label for="rv-text" class="block text-[15px] font-semibold text-lv-cream mb-2">Cuéntanos qué tal <span class="font-normal text-lv-cream/50">(opcional)</span></label>
               <textarea id="rv-text" rows="5" maxlength="1000" [value]="text()" (input)="text.set($any($event.target).value)"
-                        placeholder="Qué tal el ajuste, el acabado, el color…"
+                        placeholder="El ajuste, el acabado, el color…"
                         class="w-full rounded-card bg-white/[0.04] border border-lv-cream/15 px-4 py-3 text-[16px] text-lv-cream placeholder:text-lv-cream/35 focus:border-lv-gold/60 focus:outline-none"></textarea>
             </div>
 
@@ -96,7 +104,9 @@ export class ReviewFormComponent {
   readonly edit = signal(false);
   readonly error = signal('');
 
-  readonly label = computed(() => ['', 'Mal', 'Regular', 'Bien', 'Muy bien', 'Me encanta'][this.hover() || this.rating()]);
+  readonly whatsappUrl = WHATSAPP_URL;
+  readonly photoUrl = computed(() => `${WHATSAPP_URL}?text=${encodeURIComponent(`Hola, os mando una foto de mi pedido ${this.orderId}`)}`);
+  readonly label = computed(() => ['Toca una estrella para puntuar', 'Mal', 'Regular', 'Bien', 'Muy bien', 'Me encanta'][this.hover() || this.rating()]);
 
   constructor() {
     afterNextRender(() => this.load());
@@ -127,7 +137,7 @@ export class ReviewFormComponent {
   async send(event: Event): Promise<void> {
     event.preventDefault();
     this.error.set('');
-    if (!this.rating()) { this.error.set('Elige de 1 a 5 estrellas.'); return; }
+    if (!this.rating()) { this.error.set('Toca las estrellas para puntuar.'); return; }
     if (!this.name().trim()) { this.error.set('Pon un nombre, aunque sea solo el de pila.'); document.getElementById('rv-name')?.focus(); return; }
     this.view.set('sending');
     try {
@@ -141,7 +151,7 @@ export class ReviewFormComponent {
       this.view.set('done');
     } catch {
       this.view.set('form');
-      this.error.set('No se ha podido enviar. Prueba otra vez en un momento.');
+      this.error.set('No hemos podido enviar tu valoración. Revisa la conexión y vuelve a intentarlo.');
     }
   }
 }

@@ -25,11 +25,10 @@ const DATE_FORMAT = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 's
 
     <p class="font-body text-sm text-lv-muted mb-6 max-w-2xl">
       @if (visible()) {
-        La web enseña las publicadas en el inicio y en la ficha de cada producto valorado.
+        Las publicadas se ven en el inicio y en la ficha de cada producto valorado.
       } @else {
-        La web no enseña ninguna todavía. Puedes ir publicando y activarlo cuando tengas unas cuantas.
+        La web no enseña ninguna. Ve publicando las que quieras y activa el interruptor cuando tengas unas cuantas.
       }
-      Les llega el enlace para valorar en el email de "Entregado".
     </p>
 
     <div aria-live="polite">
@@ -38,7 +37,7 @@ const DATE_FORMAT = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 's
       } @else if (error()) {
         <p class="rounded-xl border border-red-400/30 bg-red-400/5 text-red-300 font-body text-sm px-4 py-3 mb-4">{{ error() }}</p>
       } @else if (!reviews().length) {
-        <p class="font-body text-sm text-lv-muted">Todavía no hay valoraciones.</p>
+        <p class="font-body text-sm text-lv-muted">Todavía no hay valoraciones. Llegan cuando marcas un pedido como Entregado y el cliente valora desde el email.</p>
       }
     </div>
 
@@ -48,7 +47,7 @@ const DATE_FORMAT = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 's
             [class]="r.status === 'pendiente' ? 'border-lv-gold/40' : 'border-lv-border'">
           <div class="flex flex-wrap items-start justify-between gap-3">
             <div class="min-w-0">
-              <p class="font-body text-lv-gold tracking-[2px]" [attr.aria-label]="r.rating + ' de 5'">{{ stars(r.rating) }}</p>
+              <p class="font-body tracking-[2px]" role="img" [attr.aria-label]="r.rating + ' de 5'"><span class="text-lv-gold">{{ stars(r.rating) }}</span><span class="text-lv-cream/25">{{ stars(5 - r.rating) }}</span></p>
               <p class="font-body text-sm text-lv-cream/70 mt-1 flex flex-wrap gap-x-3 gap-y-0.5">
                 <span class="text-lv-cream">{{ r.name }}</span>
                 <span>{{ r.orderId }}</span>
@@ -112,7 +111,7 @@ export class AdminReviewsComponent {
       if (!res.ok) throw new Error();
       this.reviews.set(((await res.json()) as { reviews: AdminReview[] }).reviews);
     } catch {
-      this.error.set('No se han podido cargar las valoraciones. Recarga la página.');
+      this.error.set('No hemos podido cargar las valoraciones. Recarga la página.');
     } finally {
       this.loading.set(false);
     }
@@ -129,7 +128,7 @@ export class AdminReviewsComponent {
       if (!res.ok) throw new Error();
       this.reviews.update(list => list.map(x => (x.orderId === r.orderId ? { ...x, status } : x)));
     } catch {
-      this.error.set('No se ha podido guardar el cambio.');
+      this.error.set('No hemos podido guardar el cambio. Vuelve a intentarlo.');
     } finally {
       this.busy.set(null);
     }
@@ -143,7 +142,7 @@ export class AdminReviewsComponent {
       if (!res.ok) throw new Error();
       this.reviews.update(list => list.filter(x => x.orderId !== r.orderId));
     } catch {
-      this.error.set('No se ha podido borrar.');
+      this.error.set('No hemos podido borrarla. Vuelve a intentarlo.');
     } finally {
       this.busy.set(null);
     }
@@ -159,7 +158,7 @@ export class AdminReviewsComponent {
   }
 
   stars(n: number): string {
-    return '★'.repeat(n) + '☆'.repeat(5 - n);
+    return '★'.repeat(n);
   }
 
   date(iso: string): string {
