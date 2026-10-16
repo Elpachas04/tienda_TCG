@@ -162,7 +162,7 @@ export function answerTopic(topic: Topic, k: Knowledge, product: Product | null,
       return { text: 'Hacemos accesorios para TCG impresos en 3D: deckboxes, cajas de almacenaje, organizadores y herramientas, uno a uno y en tu color.', link: { label: 'Ver catálogo', url: '/catalog' } };
     case 'returns':
       return {
-        text: 'Cada pieza se fabrica por encargo, así que no se aceptan devoluciones por cambio de opinión. Si te llega con algún problema, escríbenos en los 7 días siguientes a recibirla: lo revisamos y, si procede, nos devuelves la pieza y te enviamos una nueva. Si prefieres otro producto, te damos un vale por el importe. No se devuelve el dinero.',
+        text: 'Escríbenos en los 7 días siguientes a recibir el pedido. Si te has arrepentido, nos devuelves la pieza y te damos un vale por el importe para otro producto. Si ha llegado con un defecto o un problema que no depende de ti, lo revisamos, nos la devuelves y te enviamos una nueva. En ningún caso se devuelve el dinero.',
         link: whatsapp(question || 'Hola, mi pedido ha llegado con un problema: '),
       };
     case 'contact':
