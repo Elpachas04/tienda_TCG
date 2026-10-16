@@ -21,7 +21,8 @@ export class CatalogService {
     if (!isPlatformBrowser(this.platformId)) return;
     try {
       // no-cache: revalida siempre, para que un cambio hecho en el admin se vea al recargar
-      const res = await fetch('/api/products', { cache: 'no-cache' });
+      // Como mucho 2 s: la app no arranca hasta tener el catálogo, y el del build (seed) sirve si tarda más
+      const res = await fetch('/api/products', { cache: 'no-cache', signal: AbortSignal.timeout(2000) });
       if (!res.ok) return;
       this.apply(await res.json() as ProductCatalog);
     } catch {

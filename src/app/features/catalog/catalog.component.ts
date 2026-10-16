@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, inject, signal, computed } from '@angular/core';
-import { SplitHeadingDirective } from '../../shared/directives/split-heading.directive';
 import { CatalogService } from '../../core/services/catalog.service';
 import { CartService } from '../../core/services/cart.service';
 import { LvProductCardComponent } from '../landing/lv-product-card.component';
@@ -15,7 +14,7 @@ type CategoryPill = CategoryItem & { count: number };
   selector: 'app-catalog',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [LvProductCardComponent, SplitHeadingDirective],
+  imports: [LvProductCardComponent],
   host: { class: 'block' },
   template: `
     <div class="bg-lv-black min-h-screen">
@@ -23,7 +22,7 @@ type CategoryPill = CategoryItem & { count: number };
 
         <header class="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end mb-10 sm:mb-14">
           <div>
-            <h1 data-split class="lv-h1 text-lv-cream">Catálogo</h1>
+            <h1 class="lv-h1 text-lv-cream">Catálogo</h1>
             <p class="lv-lede mt-4">
               Accesorios para TCG. Cada pieza se fabrica cuando la pides, en el color que elijas.
             </p>
