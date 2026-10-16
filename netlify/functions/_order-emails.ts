@@ -32,7 +32,9 @@ function content(status: string, d: OrderEmailData): EmailContent | null {
         preheader: "Tu pedido entra en fabricación: estará listo en 3–7 días laborables.",
         orderId: d.orderId, greeting,
         title: "Pago recibido",
-        lede: "Tu pedido entra en fabricaci&oacute;n. Estar&aacute; listo en 3&ndash;7 d&iacute;as laborables.",
+        lede: d.pickup
+          ? "Tu pedido entra en fabricaci&oacute;n. En 3&ndash;7 d&iacute;as laborables estar&aacute; listo y te escribimos por WhatsApp para quedar."
+          : "Tu pedido entra en fabricaci&oacute;n. En 3&ndash;7 d&iacute;as laborables sale hacia tu oficina de Correos y te mandamos el seguimiento.",
         blocks: [progress(2, d.pickup), statusButton],
       }),
     };
@@ -61,7 +63,7 @@ function content(status: string, d: OrderEmailData): EmailContent | null {
         preheader: d.trackingNumber ? `Seguimiento de Correos: ${d.trackingNumber}` : "Tu pedido ya está en Correos.",
         orderId: d.orderId, greeting,
         title: "Tu pedido va de camino",
-        lede: "Ya est&aacute; en Correos, rumbo a la oficina que elegiste. Correos te avisar&aacute; cuando llegue.",
+        lede: "Ya est&aacute; en Correos, rumbo a la oficina que elegiste. Cuando llegue, Correos te avisar&aacute; para que pases a recogerlo.",
         blocks: d.trackingNumber
           ? [
               progress(3, false),

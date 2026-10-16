@@ -53,6 +53,11 @@ export function link(href: string, label: string): string {
   return `<a href="${href}" style="color:${C.gold};text-decoration:underline;text-underline-offset:2px;">${label}</a>`;
 }
 
+/** Enlace a Google Maps (abre la app de mapas en el móvil) */
+export function mapsUrl(address: string): string {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+}
+
 /** Enlace secundario suelto, debajo del botón */
 export function textLink(href: string, label: string): string {
   return paragraph(link(href, label), { size: 14 });
@@ -212,7 +217,7 @@ export function layout(o: LayoutOptions): string {
         <!-- Pie -->
         <tr><td class="lv-pad" style="padding:22px 40px 28px;border-top:1px solid ${C.line};">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-            ${paragraph(`&iquest;Dudas? ${link(`https://wa.me/${WHATSAPP}`, `WhatsApp ${WHATSAPP_TXT}`)} o responde a este email.`, { size: 14, color: C.muted })}
+            ${paragraph(`&iquest;Dudas? ${link(`https://wa.me/${WHATSAPP}`, "WhatsApp")} o responde a este email.`, { size: 14, color: C.muted })}
           </table>
         </td></tr>
 

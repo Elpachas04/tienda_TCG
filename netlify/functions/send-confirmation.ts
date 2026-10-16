@@ -1,7 +1,7 @@
 import type { Handler, HandlerEvent } from "@netlify/functions";
 import { originOk, MAX_BODY } from "./_guard";
 import {
-  BIZUM, CONTACT_EMAIL, bigValue, button, esc, eur, layout, panel, paragraph, row, strong, trackingUrl,
+  BIZUM, CONTACT_EMAIL, bigValue, button, esc, eur, layout, link, mapsUrl, panel, paragraph, row, strong, trackingUrl,
 } from "./_email-kit";
 
 const BREVO_API  = "https://api.brevo.com/v3/smtp/email";
@@ -64,7 +64,10 @@ const handler: Handler = async (event: HandlerEvent) => {
     ? row("Entrega en mano", "Gratis", { sub: "Quedamos por WhatsApp" })
     : row("Env&iacute;o a oficina de Correos", Number.isFinite(shippingCost) ? eur(shippingCost) : "", {
         sub: oficina
-          ? `${esc(oficina.nombre)}<br>${esc(oficina.direccion)}, ${esc(oficina.codigoPostal)} ${esc(oficina.localidad)}`
+          ? `${esc(oficina.nombre)}<br>${link(
+              mapsUrl(`${oficina.nombre}, ${oficina.direccion}, ${oficina.codigoPostal} ${oficina.localidad}`),
+              `${esc(oficina.direccion)}, ${esc(oficina.codigoPostal)} ${esc(oficina.localidad)}`,
+            )}`
           : esc(deliveryLine.replace(/\s+—\s+[\d.,]+\s*€\s*$/, "")),
       });
 
