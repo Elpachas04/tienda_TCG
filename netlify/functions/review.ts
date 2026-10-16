@@ -22,6 +22,7 @@ const handler: Handler = async (event) => {
       const existing = await store.get(id, { type: "json" }) as Review | null;
       return json(200, {
         firstName: order.info.firstName,
+        fullName:  order.info.fullName,
         products:  order.info.products,
         review:    existing ? { name: existing.name, rating: existing.rating, text: existing.text, photos: existing.photos ?? [], status: existing.status } : null,
       });
@@ -39,9 +40,7 @@ const handler: Handler = async (event) => {
 
       const rating = Number(body["rating"]);
       const text   = String(body["text"] ?? "").replace(/\s+\n/g, "\n").trim().slice(0, 1000);
-      const name   = String(body["name"] ?? "").replace(/\s+/g, " ").trim().slice(0, 40);
       if (!Number.isInteger(rating) || rating < 1 || rating > 5) return json(400, { error: "rating" });
-      if (!name) return json(400, { error: "name" });
       // Solo fotos subidas a la carpeta de este pedido (review-photo.ts)
       const photos = (Array.isArray(body["photos"]) ? body["photos"] : [])
         .map(String).filter(id => id.startsWith(photoFolder(orderId))).slice(0, MAX_PHOTOS);
@@ -51,6 +50,8 @@ const handler: Handler = async (event) => {
       if (!order.ok) return json(order.statusCode, { error: order.error });
       const store    = reviewsStore(event);
       const existing = await store.get(orderId, { type: "json" }) as Review | null;
+      // El nombre no lo elige el cliente: es el del pedido en Notion
+      const name     = order.info.fullName || "Cliente";
       const now      = new Date().toISOString();
       const review: Review = {
         orderId, name, rating, text,

@@ -115,7 +115,7 @@ import { CONTACT_EMAIL } from '../../shared/constants';
                 Únicamente los datos que tú proporcionas al realizar un pedido: nombre, email y teléfono (todos obligatorios) y código postal (solo cuando eliges envío a domicilio). No se recogen datos de navegación, no se usan cookies propias ni ningún sistema de analítica.
               </p>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
-                Si valoras tu pedido, guardamos la puntuación, el comentario, las fotos que subas y el nombre que indiques. Solo se publican si las aprobamos, y el nombre aparece abreviado (por ejemplo, «Ma***»). Puedes pedirnos que las borremos cuando quieras.
+                Si valoras tu pedido, guardamos la puntuación, el comentario, las fotos que subas y el nombre del pedido. Solo se publican si las aprobamos, y el nombre aparece tapado salvo las primeras y últimas letras (por ejemplo, «Mar******ez»). Puedes pedirnos que las borremos cuando quieras.
               </p>
             </section>
 

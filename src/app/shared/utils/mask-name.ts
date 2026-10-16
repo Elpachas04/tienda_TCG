@@ -1,6 +1,10 @@
-/** "Marta López" → "Ma***": así se muestra el nombre en las valoraciones públicas (igual que _reviews.ts) */
-export function maskName(name: string): string {
-  const first = Array.from(name.trim().split(/\s+/)[0] ?? '');
-  if (!first.length) return '***';
-  return first.slice(0, 2).join('') + '*'.repeat(Math.max(3, first.length - 2));
+/**
+ * Nombre y apellidos tapados para la web: tres primeras letras, asteriscos y dos últimas.
+ * 'Marta Gómez' → 'Mar******ez'. Los espacios también se tapan, para no revelar cuántas palabras tiene.
+ */
+export function maskName(fullName: string): string {
+  const c = Array.from(fullName.trim().replace(/\s+/g, ' '));
+  if (!c.length) return '***';
+  if (c.length <= 5) return c[0] + '*'.repeat(Math.max(3, c.length - 1));
+  return c.slice(0, 3).join('') + '*'.repeat(c.length - 5) + c.slice(-2).join('');
 }

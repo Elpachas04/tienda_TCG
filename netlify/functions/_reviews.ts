@@ -11,7 +11,7 @@ export type ReviewStatus = "pendiente" | "publicada" | "oculta";
 
 export interface Review {
   orderId:    string;
-  name:       string;      // nombre que se muestra (lo elige el cliente; por defecto su nombre de pila)
+  name:       string;      // nombre y apellidos del pedido en Notion; en la web sale tapado (maskName)
   rating:     number;      // 1–5
   text:       string;
   productIds: string[];    // productos del pedido, para mostrarla en sus fichas
@@ -22,7 +22,7 @@ export interface Review {
   updatedAt:  string;
 }
 
-/** Lo que se publica en la web: sin nº de pedido y con el nombre tapado (Ma***) */
+/** Lo que se publica en la web: sin nº de pedido y con el nombre tapado (Mar******ez) */
 export interface PublicReview {
   name: string; rating: number; text: string; productIds: string[]; photos: string[]; createdAt: string;
 }
@@ -34,11 +34,15 @@ export function photoFolder(orderId: string): string {
   return `layervault/valoraciones/${orderId}/`;
 }
 
-/** "Marta López" → "Ma***": dos primeras letras del nombre y el resto tapado */
-export function maskName(name: string): string {
-  const first = Array.from(name.trim().split(/\s+/)[0] ?? "");
-  if (!first.length) return "***";
-  return first.slice(0, 2).join("") + "*".repeat(Math.max(3, first.length - 2));
+/**
+ * Nombre y apellidos tapados para la web: tres primeras letras, asteriscos y dos últimas.
+ * "Marta Gómez" → "Mar******ez". Los espacios también se tapan, para no revelar cuántas palabras tiene.
+ */
+export function maskName(fullName: string): string {
+  const c = Array.from(fullName.trim().replace(/\s+/g, " "));
+  if (!c.length) return "***";
+  if (c.length <= 5) return c[0] + "*".repeat(Math.max(3, c.length - 1));
+  return c.slice(0, 3).join("") + "*".repeat(c.length - 5) + c.slice(-2).join("");
 }
 
 function secret(): string {
@@ -78,7 +82,7 @@ export function toPublic(r: Review): PublicReview {
   return { name: maskName(r.name), rating: r.rating, text: r.text, productIds: r.productIds, photos: r.photos ?? [], createdAt: r.createdAt };
 }
 
-export interface OrderInfo { status: string; firstName: string; productIds: string[]; products: string[] }
+export interface OrderInfo { status: string; fullName: string; firstName: string; productIds: string[]; products: string[] }
 
 /**
  * Pedido en Notion (la base de datos de pedidos). null = no existe.
@@ -102,6 +106,7 @@ export async function orderInfo(orderId: string): Promise<OrderInfo | null> {
   try { items = JSON.parse(text(props["Items JSON"]) || "[]"); } catch { /* pedido antiguo sin Items JSON */ }
   return {
     status:     (props["Estado"] as { select?: { name?: string } } | undefined)?.select?.name ?? "",
+    fullName:   text(props["Cliente"]).replace(/\s+/g, " ").trim(),
     firstName:  text(props["Cliente"]).trim().split(/\s+/)[0] ?? "",
     productIds: [...new Set(items.map(i => i.productId).filter((x): x is string => !!x))],
     products:   [...new Set(items.map(i => i.productName).filter((x): x is string => !!x))],

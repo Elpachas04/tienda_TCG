@@ -143,7 +143,7 @@ un failsafe CSS a los 2,5 s. Todo respeta `prefers-reduced-motion`.
   Admin → Valoraciones; la web solo las enseña si `settings.reviewsVisible` está activado (interruptor en esa pantalla)
 - Fotos de valoraciones: el formulario las reduce a 1600 px y `review-photo.ts` las sube a Cloudinary en
   `layervault/valoraciones/<nº de pedido>/` con la etiqueta del pedido (`_cloudinary.ts`). Borrar la valoración en el
-  admin borra esa carpeta. En la web el nombre sale tapado: dos letras y asteriscos (`maskName`)
+  admin borra esa carpeta. El nombre es el del pedido en Notion (no editable) y en la web sale tapado: "Marta Gómez" → "Mar******ez" (`maskName`, en `_reviews.ts` y `shared/utils/mask-name.ts`)
 
 ## Datos
 

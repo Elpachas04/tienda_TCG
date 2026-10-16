@@ -107,12 +107,18 @@ type View = 'loading' | 'form' | 'sending' | 'done' | 'invalid' | 'notDelivered'
             </div>
 
             <div>
-              <label for="rv-name" class="block text-[15px] font-semibold text-lv-cream mb-2">Tu nombre</label>
-              <input id="rv-name" type="text" maxlength="40" autocomplete="given-name" [value]="name()" (input)="name.set($any($event.target).value)"
-                     class="w-full h-12 rounded-card bg-white/[0.04] border border-lv-cream/15 px-4 text-[16px] text-lv-cream focus:border-lv-gold/60 focus:outline-none" />
-              <p class="mt-2 text-[13px] text-lv-cream/50">
-                Por privacidad se mostrará como <span class="text-lv-cream/80">{{ masked() }}</span>. Revisamos cada valoración y sus fotos antes de publicarla.
-              </p>
+              <p class="text-[15px] font-semibold text-lv-cream mb-3">Cómo aparecerá tu nombre</p>
+              <div class="rounded-card border border-lv-cream/12 bg-white/[0.03] divide-y divide-lv-cream/10">
+                <div class="flex items-center justify-between gap-4 px-4 py-3">
+                  <span class="text-[14px] text-lv-cream/60">Tu nombre</span>
+                  <span class="text-[16px] text-lv-cream text-right">{{ fullName() }}</span>
+                </div>
+                <div class="flex items-center justify-between gap-4 px-4 py-3">
+                  <span class="text-[14px] text-lv-cream/60">En la web</span>
+                  <span class="text-[17px] font-semibold tracking-[1px] text-lv-foil text-right">{{ masked() }}</span>
+                </div>
+              </div>
+              <p class="mt-2 text-[13px] text-lv-cream/50">Por privacidad solo se ven las primeras y últimas letras. Revisamos cada valoración y sus fotos antes de publicarla.</p>
             </div>
 
             @if (error()) {
@@ -138,7 +144,7 @@ export class ReviewFormComponent {
   readonly rating = signal(0);
   readonly hover = signal(0);
   readonly text = signal('');
-  readonly name = signal('');
+  readonly fullName = signal('');
   readonly firstName = signal('');
   readonly products = signal<string[]>([]);
   readonly edit = signal(false);
@@ -148,7 +154,7 @@ export class ReviewFormComponent {
   readonly maxPhotos = 3;
   readonly photos = signal<{ id: string; preview: string; publicId?: string; uploading: boolean }[]>([]);
   readonly uploading = computed(() => this.photos().some(p => p.uploading));
-  readonly masked = computed(() => maskName(this.name() || this.firstName()));
+  readonly masked = computed(() => maskName(this.fullName()));
   readonly label = computed(() => ['Toca una estrella para puntuar', 'Mal', 'Regular', 'Bien', 'Muy bien', 'Me encanta'][this.hover() || this.rating()]);
 
   constructor() {
@@ -161,10 +167,10 @@ export class ReviewFormComponent {
       const res = await fetch(`/api/review?id=${encodeURIComponent(this.orderId)}&t=${encodeURIComponent(this.token)}`);
       if (this.blocked(res.status)) return;
       if (!res.ok) throw new Error();
-      const d = await res.json() as { firstName: string; products: string[]; review: { name: string; rating: number; text: string; photos?: string[] } | null };
+      const d = await res.json() as { firstName: string; fullName: string; products: string[]; review: { name: string; rating: number; text: string; photos?: string[] } | null };
       this.firstName.set(d.firstName);
       this.products.set(d.products);
-      this.name.set(d.review?.name ?? d.firstName);
+      this.fullName.set(d.fullName || d.firstName);
       if (d.review) {
         this.rating.set(d.review.rating);
         this.text.set(d.review.text);
@@ -217,14 +223,13 @@ export class ReviewFormComponent {
     event.preventDefault();
     this.error.set('');
     if (!this.rating()) { this.error.set('Toca las estrellas para puntuar.'); return; }
-    if (!this.name().trim()) { this.error.set('Pon un nombre, aunque sea solo el de pila.'); document.getElementById('rv-name')?.focus(); return; }
     this.view.set('sending');
     try {
       const res = await fetch('/api/review', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          orderId: this.orderId, token: this.token, rating: this.rating(), text: this.text(), name: this.name(),
+          orderId: this.orderId, token: this.token, rating: this.rating(), text: this.text(),
           photos: this.photos().map(p => p.publicId).filter(Boolean),
         }),
       });
