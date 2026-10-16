@@ -104,6 +104,16 @@
   status = 200
 
 [[redirects]]
+  from = "/api/restock"
+  to   = "/.netlify/functions/restock-subscribe"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/restock"
+  to   = "/.netlify/functions/admin-restock"
+  status = 200
+
+[[redirects]]
   from = "/api/review/photo"
   to   = "/.netlify/functions/review-photo"
   status = 200

@@ -108,7 +108,7 @@ type View = 'loading' | 'form' | 'sending' | 'done' | 'invalid' | 'notDelivered'
 
             <div>
               <p class="text-[15px] font-semibold text-lv-cream mb-3">Cómo aparecerá tu nombre</p>
-              <div class="rounded-card border border-lv-cream/12 bg-white/[0.03] divide-y divide-lv-cream/10">
+              <div class="rounded-card border border-lv-cream/10 bg-white/[0.03] divide-y divide-lv-cream/10">
                 <div class="flex items-center justify-between gap-4 px-4 py-3">
                   <span class="text-[14px] text-lv-cream/60">Tu nombre</span>
                   <span class="text-[16px] text-lv-cream text-right">{{ fullName() }}</span>
