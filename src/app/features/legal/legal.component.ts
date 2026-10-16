@@ -114,6 +114,9 @@ import { CONTACT_EMAIL } from '../../shared/constants';
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
                 Únicamente los datos que tú proporcionas al realizar un pedido: nombre, email y teléfono (todos obligatorios) y código postal (solo cuando eliges envío a domicilio). No se recogen datos de navegación, no se usan cookies propias ni ningún sistema de analítica.
               </p>
+              <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
+                Si valoras tu pedido, guardamos la puntuación, el comentario, las fotos que subas y el nombre que indiques. Solo se publican si las aprobamos, y el nombre aparece abreviado (por ejemplo, «Ma***»). Puedes pedirnos que las borremos cuando quieras.
+              </p>
             </section>
 
             <section class="space-y-3">
@@ -132,6 +135,8 @@ import { CONTACT_EMAIL } from '../../shared/constants';
                 <li><span class="text-lv-cream/60 font-body text-[13px] ">Brevo</span> — envío del email de confirmación al cliente.</li>
                 <li><span class="text-lv-cream/60 font-body text-[13px] ">Notion</span> — registro interno de pedidos (nombre, email, resumen del pedido).</li>
                 <li><span class="text-lv-cream/60 font-body text-[13px] ">Telegram</span> — notificación interna al vendedor del nuevo pedido.</li>
+                <li><span class="text-lv-cream/60 font-body text-[13px] ">Cloudinary</span> — alojamiento de las fotos que subes con tu valoración.</li>
+                <li><span class="text-lv-cream/60 font-body text-[13px] ">Netlify</span> — alojamiento de la web y de las valoraciones.</li>
                 <li><span class="text-lv-cream/60 font-body text-[13px] ">Correos España</span> — gestión del envío cuando eliges esta modalidad de entrega.</li>
               </ul>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">

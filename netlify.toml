@@ -104,6 +104,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/review/photo"
+  to   = "/.netlify/functions/review-photo"
+  status = 200
+
+[[redirects]]
   from = "/api/review"
   to   = "/.netlify/functions/review"
   status = 200

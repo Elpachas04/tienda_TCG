@@ -1,6 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal, afterNextRender } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { WHATSAPP_URL } from '../../shared/constants';
+import { maskName } from '../../shared/utils/mask-name';
+import { resizeImage } from '../../shared/utils/resize-image';
+
+const CLOUDINARY = 'https://res.cloudinary.com/dew1whfdu/image/upload/f_auto,q_auto,c_fill,w_240,h_240/';
 
 type View = 'loading' | 'form' | 'sending' | 'done' | 'invalid' | 'error';
 
@@ -31,10 +35,6 @@ type View = 'loading' | 'form' | 'sending' | 'done' | 'invalid' | 'error';
         @case ('done') {
           <h1 class="lv-h1 text-lv-cream">Gracias{{ firstName() ? ', ' + firstName() : '' }}</h1>
           <p class="lv-lede mt-5">Hemos recibido tu valoración. La revisamos y la publicamos en unos días. Si quieres cambiarla, vuelve a abrir el enlace del email.</p>
-          <p class="mt-8 text-[16px] leading-relaxed text-lv-cream/80">
-            ¿Tienes una foto de la pieza en uso? Nos encanta verlas:
-            <a [href]="photoUrl()" target="_blank" rel="noopener noreferrer" class="lv-link">mándanosla por WhatsApp</a>.
-          </p>
           <a routerLink="/catalog" class="lv-btn lv-btn-ghost mt-8">Ver el catálogo</a>
         }
 
@@ -69,17 +69,46 @@ type View = 'loading' | 'form' | 'sending' | 'done' | 'invalid' | 'error';
             </div>
 
             <div>
-              <label for="rv-name" class="block text-[15px] font-semibold text-lv-cream mb-2">Nombre que se mostrará</label>
+              <p id="rv-photos-label" class="text-[15px] font-semibold text-lv-cream mb-1">Fotos <span class="font-normal text-lv-cream/50">(opcional, hasta 3)</span></p>
+              <p class="text-[13px] text-lv-cream/50 mb-3">La pieza en tu mesa, en la estantería o en partida. Mejor sin caras ni datos personales.</p>
+              <ul class="flex flex-wrap gap-3" aria-labelledby="rv-photos-label">
+                @for (p of photos(); track p.id) {
+                  <li class="relative w-24 h-24 rounded-card overflow-hidden border border-lv-cream/15 bg-white/[0.04]">
+                    <img [src]="p.preview" alt="Tu foto" class="w-full h-full object-cover" [class.opacity-40]="p.uploading" />
+                    @if (p.uploading) {
+                      <span class="absolute inset-0 grid place-items-center text-[12px] text-lv-cream">Subiendo…</span>
+                    } @else {
+                      <button type="button" (click)="removePhoto(p.id)" aria-label="Quitar esta foto"
+                              class="absolute top-1 right-1 w-8 h-8 grid place-items-center rounded-full bg-black/70 text-lv-cream text-[14px] hover:bg-black">✕</button>
+                    }
+                  </li>
+                }
+                @if (photos().length < maxPhotos) {
+                  <li>
+                    <label class="w-24 h-24 rounded-card border border-dashed border-lv-cream/25 grid place-items-center text-center cursor-pointer
+                                  text-[13px] leading-tight text-lv-cream/70 hover:border-lv-gold/60 hover:text-lv-foil transition-colors focus-within:border-lv-gold">
+                      <span><span class="block text-[22px] leading-none mb-1" aria-hidden="true">+</span>Añadir foto</span>
+                      <input type="file" accept="image/*" multiple class="sr-only" (change)="addPhotos($event)" />
+                    </label>
+                  </li>
+                }
+              </ul>
+            </div>
+
+            <div>
+              <label for="rv-name" class="block text-[15px] font-semibold text-lv-cream mb-2">Tu nombre</label>
               <input id="rv-name" type="text" maxlength="40" autocomplete="given-name" [value]="name()" (input)="name.set($any($event.target).value)"
                      class="w-full h-12 rounded-card bg-white/[0.04] border border-lv-cream/15 px-4 text-[16px] text-lv-cream focus:border-lv-gold/60 focus:outline-none" />
-              <p class="mt-2 text-[13px] text-lv-cream/50">Puedes poner solo tu nombre o un apodo. Revisamos cada valoración antes de publicarla.</p>
+              <p class="mt-2 text-[13px] text-lv-cream/50">
+                Por privacidad se mostrará como <span class="text-lv-cream/80">{{ masked() }}</span>. Revisamos cada valoración y sus fotos antes de publicarla.
+              </p>
             </div>
 
             @if (error()) {
               <p class="text-[15px] text-red-300" role="alert">{{ error() }}</p>
             }
 
-            <button type="submit" class="lv-btn lv-btn-primary self-start" [disabled]="view() === 'sending'">
+            <button type="submit" class="lv-btn lv-btn-primary self-start" [disabled]="view() === 'sending' || uploading()">
               {{ view() === 'sending' ? 'Enviando…' : (edit() ? 'Guardar cambios' : 'Enviar valoración') }}
             </button>
           </form>
@@ -105,7 +134,10 @@ export class ReviewFormComponent {
   readonly error = signal('');
 
   readonly whatsappUrl = WHATSAPP_URL;
-  readonly photoUrl = computed(() => `${WHATSAPP_URL}?text=${encodeURIComponent(`Hola, os mando una foto de mi pedido ${this.orderId}`)}`);
+  readonly maxPhotos = 3;
+  readonly photos = signal<{ id: string; preview: string; publicId?: string; uploading: boolean }[]>([]);
+  readonly uploading = computed(() => this.photos().some(p => p.uploading));
+  readonly masked = computed(() => maskName(this.name() || this.firstName()));
   readonly label = computed(() => ['Toca una estrella para puntuar', 'Mal', 'Regular', 'Bien', 'Muy bien', 'Me encanta'][this.hover() || this.rating()]);
 
   constructor() {
@@ -118,13 +150,14 @@ export class ReviewFormComponent {
       const res = await fetch(`/api/review?id=${encodeURIComponent(this.orderId)}&t=${encodeURIComponent(this.token)}`);
       if (res.status === 403) { this.view.set('invalid'); return; }
       if (!res.ok) throw new Error();
-      const d = await res.json() as { firstName: string; products: string[]; review: { name: string; rating: number; text: string } | null };
+      const d = await res.json() as { firstName: string; products: string[]; review: { name: string; rating: number; text: string; photos?: string[] } | null };
       this.firstName.set(d.firstName);
       this.products.set(d.products);
       this.name.set(d.review?.name ?? d.firstName);
       if (d.review) {
         this.rating.set(d.review.rating);
         this.text.set(d.review.text);
+        this.photos.set((d.review.photos ?? []).map(id => ({ id, publicId: id, preview: CLOUDINARY + id, uploading: false })));
         this.edit.set(true);
       }
       this.view.set('form');
@@ -132,6 +165,35 @@ export class ReviewFormComponent {
       // Sin datos del pedido se puede valorar igual
       this.view.set('form');
     }
+  }
+
+  async addPhotos(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const files = Array.from(input.files ?? []).slice(0, this.maxPhotos - this.photos().length);
+    input.value = '';
+    this.error.set('');
+    for (const file of files) {
+      const id = Math.random().toString(36).slice(2);
+      try {
+        const dataBase64 = await resizeImage(file);
+        this.photos.update(list => [...list, { id, preview: dataBase64, uploading: true }]);
+        const res = await fetch('/api/review/photo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId: this.orderId, token: this.token, dataBase64 }),
+        });
+        if (!res.ok) throw new Error();
+        const { publicId } = await res.json() as { publicId: string };
+        this.photos.update(list => list.map(p => (p.id === id ? { ...p, publicId, uploading: false } : p)));
+      } catch {
+        this.photos.update(list => list.filter(p => p.id !== id));
+        this.error.set('No hemos podido subir una de las fotos. Prueba con otra o vuelve a intentarlo.');
+      }
+    }
+  }
+
+  removePhoto(id: string): void {
+    this.photos.update(list => list.filter(p => p.id !== id));
   }
 
   async send(event: Event): Promise<void> {
@@ -144,7 +206,10 @@ export class ReviewFormComponent {
       const res = await fetch('/api/review', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId: this.orderId, token: this.token, rating: this.rating(), text: this.text(), name: this.name() }),
+        body: JSON.stringify({
+          orderId: this.orderId, token: this.token, rating: this.rating(), text: this.text(), name: this.name(),
+          photos: this.photos().map(p => p.publicId).filter(Boolean),
+        }),
       });
       if (res.status === 403) { this.view.set('invalid'); return; }
       if (!res.ok) throw new Error();

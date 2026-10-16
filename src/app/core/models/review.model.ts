@@ -5,6 +5,7 @@ export interface PublicReview {
   rating: number;
   text: string;
   productIds: string[];
+  photos: string[];
   createdAt: string;
 }
 

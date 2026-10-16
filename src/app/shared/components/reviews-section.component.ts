@@ -1,6 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, afterNextRender } from '@angular/core';
 import { ReviewsService } from '../../core/services/reviews.service';
 
+/** Primero las que tienen fotos y texto */
+const score = (r: { text: string; photos: string[] }) => (r.photos.length ? 2 : 0) + (r.text ? 1 : 0);
+
 // Valoraciones de clientes. No pinta nada si están desactivadas en el admin o si no hay ninguna publicada
 // (en una ficha: ninguna de ese producto).
 @Component({
@@ -30,6 +33,15 @@ import { ReviewsService } from '../../core/services/reviews.service';
                 @if (r.text) {
                   <p class="text-[16px] leading-relaxed text-lv-cream/85">{{ r.text }}</p>
                 }
+                @if (r.photos.length) {
+                  <div class="flex gap-2">
+                    @for (id of r.photos; track id) {
+                      <a [href]="photo(id, 1400)" target="_blank" rel="noopener noreferrer" class="block w-20 h-20 rounded-lg overflow-hidden border border-lv-cream/10 hover:border-lv-gold/50">
+                        <img [src]="photo(id, 200)" [alt]="'Foto de ' + r.name" loading="lazy" width="80" height="80" class="w-full h-full object-cover" />
+                      </a>
+                    }
+                  </div>
+                }
                 <p class="mt-auto text-[14px] text-lv-cream/55">{{ r.name }} · {{ date(r.createdAt) }}</p>
               </li>
             }
@@ -51,7 +63,7 @@ export class ReviewsSectionComponent {
     const all = this.service.reviews();
     return id ? all.filter(r => r.productIds.includes(id)) : all;
   });
-  readonly visible = computed(() => this.list().filter(r => r.text).concat(this.list().filter(r => !r.text)).slice(0, 6));
+  readonly visible = computed(() => [...this.list()].sort((a, b) => score(b) - score(a)).slice(0, 6));
   readonly cols = computed(() => {
     const n = this.visible().length;
     return n === 1 ? 'max-w-md' : n === 2 || n === 4 ? 'sm:grid-cols-2 max-w-4xl' : 'sm:grid-cols-2 lg:grid-cols-3';
@@ -63,6 +75,11 @@ export class ReviewsSectionComponent {
 
   constructor() {
     afterNextRender(() => this.service.load());
+  }
+
+  photo(id: string, size: number): string {
+    const t = size > 400 ? `f_auto,q_auto,c_limit,w_${size}` : `f_auto,q_auto,c_fill,w_${size},h_${size}`;
+    return `https://res.cloudinary.com/dew1whfdu/image/upload/${t}/${id}`;
   }
 
   stars(n: number): string {

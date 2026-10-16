@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal, afterNextRender } from '@angular/core';
 import { AdminReview, ReviewStatus } from '../../core/models/review.model';
 import { AdminCatalogService } from '../../core/services/admin-catalog.service';
+import { maskName } from '../../shared/utils/mask-name';
 
 const DATE_FORMAT = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
 
@@ -49,7 +50,7 @@ const DATE_FORMAT = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 's
             <div class="min-w-0">
               <p class="font-body tracking-[2px]" role="img" [attr.aria-label]="r.rating + ' de 5'"><span class="text-lv-gold">{{ stars(r.rating) }}</span><span class="text-lv-cream/25">{{ stars(5 - r.rating) }}</span></p>
               <p class="font-body text-sm text-lv-cream/70 mt-1 flex flex-wrap gap-x-3 gap-y-0.5">
-                <span class="text-lv-cream">{{ r.name }}</span>
+                <span class="text-lv-cream">{{ r.name }} <span class="text-lv-muted">(se ve como {{ mask(r.name) }})</span></span>
                 <span>{{ r.orderId }}</span>
                 <span>{{ date(r.createdAt) }}</span>
                 @if (r.products.length) { <span>{{ r.products.join(', ') }}</span> }
@@ -63,6 +64,21 @@ const DATE_FORMAT = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 's
 
           @if (r.text) {
             <p class="font-body text-[15px] leading-relaxed text-lv-cream/85 mt-3 whitespace-pre-line">{{ r.text }}</p>
+          }
+
+          @if (r.photos.length) {
+            <ul class="flex flex-wrap gap-3 mt-4" [attr.aria-label]="'Fotos de ' + r.name">
+              @for (id of r.photos; track id) {
+                <li class="relative">
+                  <a [href]="photo(id, 1600)" target="_blank" rel="noopener noreferrer" title="Ver a tamaño completo"
+                     class="block w-28 h-28 rounded-lg overflow-hidden border border-lv-border hover:border-lv-gold/60">
+                    <img [src]="photo(id, 240)" alt="Foto de la valoración" class="w-full h-full object-cover" loading="lazy" />
+                  </a>
+                  <button type="button" class="absolute top-1 right-1 w-8 h-8 grid place-items-center rounded-full bg-black/75 text-lv-cream text-xs hover:text-red-300 disabled:opacity-50"
+                          [disabled]="busy() === r.orderId" (click)="removePhoto(r, id)" aria-label="Quitar esta foto">✕</button>
+                </li>
+              }
+            </ul>
           }
 
           <div class="flex flex-wrap items-center gap-2 mt-4">
@@ -94,6 +110,7 @@ export class AdminReviewsComponent {
   readonly catalogReady = computed(() => !!this.admin.catalog());
   readonly visible = computed(() => !!this.admin.catalog()?.settings?.reviewsVisible);
 
+  readonly mask = maskName;
   readonly statusLabel: Record<ReviewStatus, string> = { pendiente: 'Pendiente', publicada: 'Publicada', oculta: 'Oculta' };
 
   constructor() {
@@ -109,7 +126,7 @@ export class AdminReviewsComponent {
     try {
       const res = await fetch('/api/admin/reviews');
       if (!res.ok) throw new Error();
-      this.reviews.set(((await res.json()) as { reviews: AdminReview[] }).reviews);
+      this.reviews.set(((await res.json()) as { reviews: AdminReview[] }).reviews.map(r => ({ ...r, photos: r.photos ?? [] })));
     } catch {
       this.error.set('No hemos podido cargar las valoraciones. Recarga la página.');
     } finally {
@@ -134,8 +151,31 @@ export class AdminReviewsComponent {
     }
   }
 
+  async removePhoto(r: AdminReview, id: string): Promise<void> {
+    if (!confirm('¿Quitar esta foto? Se borra también de Cloudinary.')) return;
+    this.busy.set(r.orderId);
+    try {
+      const res = await fetch('/api/admin/reviews', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: r.orderId, removePhoto: id }),
+      });
+      if (!res.ok) throw new Error();
+      this.reviews.update(list => list.map(x => (x.orderId === r.orderId ? { ...x, photos: x.photos.filter(p => p !== id) } : x)));
+    } catch {
+      this.error.set('No hemos podido quitar la foto. Vuelve a intentarlo.');
+    } finally {
+      this.busy.set(null);
+    }
+  }
+
+  photo(id: string, size: number): string {
+    const t = size > 400 ? `f_auto,q_auto,c_limit,w_${size}` : `f_auto,q_auto,c_fill,w_${size},h_${size}`;
+    return `https://res.cloudinary.com/dew1whfdu/image/upload/${t}/${id}`;
+  }
+
   async remove(r: AdminReview): Promise<void> {
-    if (!confirm(`¿Borrar la valoración de ${r.name} (${r.orderId})? No se puede deshacer.`)) return;
+    if (!confirm(`¿Borrar la valoración de ${r.name} (${r.orderId}) y sus fotos? No se puede deshacer.`)) return;
     this.busy.set(r.orderId);
     try {
       const res = await fetch(`/api/admin/reviews?id=${encodeURIComponent(r.orderId)}`, { method: 'DELETE' });

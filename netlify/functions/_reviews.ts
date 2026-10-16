@@ -15,15 +15,30 @@ export interface Review {
   rating:     number;      // 1–5
   text:       string;
   productIds: string[];    // productos del pedido, para mostrarla en sus fichas
+  photos:     string[];    // public_id de Cloudinary, en layervault/valoraciones/<orderId>/
   products:   string[];    // nombres, para el admin
   status:     ReviewStatus;
   createdAt:  string;
   updatedAt:  string;
 }
 
-/** Lo que se publica en la web: sin nº de pedido */
+/** Lo que se publica en la web: sin nº de pedido y con el nombre tapado (Ma***) */
 export interface PublicReview {
-  name: string; rating: number; text: string; productIds: string[]; createdAt: string;
+  name: string; rating: number; text: string; productIds: string[]; photos: string[]; createdAt: string;
+}
+
+export const MAX_PHOTOS = 3;
+
+/** Carpeta de Cloudinary de las fotos de una valoración: el nº de pedido une foto y comentario */
+export function photoFolder(orderId: string): string {
+  return `layervault/valoraciones/${orderId}/`;
+}
+
+/** "Marta López" → "Ma***": dos primeras letras del nombre y el resto tapado */
+export function maskName(name: string): string {
+  const first = Array.from(name.trim().split(/\s+/)[0] ?? "");
+  if (!first.length) return "***";
+  return first.slice(0, 2).join("") + "*".repeat(Math.max(3, first.length - 2));
 }
 
 function secret(): string {
@@ -60,7 +75,7 @@ export async function listReviews(store: ReturnType<typeof getStore>): Promise<R
 }
 
 export function toPublic(r: Review): PublicReview {
-  return { name: r.name, rating: r.rating, text: r.text, productIds: r.productIds, createdAt: r.createdAt };
+  return { name: maskName(r.name), rating: r.rating, text: r.text, productIds: r.productIds, photos: r.photos ?? [], createdAt: r.createdAt };
 }
 
 /** Datos del pedido en Notion: nombre del cliente y productos (de "Items JSON") */

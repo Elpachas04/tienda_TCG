@@ -1,6 +1,7 @@
 import type { Handler } from "@netlify/functions";
 import { originOk, requestOk, MAX_BODY } from "./_guard";
-import { Review, orderInfo, reviewsStore, verifyReviewToken } from "./_reviews";
+import { destroyImage } from "./_cloudinary";
+import { MAX_PHOTOS, Review, orderInfo, photoFolder, reviewsStore, verifyReviewToken } from "./_reviews";
 
 // GET  /api/review?id=LV-…&t=…  → datos para el formulario (nombre, productos y valoración previa si la hay)
 // POST /api/review              → guarda o actualiza la valoración (queda "pendiente" hasta aprobarla en el admin)
@@ -21,7 +22,7 @@ const handler: Handler = async (event) => {
       return json(200, {
         firstName: info?.firstName ?? "",
         products:  info?.products ?? [],
-        review:    existing ? { name: existing.name, rating: existing.rating, text: existing.text, status: existing.status } : null,
+        review:    existing ? { name: existing.name, rating: existing.rating, text: existing.text, photos: existing.photos ?? [], status: existing.status } : null,
       });
     }
 
@@ -40,6 +41,9 @@ const handler: Handler = async (event) => {
       const name   = String(body["name"] ?? "").replace(/\s+/g, " ").trim().slice(0, 40);
       if (!Number.isInteger(rating) || rating < 1 || rating > 5) return json(400, { error: "rating" });
       if (!name) return json(400, { error: "name" });
+      // Solo fotos subidas a la carpeta de este pedido (review-photo.ts)
+      const photos = (Array.isArray(body["photos"]) ? body["photos"] : [])
+        .map(String).filter(id => id.startsWith(photoFolder(orderId))).slice(0, MAX_PHOTOS);
 
       const store    = reviewsStore(event);
       const existing = await store.get(orderId, { type: "json" }) as Review | null;
@@ -48,6 +52,7 @@ const handler: Handler = async (event) => {
       const review: Review = {
         orderId, name, rating, text,
         productIds: existing?.productIds ?? info?.productIds ?? [],
+        photos,
         products:   existing?.products ?? info?.products ?? [],
         // Si la edita después de publicada, vuelve a revisión
         status:     "pendiente",
@@ -55,6 +60,10 @@ const handler: Handler = async (event) => {
         updatedAt:  now,
       };
       await store.setJSON(orderId, review);
+      // Fotos que tenía y ha quitado al editar: fuera de Cloudinary
+      for (const id of (existing?.photos ?? []).filter(id => !photos.includes(id))) {
+        await destroyImage(id).catch(err => console.error("destroy photo:", err));
+      }
       return json(200, { success: true });
     }
 
