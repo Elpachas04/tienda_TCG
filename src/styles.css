@@ -160,6 +160,19 @@
   .foil-frame:hover::before { opacity: 1; }
 }
 
+/* Fondo de las fotos de producto: oscuro con un foco de luz en el centro y sombra al suelo,
+   para que las piezas negras no se fundan con el fondo. La foto va encima con c_fit (sin relleno negro). */
+.lv-stage {
+  background: radial-gradient(70% 60% at 50% 42%, #3b362f 0%, #221f1b 55%, #151412 100%);
+  isolation: isolate;
+}
+.lv-stage::before {
+  content: '';
+  position: absolute; left: 20%; right: 20%; bottom: 12%; height: 9%;
+  border-radius: 50%; background: rgb(0 0 0 / .55); filter: blur(12px);
+  z-index: -1; pointer-events: none;
+}
+
 /* Antes de que GSAP prepare la entrada, los titulares y el hero esperan ocultos (html.motion lo pone index.html).
    Si el script fallara, se muestran solos a los 2,5 s. */
 html.motion [data-split]:not(.split-ready),
