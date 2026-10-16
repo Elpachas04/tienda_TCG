@@ -160,7 +160,7 @@ const handler: Handler = async (event: HandlerEvent) => {
                   <tr>
                     <td style="padding:12px 16px;background:#1a1a1a;border-radius:8px;border:1px solid #2a2a2a;">
                       <p style="margin:0 0 3px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#888;">Bizum al</p>
-                      <p style="margin:0;font-family:'Barlow',Arial,sans-serif;font-size:16px;letter-spacing:2px;color:#f0f0f0;">644 794 412</p>
+                      <p style="margin:0;font-family:'Barlow',Arial,sans-serif;font-size:16px;letter-spacing:2px;color:#f0f0f0;">674 012 922</p>
                     </td>
                   </tr>
                 </table>
