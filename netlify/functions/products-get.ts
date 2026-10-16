@@ -20,7 +20,7 @@ const handler: Handler = async (event) => {
 
   try {
     // Funciones en formato Lambda: Blobs necesita el contexto que viene en el evento
-    connectLambda(event as Parameters<typeof connectLambda>[0]);
+    connectLambda(event as unknown as Parameters<typeof connectLambda>[0]);
     const store    = getStore(STORE_NAME);
     const existing = await store.get(BLOB_KEY, { type: "json" });
 

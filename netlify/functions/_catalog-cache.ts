@@ -1,4 +1,4 @@
-import { purgeCache } from "@netlify/functions";
+import { purgeCache, type HandlerContext } from "@netlify/functions";
 
 const CATALOG_TAG = "catalog";
 
@@ -12,9 +12,11 @@ export const CATALOG_CACHE_HEADERS = {
 };
 
 /** Tras guardar en el admin: la siguiente visita ya ve el catálogo nuevo. Si falla, se renueva solo en ≤ 5 min. */
-export async function purgeCatalogCache(): Promise<void> {
+export async function purgeCatalogCache(context: HandlerContext): Promise<void> {
   try {
-    await purgeCache({ tags: [CATALOG_TAG] });
+    // Las funciones en formato Lambda no tienen el token de purga en el entorno: Netlify lo pasa en el contexto
+    const token = (context.clientContext?.["custom"] as { purge_api_token?: string } | undefined)?.purge_api_token;
+    await purgeCache({ tags: [CATALOG_TAG], token });
   } catch (err) {
     console.error("No se pudo purgar la caché del catálogo:", err);
   }
