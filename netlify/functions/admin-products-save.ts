@@ -3,6 +3,7 @@ import { connectLambda, getStore } from "@netlify/blobs";
 import { originOk } from "./_guard";
 import { verifyAdminSession } from "./_admin-auth";
 import { purgeCatalogCache } from "./_catalog-cache";
+import { notifyBackInStock } from "./_restock";
 
 const STORE_NAME     = "products";
 const BLOB_KEY        = "catalog";
@@ -62,7 +63,14 @@ const handler: Handler = async (event, context) => {
     const catalog  = { ...(existing ?? {}), products };
     await store.setJSON(BLOB_KEY, catalog);
     await purgeCatalogCache(context);
-    return { statusCode: 200, headers, body: JSON.stringify({ success: true }) };
+
+    // Productos que estaban agotados y ahora se pueden comprar: avisar a quien lo pidió
+    type P = { id: string; name: string; available?: boolean; hidden?: boolean };
+    const before = new Map(((existing?.["products"] ?? []) as P[]).map(p => [p.id, p]));
+    const back = (products as P[]).filter(p => p.available && !p.hidden && before.get(p.id)?.available === false);
+    const notified = await notifyBackInStock(event, back);
+
+    return { statusCode: 200, headers, body: JSON.stringify({ success: true, notified }) };
   } catch (err) {
     console.error("Error saving products blob:", err);
     return { statusCode: 500, headers, body: JSON.stringify({ error: "server_error" }) };

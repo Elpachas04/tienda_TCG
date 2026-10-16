@@ -149,6 +149,11 @@ Lo que se ve al cargar (hero del inicio, cabecera del catálogo) NO se anima ni 
   `layervault/valoraciones/<nº de pedido>/` con la etiqueta del pedido (`_cloudinary.ts`). Borrar la valoración en el
   admin borra esa carpeta. El nombre es el del pedido en Notion (no editable) y en la web sale tapado: "Marta Gómez" → "Mar******ez" (`maskName`, en `_reviews.ts` y `shared/utils/mask-name.ts`)
 
+- "Avísame cuando vuelva": en la ficha de un producto agotado (`restock-form.component.ts` → `/api/restock`). Los
+  emails se guardan en Netlify Blobs (store `restock`, uno por producto, `_restock.ts`). Al marcar el producto como
+  "Se puede comprar" en el admin, `admin-products-save.ts` manda un email a cada uno y vacía la lista. El admin
+  enseña cuántos esperan (`/api/admin/restock`)
+
 ## Datos
 
 Catálogo en `src/assets/data/products.json`.
