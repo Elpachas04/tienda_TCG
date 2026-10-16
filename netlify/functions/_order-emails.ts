@@ -1,7 +1,8 @@
 // Emails automáticos al cambiar el estado de un pedido desde el admin.
 // Maquetación común en _email-kit.ts (la misma que el de "Pedido recibido", send-confirmation.ts).
 
-import { WHATSAPP, esc, layout, bigValue, button, link, mapsUrl, paragraph, progress, strong, trackingUrl } from "./_email-kit";
+import { reviewUrl } from "./_reviews";
+import { esc, layout, bigValue, button, link, mapsUrl, paragraph, progress, strong, trackingUrl } from "./_email-kit";
 
 const BREVO_API  = "https://api.brevo.com/v3/smtp/email";
 const FROM_EMAIL = "hola@layervault.es";
@@ -89,13 +90,13 @@ function content(status: string, d: OrderEmailData): EmailContent | null {
     return {
       subject: `¿Ha llegado todo bien? · ${d.orderId}`,
       html: layout({
-        preheader: "Si hay cualquier problema con la pieza, tienes 7 días para decírnoslo.",
+        preheader: "¿Qué te ha parecido? Valora tu pedido en un minuto.",
         orderId: d.orderId, greeting,
         title: "Ya lo tienes",
-        lede: "Esperamos que te guste. Si te apetece, m&aacute;ndanos una foto de la pieza en uso: nos encanta verlas.",
+        lede: "Esperamos que te guste. &iquest;Nos cuentas qu&eacute; te parece? Es un minuto y nos ayuda much&iacute;simo.",
         blocks: [
           progress(4, d.pickup),
-          button(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola, os mando una foto de mi pedido ${d.orderId}`)}`, "Mandar una foto por WhatsApp"),
+          button(reviewUrl(d.orderId), "Valorar mi pedido"),
           paragraph(`Si hay alg&uacute;n problema, escr&iacute;benos en los ${strong("7 d&iacute;as")} siguientes. Si tiene un defecto, nos la devuelves y te enviamos una nueva; si te has arrepentido, nos la devuelves y te damos un vale por el importe.`, { size: 14 }),
         ],
       }),

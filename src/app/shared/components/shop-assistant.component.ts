@@ -120,7 +120,7 @@ export class ShopAssistantComponent {
   );
 
   // Fuera del flujo de compra y del panel: ahí estorba
-  readonly visible = computed(() => !/^\/(checkout|admin)/.test(this.url()));
+  readonly visible = computed(() => !/^\/(checkout|admin|valorar)/.test(this.url()));
 
   readonly product = computed(() => {
     const id = this.url().match(/^\/product\/([^/?#]+)/)?.[1];

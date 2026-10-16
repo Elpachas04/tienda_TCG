@@ -103,6 +103,21 @@
   to   = "/.netlify/functions/admin-order-status"
   status = 200
 
+[[redirects]]
+  from = "/api/review"
+  to   = "/.netlify/functions/review"
+  status = 200
+
+[[redirects]]
+  from = "/api/reviews"
+  to   = "/.netlify/functions/reviews-get"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/reviews"
+  to   = "/.netlify/functions/admin-reviews"
+  status = 200
+
 # ── Rutas de la app sin HTML prerenderizado: las sirve index.html y las pinta Angular ──
 # (las que sí tienen HTML — inicio, catálogo, fichas, legal — se sirven tal cual: estas reglas
 #  no se aplican cuando existe el archivo)
@@ -118,6 +133,11 @@
 
 [[redirects]]
   from   = "/seguimiento"
+  to     = "/index.html"
+  status = 200
+
+[[redirects]]
+  from   = "/valorar"
   to     = "/index.html"
   status = 200
 

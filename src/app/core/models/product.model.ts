@@ -84,6 +84,8 @@ export interface ShopSettings {
   whatsappPhone: string;
   paymentMethods: string[];
   deliveryDays: string;
+  /** Enseña las valoraciones aprobadas en la web (se activa desde Admin → Valoraciones) */
+  reviewsVisible?: boolean;
 }
 
 export interface BulkBox {
