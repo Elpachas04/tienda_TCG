@@ -1,15 +1,15 @@
-import { ChangeDetectionStrategy, Component, ElementRef, NgZone, afterNextRender, inject } from '@angular/core';
-import { SplitHeadingDirective } from '../../shared/directives/split-heading.directive';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FoilCardComponent } from '../../shared/components/foil-card.component';
 import { CloudinaryService } from '../../core/services/cloudinary.service';
-import { gsap, prefersReducedMotion } from '../../core/motion/motion';
 
+// Sin animación de entrada a propósito: es lo primero que se ve y lo que mide Google (LCP).
+// Si se oculta hasta que carga la animación, la portada tarda segundos en aparecer.
 @Component({
   selector: 'app-lv-hero',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, FoilCardComponent, SplitHeadingDirective],
+  imports: [RouterLink, FoilCardComponent],
   host: { class: 'block' },
   template: `
     <section id="hero" class="relative min-h-[100svh] flex items-center overflow-hidden bg-lv-black">
@@ -23,27 +23,27 @@ import { gsap, prefersReducedMotion } from '../../core/motion/motion';
                   grid gap-10 lg:gap-x-20 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] items-center">
 
         <div class="hero-copy flex flex-col items-start gap-7 lg:col-start-1 lg:row-start-1 lg:self-end">
-          <h1 data-split [splitDelay]="0.1" class="lv-display text-lv-cream max-w-[11ch]">
+          <h1 class="lv-display text-lv-cream max-w-[11ch]">
             La primera carta que ven es tu caja.
           </h1>
         </div>
 
-        <lv-foil-card class="hero-card hero-reveal lg:col-start-2 lg:row-start-1 lg:row-span-2"
+        <lv-foil-card class="hero-card lg:col-start-2 lg:row-start-1 lg:row-span-2"
           name="Leader Vault"
           [price]="50"
           [image]="leaderVaultImage" />
 
         <div class="hero-copy flex flex-col items-start gap-8 lg:col-start-1 lg:row-start-2 lg:self-start">
-          <p class="lv-lede hero-reveal">
+          <p class="lv-lede">
             No les decepciones. Deckboxes, expositores y organizadores para TCG,
             impresos en 3D en Barcelona.
           </p>
 
-          <div class="flex gap-3 flex-wrap hero-reveal">
+          <div class="flex gap-3 flex-wrap">
             <a routerLink="/catalog" class="lv-btn lv-btn-primary">Ver catálogo</a>
           </div>
 
-          <dl class="hero-reveal grid grid-cols-3 gap-x-6 sm:gap-x-10 pt-6 border-t border-lv-cream/10 w-full max-w-md">
+          <dl class="grid grid-cols-3 gap-x-6 sm:gap-x-10 pt-6 border-t border-lv-cream/10 w-full max-w-md">
             <div>
               <dt class="text-xs text-lv-cream/60">Fabricación</dt>
               <dd class="mt-1 text-[15px] font-semibold text-lv-cream">3–7 días</dd>
@@ -72,22 +72,4 @@ import { gsap, prefersReducedMotion } from '../../core/motion/motion';
 })
 export class HeroComponent {
   readonly leaderVaultImage = inject(CloudinaryService).detail('leader-vault_yamato_01');
-
-  constructor() {
-    const host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
-    const zone = inject(NgZone);
-    // Un solo momento orquestado: el titular sube línea a línea y después aparecen la pieza y el resto
-    afterNextRender(() => {
-      const items = host.querySelectorAll<HTMLElement>('.hero-reveal');
-      if (prefersReducedMotion()) { gsap.set(items, { autoAlpha: 1 }); return; }
-      zone.runOutsideAngular(() => {
-        gsap.fromTo(host.querySelector('.hero-card'),
-          { autoAlpha: 0, y: 28, scale: 0.97 },
-          { autoAlpha: 1, y: 0, scale: 1, duration: 1.3, delay: 0.35, ease: 'expo.out' });
-        gsap.fromTo(host.querySelectorAll('.hero-copy .hero-reveal'),
-          { autoAlpha: 0, y: 14 },
-          { autoAlpha: 1, y: 0, duration: 0.9, delay: 0.55, stagger: 0.08, ease: 'expo.out' });
-      });
-    });
-  }
 }

@@ -116,9 +116,10 @@ animate-badge-pop     → badge del carrito
 animate-dropdown-in   → dropdown del color picker
 ```
 
-Movimiento con GSAP (`core/motion/`): SplitHeadingDirective (`[data-split]`), secuencia del hero en HeroComponent,
+Movimiento con GSAP (`core/motion/`): SplitHeadingDirective (`[data-split]`) en titulares de más abajo,
 SmoothScrollService (Lenis, carga diferida). `html.motion` (script en index.html) oculta lo que va a animarse, con
 un failsafe CSS a los 2,5 s. Todo respeta `prefers-reduced-motion`.
+Lo que se ve al cargar (hero del inicio, cabecera del catálogo) NO se anima ni se oculta: retrasaba el LCP a ~9 s.
 
 ---
 
