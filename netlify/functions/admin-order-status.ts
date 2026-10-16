@@ -89,15 +89,22 @@ const handler: Handler = async (event) => {
       properties[dateProperty] = { date: { start: new Date().toISOString() } };
     }
 
-    const updateRes = await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
+    const patchPage = (props: Record<string, unknown>) => fetch(`https://api.notion.com/v1/pages/${pageId}`, {
       method: "PATCH",
       headers: {
         "Authorization":  `Bearer ${notionToken}`,
         "Content-Type":   "application/json",
         "Notion-Version": "2022-06-28",
       },
-      body: JSON.stringify({ properties }),
+      body: JSON.stringify({ properties: props }),
     });
+
+    let updateRes = await patchPage(properties);
+    if (updateRes.status === 400) {
+      // Si falta en Notion alguna columna opcional (fechas, Tracking), Notion rechaza todo: se guarda al menos el estado
+      console.error("Notion update 400, reintentando solo con Estado:", await updateRes.text());
+      updateRes = await patchPage({ "Estado": properties["Estado"] });
+    }
 
     if (!updateRes.ok) {
       console.error("Notion update error:", updateRes.status, await updateRes.text());
