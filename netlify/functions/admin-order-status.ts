@@ -122,6 +122,7 @@ const handler: Handler = async (event) => {
         customerEmail: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail) ? customerEmail : "",
         pickup:        (props["Entrega"] as { select?: { name?: string } } | undefined)?.select?.name === "En mano",
         trackingNumber,
+        oficina:       richText(props["Oficina"]) || undefined,
       });
     }
 
