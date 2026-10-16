@@ -39,3 +39,31 @@ await writeFile('public/sitemap.xml',
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`);
 
 console.log(`prebuild: ${pages.length} páginas en el sitemap y en el prerender`);
+
+// Cloudinary crea cada tamaño de foto la primera vez que alguien lo pide, y eso tarda segundos.
+// En cada deploy pedimos por adelantado los que usa la web (mismas transformaciones que cloudinary.service.ts),
+// en AVIF y WebP, que es lo que sirven Chrome y Safari con f_auto. Si falla, no para el build.
+if (live) {
+  const BASE = 'https://res.cloudinary.com/dew1whfdu/image/upload';
+  const SIZES = [
+    'f_auto,q_auto:good,c_fit,w_360,h_360',   // stageCard
+    'f_auto,q_auto:good,c_fit,w_700,h_700',   // stageDetail
+    'f_auto,q_auto:low,c_fit,w_120,h_120',    // stageThumb
+  ];
+  const ids = [...new Set(products.flatMap(p => p.images ?? []))].filter(Boolean);
+  const jobs = ids.flatMap(id => SIZES.flatMap(t => ['image/avif,image/webp,*/*', 'image/webp,*/*'].map(accept => ({ url: `${BASE}/${t}/${id}`, accept }))));
+  const started = Date.now();
+  let ok = 0;
+  const worker = async () => {
+    while (jobs.length && Date.now() - started < 120_000) {
+      const { url, accept } = jobs.shift();
+      try {
+        const res = await fetch(url, { headers: { Accept: accept }, signal: AbortSignal.timeout(20_000) });
+        await res.arrayBuffer();
+        if (res.ok) ok++;
+      } catch { /* siguiente */ }
+    }
+  };
+  await Promise.all(Array.from({ length: 8 }, worker));
+  console.log(`prebuild: ${ok} fotos preparadas en Cloudinary (${Math.round((Date.now() - started) / 1000)} s)`);
+}

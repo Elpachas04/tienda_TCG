@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, signal, inject, DestroyRef } from '@angular/core';
 import { EurPipe } from '../../shared/pipes/eur.pipe';
+import { LazyVideoDirective } from '../../shared/directives/lazy-video.directive';
 import { RouterLink } from '@angular/router';
 import { Product, ProductVariant, Color, Leader } from '../../core/models/product.model';
 import { CartItem } from '../../core/models/cart-item.model';
@@ -12,7 +13,7 @@ import { LeaderPickerComponent } from '../../shared/components/leader-picker.com
   selector: 'app-lv-product-card',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, FoilHoverDirective, LeaderPickerComponent, EurPipe],
+  imports: [RouterLink, FoilHoverDirective, LeaderPickerComponent, EurPipe, LazyVideoDirective],
   host: { class: 'block h-full' },
   template: `
     <article class="group relative h-full flex flex-col">
@@ -24,9 +25,9 @@ import { LeaderPickerComponent } from '../../shared/components/leader-picker.com
         <div class="lv-stage absolute inset-0 rounded-card overflow-hidden">
           @if (product.video) {
             <video class="w-full h-full object-cover scale-[1.18] bg-[#111]"
-                   autoplay muted loop playsinline preload="metadata"
+                   muted loop playsinline preload="none"
                    disablepictureinpicture disableremoteplayback
-                   [src]="cloudinary.video(product.video!)"
+                   [lvLazyVideo]="cloudinary.video(product.video!)"
                    [poster]="product.images.length ? cloudinary.card(product.images[0]) : ''">
             </video>
           } @else {
