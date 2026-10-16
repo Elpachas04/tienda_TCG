@@ -97,7 +97,7 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
           </div>
           @if (state() === 'invalid') {
             <p class="font-body text-xs text-red-400 mt-2">
-              Formato inválido — debe ser LV-YYMMDD-XXXX
+              Ese número no tiene el formato de pedido. Es algo como LV-261014-A3K7 y viene en tu email.
             </p>
           }
         </div>
@@ -109,7 +109,7 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
             <div class="text-4xl">🔍</div>
             <p class="font-display text-xl text-lv-cream ">Pedido no encontrado</p>
             <p class="font-body text-[13px] text-lv-cream/60 leading-relaxed">
-              Comprueba que el ID es correcto. Si acabas de hacer el pedido, puede tardar unos minutos en aparecer.
+              Revisa el número en el email del pedido. Si acabas de hacerlo, puede tardar unos minutos en aparecer.
             </p>
           </div>
         }
@@ -117,9 +117,9 @@ type ViewState = 'idle' | 'loading' | 'found' | 'not_found' | 'unavailable' | 'i
         @if (state() === 'unavailable') {
           <div class="liquid-glass rounded-[20px] p-8 border border-lv-gold/10 text-center space-y-3">
             <div class="text-4xl">⚙️</div>
-            <p class="font-display text-xl text-lv-cream ">Activando sistema</p>
+            <p class="font-display text-xl text-lv-cream ">Seguimiento no disponible ahora</p>
             <p class="font-body text-[13px] text-lv-cream/60 leading-relaxed">
-              El seguimiento de pedidos está siendo configurado. Escríbenos a hola@layervault.es para consultar el estado.
+              Escríbenos a hola@layervault.es o por WhatsApp y te decimos cómo va tu pedido.
             </p>
           </div>
         }

@@ -4,9 +4,9 @@ import { CatalogService } from '../../core/services/catalog.service';
 
 const STEPS = [
   { n: '1', title: 'Elige tu pieza',     desc: 'Producto, tamaño y color. Si quieres algo fuera del catálogo, pregúntanos.' },
-  { n: '2', title: 'Mándanos el pedido', desc: 'Solo tu nombre y contacto. Te confirmamos al momento.' },
-  { n: '3', title: 'Paga por Bizum',     desc: 'Rápido y sin rodeos. Empezamos a fabricar en el momento.' },
-  { n: '4', title: 'Recíbela en casa',   desc: '3–7 días laborables. Envío acordado o recogida en persona.' },
+  { n: '2', title: 'Confirma el pedido', desc: 'Solo tu nombre y contacto. Al momento te llega un email con tu número de pedido.' },
+  { n: '3', title: 'Paga por Bizum',     desc: 'Con tu número de pedido como concepto. Te confirmamos el pago en menos de 1 hora.' },
+  { n: '4', title: 'Recíbela o recógela', desc: 'La fabricamos en 3–7 días laborables. Después, envío por Correos o recogida en mano.' },
 ];
 
 @Component({

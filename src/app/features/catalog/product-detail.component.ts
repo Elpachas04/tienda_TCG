@@ -107,7 +107,7 @@ type DetailData = { product: Product | null; colors: Color[] };
                 <p class="lv-lede mt-4">{{ variantTagline(data.product) }}</p>
               </div>
 
-              <!-- Color — swatches directos One Piece -->
+              <!-- Color: muestras directas -->
               @if (data.product.colorPickerEnabled && data.colors.length > 0) {
                 <div class="mb-5">
                   <p class="text-sm font-semibold text-lv-cream mb-3">Color</p>

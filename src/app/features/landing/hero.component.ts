@@ -46,11 +46,11 @@ import { gsap, prefersReducedMotion } from '../../core/motion/motion';
           <dl class="hero-reveal grid grid-cols-3 gap-x-6 sm:gap-x-10 pt-6 border-t border-lv-cream/10 w-full max-w-md">
             <div>
               <dt class="text-xs text-lv-cream/60">Fabricación</dt>
-              <dd class="mt-1 text-[15px] font-semibold text-lv-cream">Uno a uno</dd>
+              <dd class="mt-1 text-[15px] font-semibold text-lv-cream">3–7 días</dd>
             </div>
             <div>
               <dt class="text-xs text-lv-cream/60">Entrega</dt>
-              <dd class="mt-1 text-[15px] font-semibold text-lv-cream">3–7 días</dd>
+              <dd class="mt-1 text-[15px] font-semibold text-lv-cream">Correos o en mano</dd>
             </div>
             <div>
               <dt class="text-xs text-lv-cream/60">Pago</dt>

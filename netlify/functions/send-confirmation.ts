@@ -79,9 +79,10 @@ const handler: Handler = async (event: HandlerEvent) => {
     : "Te contactamos por WhatsApp para coordinar lugar y hora de recogida";
 
   const steps = [
-    ["01", "Abonas el total por Bizum"],
-    ["02", "Fabricamos tu pedido en 3&ndash;7 d&iacute;as laborables"],
-    ["03", step03],
+    ["01", "Haces el Bizum con tu n&uacute;mero de pedido como concepto"],
+    ["02", "Te confirmamos el pago en menos de 1 hora, de lunes a s&aacute;bado"],
+    ["03", "Fabricamos tu pedido en 3&ndash;7 d&iacute;as laborables"],
+    ["04", step03],
   ].map(([n, t]) => `
     <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:10px;">
       <tr>
@@ -119,7 +120,7 @@ const handler: Handler = async (event: HandlerEvent) => {
 
             <p style="margin:0 0 24px;font-size:14px;color:#aaa;line-height:1.6;">
               Hola <strong style="color:#f0f0f0;">${esc(customerName)}</strong>,<br>
-              hemos recibido tu pedido. Te contactamos por email en menos de 24 horas para coordinar el pago y los detalles.
+              hemos recibido tu pedido. Para ponerlo en marcha, haz el Bizum con los datos de abajo: en cuanto llegue te lo confirmamos, en menos de 1 hora de lunes a s&aacute;bado.
             </p>
 
             <!-- Items -->
@@ -174,7 +175,7 @@ const handler: Handler = async (event: HandlerEvent) => {
                   </tr>
                 </table>
 
-                <p style="margin:0;font-size:11px;color:#555;font-style:italic;">Confirmo recepci&oacute;n en menos de 1 hora, lunes a s&aacute;bado</p>
+                <p style="margin:0;font-size:11px;color:#555;font-style:italic;">Te confirmamos el pago en menos de 1 hora, de lunes a s&aacute;bado</p>
               </td></tr>
             </table>
 

@@ -37,9 +37,9 @@ import { SmoothScrollService } from './core/motion/smooth-scroll.service';
             <p class="font-body text-xs text-lv-gold ">Tienes una</p>
             <h2 class="font-display text-5xl text-lv-gold leading-none">₿ERRY</h2>
             <div class="space-y-1 mt-1">
-              <p class="font-display text-2xl text-lv-cream ">Vale 5€</p>
+              <p class="font-display text-2xl text-lv-cream ">Vale 5 €</p>
               <p class="font-body text-xs text-lv-cream/60 leading-relaxed">
-                Descuento automático en tu pedido<br>al gastar un mínimo de 35€
+                Descuento automático en tu pedido<br>al gastar un mínimo de 35 €
               </p>
             </div>
           </div>
@@ -47,7 +47,7 @@ import { SmoothScrollService } from './core/motion/smooth-scroll.service';
             class="bg-lv-gold text-black font-body text-[13px] font-semibold rounded-full px-8 py-3 hover:brightness-110 transition-all duration-200"
             style="animation:fade-up 300ms ease-out 320ms both"
             (click)="closeBerryModal()">
-            ¡A LA TIENDA!
+            Ir a la tienda
           </button>
         </div>
       </div>

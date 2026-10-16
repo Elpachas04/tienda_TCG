@@ -13,7 +13,7 @@ import { WHATSAPP_URL, CONTACT_EMAIL } from '../../shared/constants';
       <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-14 pb-10 grid gap-10 sm:grid-cols-[1.6fr_1fr_1fr]">
         <div>
           <p class="font-display text-2xl font-[760] tracking-[-0.04em] text-lv-cream" style="font-variation-settings: 'opsz' 48">LayerVault</p>
-          <p class="lv-note mt-3 max-w-xs">Accesorios para One Piece TCG impresos en 3D en Barcelona.</p>
+          <p class="lv-note mt-3 max-w-xs">Accesorios para TCG impresos en 3D en Barcelona.</p>
         </div>
         <nav aria-label="Tienda" class="flex flex-col gap-2.5 text-[15px] text-lv-cream/65">
           <a routerLink="/catalog" class="hover:text-lv-cream transition-colors w-fit">Catálogo</a>

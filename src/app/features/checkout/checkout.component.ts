@@ -347,7 +347,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
               <h1 class="lv-h1 mb-3">
                 <span class="block text-lv-cream">Pedido enviado</span>
               </h1>
-              <p class="font-body text-[13px] text-lv-cream/60">Te respondemos en menos de 1 hora</p>
+              <p class="font-body text-[15px] text-lv-cream/75 max-w-sm mx-auto">Te hemos enviado un email con el Bizum y el concepto. En cuanto pagues, te lo confirmamos en menos de 1 hora (de lunes a sábado).</p>
             </div>
 
             @if (orderId()) {
@@ -433,10 +433,10 @@ export class CheckoutComponent implements OnInit {
   });
 
   readonly steps = [
-    { n: '01', text: 'Te contactamos por email para confirmar detalles y coordinar el pago' },
-    { n: '02', text: 'Abona el total por Bizum' },
-    { n: '03', text: 'Fabricamos en 3–7 días laborables' },
-    { n: '04', text: 'Entrega o recogida acordada contigo' },
+    { n: '1', text: 'Haz el Bizum con los datos del email, con tu número de pedido como concepto' },
+    { n: '2', text: 'Te confirmamos el pago en menos de 1 hora (de lunes a sábado)' },
+    { n: '3', text: 'Fabricamos tu pedido en 3–7 días laborables' },
+    { n: '4', text: 'Te lo enviamos por Correos o lo recoges en mano, como hayas elegido' },
   ];
 
   ngOnInit() {
