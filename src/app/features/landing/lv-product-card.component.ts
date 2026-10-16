@@ -18,10 +18,10 @@ import { LeaderPickerComponent } from '../../shared/components/leader-picker.com
     <article class="group relative h-full flex flex-col">
 
       <a [routerLink]="['/product', product.id]" lvFoil
-         class="foil-frame relative block aspect-square rounded-card bg-[#111] flex-shrink-0"
+         class="foil-frame relative block aspect-square rounded-card bg-[#151412] flex-shrink-0"
          [style.view-transition-name]="'product-' + product.id"
          [attr.aria-label]="product.name">
-        <div class="absolute inset-0 rounded-card overflow-hidden">
+        <div class="lv-stage absolute inset-0 rounded-card overflow-hidden">
           @if (product.video) {
             <video class="w-full h-full object-cover scale-[1.18] bg-[#111]"
                    autoplay muted loop playsinline preload="metadata"
@@ -33,7 +33,7 @@ import { LeaderPickerComponent } from '../../shared/components/leader-picker.com
             <img
               [src]="currentImage()"
               [alt]="product.name"
-              class="w-full h-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.04]"
+              class="w-full h-full object-contain p-[7%] transition-transform duration-[900ms] ease-out group-hover:scale-[1.04]"
               loading="lazy"
               draggable="false"
               (contextmenu)="$event.preventDefault()"
@@ -181,7 +181,7 @@ export class LvProductCardComponent implements OnChanges {
   currentImage(): string {
     const valid = this.validImages();
     const id = valid[this.currentImageIndex()];
-    return id ? this.cloudinary.card(id) : PLACEHOLDER;
+    return id ? this.cloudinary.stageCard(id) : PLACEHOLDER;
   }
 
   currentPrice() {
