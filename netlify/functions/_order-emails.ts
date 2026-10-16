@@ -1,7 +1,7 @@
 // Emails automáticos al cambiar el estado de un pedido desde el admin.
 // Maquetación común en _email-kit.ts (la misma que el de "Pedido recibido", send-confirmation.ts).
 
-import { esc, layout, bigValue, button, progress, trackingUrl } from "./_email-kit";
+import { esc, layout, bigValue, button, link, mapsUrl, progress, trackingUrl } from "./_email-kit";
 
 const BREVO_API  = "https://api.brevo.com/v3/smtp/email";
 const FROM_EMAIL = "hola@layervault.es";
@@ -13,12 +13,24 @@ export interface OrderEmailData {
   customerEmail:  string;
   pickup:         boolean;
   trackingNumber?: string;
+  oficina?:       string;   // "Nombre · Dirección, CP Localidad" (columna "Oficina" de Notion)
 }
 
 /** Estados que avisan al cliente. El resto solo se guardan en Notion. */
 export const EMAIL_STATUSES = ["Pago recibido", "Enviado"] as const;
 
 interface EmailContent { subject: string; html: string }
+
+/** Oficina de destino, con la dirección como enlace a Maps */
+function officeBlock(oficina?: string): string {
+  if (!oficina) return "";
+  const [nombre, direccion] = oficina.split(" · ");
+  return `<tr><td>
+    <div style="font-family:'Hanken Grotesk',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.4;color:#8F8A80;">Tu oficina</div>
+    <div style="font-family:'Hanken Grotesk',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.5;color:#F5F0E8;padding-top:2px;">${esc(nombre)}</div>
+    ${direccion ? `<div style="font-family:'Hanken Grotesk',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.5;">${link(mapsUrl(oficina.replace(" · ", ", ")), esc(direccion))}</div>` : ""}
+  </td></tr>`;
+}
 
 // Los emails de estado son cortos a propósito: qué ha cambiado, en qué paso está y un botón.
 function content(status: string, d: OrderEmailData): EmailContent | null {
@@ -64,13 +76,12 @@ function content(status: string, d: OrderEmailData): EmailContent | null {
         orderId: d.orderId, greeting,
         title: "Tu pedido va de camino",
         lede: "Ya est&aacute; en Correos, rumbo a la oficina que elegiste. Cuando llegue, Correos te avisar&aacute; para que pases a recogerlo.",
-        blocks: d.trackingNumber
-          ? [
-              progress(3, false),
-              bigValue("N&uacute;mero de seguimiento", esc(d.trackingNumber), { gold: true, last: true }),
-              button(correosUrl, "Seguir el env&iacute;o en Correos"),
-            ]
-          : [progress(3, false), statusButton],
+        blocks: [
+          progress(3, false),
+          d.trackingNumber ? bigValue("N&uacute;mero de seguimiento", esc(d.trackingNumber), { gold: true, last: true }) : "",
+          officeBlock(d.oficina),
+          d.trackingNumber ? button(correosUrl, "Seguir el env&iacute;o en Correos") : statusButton,
+        ],
       }),
     };
   }
