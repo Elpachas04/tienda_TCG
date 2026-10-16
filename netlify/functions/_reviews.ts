@@ -78,17 +78,22 @@ export function toPublic(r: Review): PublicReview {
   return { name: maskName(r.name), rating: r.rating, text: r.text, productIds: r.productIds, photos: r.photos ?? [], createdAt: r.createdAt };
 }
 
-/** Datos del pedido en Notion: nombre del cliente y productos (de "Items JSON") */
-export async function orderInfo(orderId: string): Promise<{ firstName: string; productIds: string[]; products: string[] } | null> {
+export interface OrderInfo { status: string; firstName: string; productIds: string[]; products: string[] }
+
+/**
+ * Pedido en Notion (la base de datos de pedidos). null = no existe.
+ * Lanza si Notion no responde: en ese caso no se acepta la valoración (mejor "prueba luego" que una sin pedido).
+ */
+export async function orderInfo(orderId: string): Promise<OrderInfo | null> {
   const token = process.env["NOTION_TOKEN"];
   const db    = process.env["NOTION_DATABASE_ID"];
-  if (!token || !db) return null;
+  if (!token || !db) throw new Error("NOTION_TOKEN / NOTION_DATABASE_ID no configurados");
   const res = await fetch(`https://api.notion.com/v1/databases/${db}/query`, {
     method: "POST",
     headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json", "Notion-Version": "2022-06-28" },
     body: JSON.stringify({ filter: { property: "ID Pedido", title: { equals: orderId } } }),
   });
-  if (!res.ok) return null;
+  if (!res.ok) throw new Error(`Notion ${res.status}: ${await res.text()}`);
   const data = await res.json() as { results: Array<{ properties: Record<string, unknown> }> };
   const props = data.results[0]?.properties;
   if (!props) return null;
@@ -96,8 +101,25 @@ export async function orderInfo(orderId: string): Promise<{ firstName: string; p
   let items: Array<{ productId?: string; productName?: string }> = [];
   try { items = JSON.parse(text(props["Items JSON"]) || "[]"); } catch { /* pedido antiguo sin Items JSON */ }
   return {
+    status:     (props["Estado"] as { select?: { name?: string } } | undefined)?.select?.name ?? "",
     firstName:  text(props["Cliente"]).trim().split(/\s+/)[0] ?? "",
     productIds: [...new Set(items.map(i => i.productId).filter((x): x is string => !!x))],
     products:   [...new Set(items.map(i => i.productName).filter((x): x is string => !!x))],
   };
+}
+
+export type OrderCheck = { ok: true; info: OrderInfo } | { ok: false; statusCode: number; error: "order_not_found" | "not_delivered" | "unavailable" };
+
+/** Solo se puede valorar un pedido que existe en Notion y está marcado como Entregado */
+export async function checkOrder(orderId: string): Promise<OrderCheck> {
+  let info: OrderInfo | null;
+  try {
+    info = await orderInfo(orderId);
+  } catch (err) {
+    console.error("checkOrder:", err);
+    return { ok: false, statusCode: 503, error: "unavailable" };
+  }
+  if (!info) return { ok: false, statusCode: 404, error: "order_not_found" };
+  if (info.status !== "Entregado") return { ok: false, statusCode: 409, error: "not_delivered" };
+  return { ok: true, info };
 }

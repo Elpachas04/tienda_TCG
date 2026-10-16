@@ -2,7 +2,7 @@ import type { Handler } from "@netlify/functions";
 import { randomBytes } from "node:crypto";
 import { originOk } from "./_guard";
 import { uploadImage } from "./_cloudinary";
-import { photoFolder, verifyReviewToken } from "./_reviews";
+import { checkOrder, photoFolder, verifyReviewToken } from "./_reviews";
 
 const MAX_PHOTO_BODY = 4_000_000; // el navegador la reduce a ~1600 px antes de mandarla
 
@@ -28,6 +28,8 @@ const handler: Handler = async (event) => {
     return json(400, { error: "bad_request" });
   }
   if (!verifyReviewToken(orderId, token)) return json(403, { error: "invalid_link" });
+  const order = await checkOrder(orderId);
+  if (!order.ok) return json(order.statusCode, { error: order.error });
 
   try {
     const publicId = await uploadImage(dataBase64, {

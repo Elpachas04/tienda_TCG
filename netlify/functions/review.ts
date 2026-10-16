@@ -1,7 +1,7 @@
 import type { Handler } from "@netlify/functions";
 import { originOk, requestOk, MAX_BODY } from "./_guard";
 import { destroyImage } from "./_cloudinary";
-import { MAX_PHOTOS, Review, orderInfo, photoFolder, reviewsStore, verifyReviewToken } from "./_reviews";
+import { MAX_PHOTOS, Review, checkOrder, photoFolder, reviewsStore, verifyReviewToken } from "./_reviews";
 
 // GET  /api/review?id=LV-…&t=…  → datos para el formulario (nombre, productos y valoración previa si la hay)
 // POST /api/review              → guarda o actualiza la valoración (queda "pendiente" hasta aprobarla en el admin)
@@ -16,12 +16,13 @@ const handler: Handler = async (event) => {
       const t  = event.queryStringParameters?.["t"] ?? "";
       if (!verifyReviewToken(id, t)) return json(403, { error: "invalid_link" });
 
+      const order = await checkOrder(id);
+      if (!order.ok) return json(order.statusCode, { error: order.error });
       const store    = reviewsStore(event);
       const existing = await store.get(id, { type: "json" }) as Review | null;
-      const info     = await orderInfo(id).catch(() => null);
       return json(200, {
-        firstName: info?.firstName ?? "",
-        products:  info?.products ?? [],
+        firstName: order.info.firstName,
+        products:  order.info.products,
         review:    existing ? { name: existing.name, rating: existing.rating, text: existing.text, photos: existing.photos ?? [], status: existing.status } : null,
       });
     }
@@ -45,15 +46,17 @@ const handler: Handler = async (event) => {
       const photos = (Array.isArray(body["photos"]) ? body["photos"] : [])
         .map(String).filter(id => id.startsWith(photoFolder(orderId))).slice(0, MAX_PHOTOS);
 
+      // El nº de pedido tiene que existir en Notion y estar entregado, también al editar
+      const order = await checkOrder(orderId);
+      if (!order.ok) return json(order.statusCode, { error: order.error });
       const store    = reviewsStore(event);
       const existing = await store.get(orderId, { type: "json" }) as Review | null;
-      const info     = existing ? null : await orderInfo(orderId).catch(() => null);
       const now      = new Date().toISOString();
       const review: Review = {
         orderId, name, rating, text,
-        productIds: existing?.productIds ?? info?.productIds ?? [],
+        productIds: order.info.productIds,
         photos,
-        products:   existing?.products ?? info?.products ?? [],
+        products:   order.info.products,
         // Si la edita después de publicada, vuelve a revisión
         status:     "pendiente",
         createdAt:  existing?.createdAt ?? now,
