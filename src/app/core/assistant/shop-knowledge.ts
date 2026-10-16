@@ -82,6 +82,93 @@ export function fitInfo(product: Product): string | null {
   return null;
 }
 
+type Specific = [RegExp, string, boolean?];
+const R = {
+  whichSleeves: /(con )?que fundas?|fundas? encaja/,
+  sleeves: /doble funda|enfundad|con funda|sin funda|fundas? encaja|que fundas?|perfect fit|dragon shield/,
+  don: /\bdon\b/,
+  snap: /mini ?snaps?/,
+  toploader: /toploaders?/,
+  howTo: /como se usa|como funciona|como se utiliza|como lo uso/,
+  count: /cuantas cartas|cuantas caben|cuantos caben|capacidad|que cabe/,
+  size: /medida|tamano|dimension|\bcm\b|cuanto mide/,
+  what: /que es\b|para que sirve/,
+};
+const NO_CM = 'Las medidas en cm no las tenemos publicadas; te las pasamos por WhatsApp.';
+
+/**
+ * Respuestas concretas por producto, revisadas pregunta a pregunta. Van antes que las genéricas.
+ * El tercer valor marca las que necesitan el botón de WhatsApp (dato que no está publicado).
+ */
+const SPECIFIC: Record<string, Specific[]> = {
+  'leader-vault': [
+    [R.don, 'Sí, las 10 DON!! van en su propio compartimento, separadas del mazo.'],
+    [/fichas/, 'Freeze, Tax, Negate, Blocker y Effect Used, imantadas bajo la tapa.'],
+    [/otro lider|mi lider|cambiar (el )?lider|con otro/, 'Sí. Ahora está con Yamato, pero te la hacemos con tu Líder por encargo. Escríbenos por WhatsApp.', true],
+    [R.whichSleeves, 'Con doble funda: Perfect Fit por dentro y Dragon Shield (o una exterior de tamaño estándar) por fuera.'],
+    [R.sleeves, 'Sí, está pensada para doble funda: Perfect Fit por dentro y Dragon Shield por fuera.'],
+    [R.size, `${NO_CM} Lo que sí: cabe el mazo con doble funda y las 10 DON!!.`, true],
+    [R.count, 'El mazo con doble funda (Perfect Fit + Dragon Shield) en un compartimento y las 10 DON!! en el otro.'],
+    [R.what, 'Una deckbox con el Líder a la vista: mazo en un compartimento, DON!! en otro y las fichas de estado imantadas bajo la tapa.'],
+  ],
+  'deckbox-ventana': [
+    [R.don, 'Si además del mazo caben las 10 DON!! no lo tenemos publicado; te lo confirmamos por WhatsApp.', true],
+    [/se ve|ventana/, 'Sí, el Líder queda a la vista en la ventana frontal mientras juegas.'],
+    [/wanted/, 'Es una barra deslizante con el cartel de WANTED, integrada en la caja. Si quieres verla de cerca, te mandamos fotos por WhatsApp.', true],
+    [R.whichSleeves, 'Con doble funda: Perfect Fit por dentro y Dragon Shield (o una exterior de tamaño estándar) por fuera.'],
+    [R.sleeves, 'Sí, entra el mazo con Perfect Fit por dentro y Dragon Shield por fuera.'],
+    [R.size, `${NO_CM} Lo que sí: cabe el mazo con doble funda.`, true],
+    [R.count, 'Tu mazo con doble funda (Perfect Fit + Dragon Shield), con el Líder a la vista en la ventana frontal.'],
+    [R.what, 'Una deckbox para el mazo con doble funda, con ventana frontal para lucir el Líder y barra WANTED deslizante.'],
+  ],
+  'caja-minisnap': [
+    [R.toploader, 'Está hecha a medida para Mini Snaps, sin holgura, así que no es para toploaders. Para toploaders tienes la Shutter Vault.'],
+    [/cuantos|cuantas|capacidad/, 'Cuántos Mini Snaps entran no lo tenemos publicado; te lo confirmamos por WhatsApp. Lo que sí: van en fila y sin holgura.', true],
+    [R.sleeves, 'La caja guarda Mini Snaps, no cartas sueltas: si tu carta enfundada entra en el Mini Snap, el Mini Snap entra en la caja.'],
+    [R.size, `${NO_CM} Lo que sí: está hecha a medida para Mini Snaps.`, true],
+    [R.count, 'Cartas dentro de Mini Snaps (one-touch magnéticos), en fila y sin holgura.'],
+    [R.what, 'Una caja hecha a medida para Mini Snaps: van en fila, sin holgura, y no se mueven en la mochila.'],
+  ],
+  'deckbox-toploader': [
+    [R.snap, 'Está pensada para toploaders estándar; si entran Mini Snaps no lo tenemos comprobado, te lo confirmamos por WhatsApp. Para Mini Snaps tienes la Tactical Vault.', true],
+    [/cuantos|cuantas|capacidad/, 'Cuántos toploaders entran no lo tenemos publicado; te lo confirmamos por WhatsApp. Lo que sí: son toploaders estándar de 3" × 4".', true],
+    [R.sleeves, 'La caja guarda toploaders estándar (3" × 4"), no cartas sueltas: si tu carta enfundada entra en el toploader, entra en la caja.'],
+    [R.size, `${NO_CM} Lo que sí: es para toploaders estándar de 3" × 4".`, true],
+    [R.count, 'Cartas dentro de toploaders estándar (3" × 4").'],
+    [R.what, 'Una caja para toploaders con persiana enrollable: los metes, cierras y no se salen ni cogen polvo.'],
+  ],
+  'organizador-fundas': [
+    [R.toploader, '30 toploaders en vertical.'],
+    [/cartas/, 'No es para cartas sino para fundas vacías: 30 toploaders en vertical, 45 semirrígidas y un hueco para penny sleeves.'],
+    [R.size, `${NO_CM} Lo que sí: caben 30 toploaders, 45 semirrígidas y penny sleeves.`, true],
+    [/fundas?|que cabe|capacidad/, 'Fundas vacías: 30 toploaders en vertical, 45 semirrígidas y un hueco para penny sleeves.'],
+    [R.what, 'Un organizador para fundas vacías con tres huecos: toploaders, semirrígidas y penny sleeves.'],
+  ],
+  'aplastador': [
+    [/cual necesito|para un mazo|cual me|que tamano/, 'Para 50 cartas + Líder, el de 60 (20 €). Si quieres meter también las 10 DON!!, el de 100 (25 €).'],
+    [R.howTo, 'El paso a paso te lo explicamos por WhatsApp. Lo que sí: no lleva tornillos y vale con doble funda.', true],
+    [R.whichSleeves, 'Con cartas enfundadas, también con doble funda.'],
+    [R.sleeves, 'Sí, es compatible con doble funda.'],
+    [R.size, `${NO_CM} Lo que sí: hay versión de 60 y de 100 cartas.`, true],
+    [R.count, 'Hay dos tamaños: 60 cartas (20 €) y 100 cartas (25 €), enfundadas. Para un mazo de One Piece basta el de 60; el de 100 si quieres meter también las DON!!.'],
+    [R.what, 'Una prensa para aplanar tus cartas enfundadas y quitarles el aire; vale con doble funda y no lleva tornillos.'],
+  ],
+  'caja-bulk': [
+    [/separador/, 'Un pack de 10 separadores para dividir la caja por secciones. Se añaden por 2 € marcándolos en la ficha.'],
+    [R.whichSleeves, 'La capacidad (400 / 500 / 650) se cuenta con cartas sin funda. Con funda también caben, pero bastantes menos; si quieres la cifra, te la confirmamos por WhatsApp.', true],
+    [R.sleeves, 'Caben, pero la capacidad publicada (400 / 500 / 650) es sin funda; con funda caben bastantes menos. Si quieres la cifra, te la confirmamos por WhatsApp.', true],
+    [R.what, 'Cajas bulk apilables de paredes rígidas, en tres tamaños: 400, 500 y 650 cartas sin funda.'],
+  ],
+};
+
+/** Respuesta concreta para este producto, si la pregunta encaja con alguna revisada */
+export function specificAnswer(question: string, product: Product): Answer | null {
+  const q = normalize(question);
+  const hit = SPECIFIC[product.id]?.find(([re]) => re.test(q));
+  if (!hit) return null;
+  return { text: hit[1], link: hit[2] ? whatsapp(question || `Hola, una duda sobre el ${product.name}`) : undefined };
+}
+
 // Palabras de nombres de producto que también se usan al preguntar por cualquier pieza ("¿con qué fundas…?")
 const GENERIC_WORDS = new Set(['fundas', 'funda', 'vault', 'leader', 'caja', 'cajas', 'cartas', 'box']);
 
@@ -122,8 +209,9 @@ export function answerTopic(topic: Topic, k: Knowledge, product: Product | null,
   switch (topic) {
     case 'price': {
       if (!product) return { text: `Los precios van de ${eur(Math.min(...k.products.map(p => p.price)))} a ${eur(Math.max(...k.products.flatMap(p => [p.price, ...(p.variants ?? []).map(v => v.price)])))}. Los ves en cada ficha del catálogo.`, link: { label: 'Ver catálogo', url: '/catalog' } };
-      if (product.variants?.length) return { text: `${product.name}: ${pickVariants(product, question).map(v => `${v.label}, ${eur(v.price)}`).join(' · ')}. El color no cambia el precio.` };
-      return { text: `${product.name} cuesta ${eur(product.price)}. El color no cambia el precio.` };
+      const color = product.colorPickerEnabled ? ' El color no cambia el precio.' : '';
+      if (product.variants?.length) return { text: `${pickVariants(product, question).map(v => `${v.label}, ${eur(v.price)}`).join(' · ')}.${color}` };
+      return { text: `${eur(product.price)}.${color}` };
     }
     case 'colors': {
       const names = k.colors.map(c => c.name.toLowerCase());
@@ -144,9 +232,9 @@ export function answerTopic(topic: Topic, k: Knowledge, product: Product | null,
         }).join(' · ') + ' (largo × ancho × alto).' };
       }
       if (fit) {
-        if (topic === 'capacity') return { text: `${product.name}: ${fit}` };
+        if (topic === 'capacity') return { text: fit };
         return {
-          text: `${product.name}: ${fit} Las medidas exactas en cm te las pasamos por WhatsApp.`,
+          text: `${fit} Las medidas exactas en cm te las pasamos por WhatsApp.`,
           link: whatsapp(question || `Hola, ¿qué medidas tiene el ${product.name}?`),
         };
       }
@@ -161,7 +249,7 @@ export function answerTopic(topic: Topic, k: Knowledge, product: Product | null,
     case 'leader': {
       if (product && !product.leaderPickerEnabled) {
         const about = [product.description, ...product.features].find(t => /l[ií]der/i.test(t));
-        if (about) return { text: `${product.name}: ${about.split(/(?<=\.)\s+/).find(x => /l[ií]der/i.test(x)) ?? about}` };
+        if (about) return { text: `${about.split(/(?<=\.)\s+/).find(x => /l[ií]der/i.test(x)) ?? about}` };
       }
       const p = product?.leaderPickerEnabled ? product : k.products.find(x => x.leaderPickerEnabled) ?? null;
       if (!p?.leaders?.length) return { text: 'Ninguna pieza del catálogo lleva ahora mismo selector de líder.', link: whatsapp(question) };
@@ -187,13 +275,13 @@ export function answerTopic(topic: Topic, k: Knowledge, product: Product | null,
     case 'sleeves': {
       if (product) {
         const fit = fitInfo(product);
-        if (fit) return { text: `${product.name}: ${fit}` };
+        if (fit) return { text: fit };
         return { text: `No tengo el dato de fundas de ${product.name} en la web. Pregúntanos y te lo confirmamos.`, link: whatsapp(question || `Hola, ¿con qué fundas es compatible el ${product.name}?`) };
       }
       return { text: 'Depende de la pieza: las deckboxes van con doble funda (Perfect Fit + Dragon Shield) y las cajas de almacenaje se cuentan con cartas sin funda. ¿De cuál quieres saberlo?', link: { label: 'Ver catálogo', url: '/catalog' } };
     }
     case 'what':
-      if (product) return { text: `${product.name}: ${product.description}`, link: { label: 'Ver la ficha', url: `/product/${product.id}` } };
+      if (product) return { text: product.description, link: { label: 'Ver la ficha', url: `/product/${product.id}` } };
       return { text: 'Hacemos accesorios para TCG impresos en 3D: deckboxes, cajas de almacenaje, organizadores y herramientas, uno a uno y en tu color.', link: { label: 'Ver catálogo', url: '/catalog' } };
     case 'returns':
       return {
@@ -226,14 +314,24 @@ export function answer(question: string, k: Knowledge, pageProduct: Product | nu
   if (/^(hola|buenas|hey|buenos dias|buenas tardes|buenas noches)$/.test(q)) {
     return { text: 'Hola. Pregúntame por precios, medidas, colores, plazos, envío o pago.' };
   }
-  const product = findProduct(question, k.products) ?? pageProduct;
+  const named = findProduct(question, k.products);
+  const product = named ?? pageProduct;
+  const res = answerFor(question, k, product);
+  // En la ficha se sobreentiende el producto; si se pregunta por otro, se nombra
+  if (product && named && named !== pageProduct && !res.text.includes(product.name)) return { ...res, text: `${product.name}: ${res.text}` };
+  return res;
+}
+
+function answerFor(question: string, k: Knowledge, product: Product | null): Answer {
+  const specific = product && specificAnswer(question, product);
+  if (specific) return specific;
   const topics = detectTopics(question);
   // "¿Caben con doble funda?" va de fundas aunque diga "caben"
   if (topics.includes('sleeves') && product) return answerTopic('sleeves', k, product, question);
   if (topics.length) return answerTopic(topics[0], k, product, question);
   if (product) {
     const hit = featureMatch(question, product);
-    if (hit) return { text: `${product.name}: ${hit}` };
+    if (hit) return { text: hit };
   }
   if (product && findProduct(question, k.products)) return answerTopic('what', k, product, question);
   return {
@@ -260,7 +358,7 @@ export function productFaq(product: Product, k: Knowledge): FaqItem[] {
     ['¿Cómo se paga?', 'payment'],
     ['¿Se puede devolver?', 'returns'],
   );
-  return items.map(([q, topic]) => ({ q, topic, a: answerTopic(topic, k, product) }));
+  return items.map(([q, topic]) => ({ q, topic, a: specificAnswer(q, product) ?? answerTopic(topic, k, product) }));
 }
 
 /** Preguntas frecuentes fuera de las fichas */
