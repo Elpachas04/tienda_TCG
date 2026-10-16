@@ -189,17 +189,36 @@ export function answer(question: string, k: Knowledge, pageProduct: Product | nu
   };
 }
 
+export interface FaqItem { q: string; topic: Topic; a: Answer }
+
 /** Preguntas frecuentes de una ficha, solo las que tienen respuesta con datos */
-export function productFaq(product: Product, k: Knowledge): { q: string; a: Answer }[] {
-  const faq: { q: string; a: Answer }[] = [];
-  if (product.variants?.some(v => v.specs)) faq.push({ q: '¿Qué medidas tiene y cuántas cartas caben?', a: answerTopic('size', k, product) });
-  if ([product.description, ...product.features].some(t => /fund|toploader|snap|penny/i.test(t))) faq.push({ q: '¿Con qué fundas encaja?', a: answerTopic('sleeves', k, product) });
-  if (product.colorPickerEnabled) faq.push({ q: '¿En qué colores se puede hacer?', a: answerTopic('colors', k, product) });
-  if (product.leaderPickerEnabled && product.leaders?.length) faq.push({ q: '¿Qué líderes hay?', a: answerTopic('leader', k, product) });
-  faq.push({ q: '¿Incluye cartas?', a: answerTopic('cards', k, product) });
-  faq.push({ q: '¿Cuánto tarda?', a: answerTopic('time', k, product) });
-  faq.push({ q: '¿Cómo es el envío?', a: answerTopic('shipping', k, product) });
-  faq.push({ q: '¿Cómo se paga?', a: answerTopic('payment', k, product) });
-  faq.push({ q: '¿Se puede devolver?', a: answerTopic('returns', k, product) });
-  return faq;
+export function productFaq(product: Product, k: Knowledge): FaqItem[] {
+  const items: [string, Topic][] = [];
+  if (product.variants?.some(v => v.specs)) items.push(['¿Qué medidas tiene y cuántas cartas caben?', 'size']);
+  if ([product.description, ...product.features].some(t => /fund|toploader|snap|penny/i.test(t))) items.push(['¿Con qué fundas encaja?', 'sleeves']);
+  if (product.colorPickerEnabled) items.push(['¿En qué colores se puede hacer?', 'colors']);
+  if (product.leaderPickerEnabled && product.leaders?.length) items.push(['¿Qué líderes hay?', 'leader']);
+  items.push(
+    ['¿Cuánto cuesta?', 'price'],
+    ['¿Incluye cartas?', 'cards'],
+    ['¿Cuánto tarda?', 'time'],
+    ['¿Cómo es el envío?', 'shipping'],
+    ['¿Cómo se paga?', 'payment'],
+    ['¿Se puede devolver?', 'returns'],
+  );
+  return items.map(([q, topic]) => ({ q, topic, a: answerTopic(topic, k, product) }));
+}
+
+/** Preguntas frecuentes fuera de las fichas */
+export function generalFaq(k: Knowledge): FaqItem[] {
+  const items: [string, Topic][] = [
+    ['¿Qué vendéis?', 'what'],
+    ['¿Cuánto tarda un pedido?', 'time'],
+    ['¿Cómo es el envío?', 'shipping'],
+    ['¿Cómo se paga?', 'payment'],
+    ['¿Hacéis encargos personalizados?', 'custom'],
+    ['¿Dónde está mi pedido?', 'tracking'],
+    ['¿Se puede devolver?', 'returns'],
+  ];
+  return items.map(([q, topic]) => ({ q, topic, a: answerTopic(topic, k, null) }));
 }

@@ -12,7 +12,7 @@ import { LeaderPickerComponent } from '../../shared/components/leader-picker.com
 import { CustomLeaderRequestComponent } from '../../shared/components/custom-leader-request.component';
 import { FoilHoverDirective } from '../../shared/directives/foil-hover.directive';
 import { SeoService } from '../../core/services/seo.service';
-import { ProductFaqComponent } from '../../shared/components/product-faq.component';
+import { AssistantService } from '../../core/assistant/assistant.service';
 
 type DetailData = { product: Product | null; colors: Color[] };
 
@@ -20,7 +20,7 @@ type DetailData = { product: Product | null; colors: Color[] };
   selector: 'app-product-detail',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, LeaderPickerComponent, CustomLeaderRequestComponent, FoilHoverDirective, EurPipe, ProductFaqComponent],
+  imports: [RouterLink, LeaderPickerComponent, CustomLeaderRequestComponent, FoilHoverDirective, EurPipe],
   host: { class: 'block' },
   template: `
     @let data = productData();
@@ -281,10 +281,16 @@ type DetailData = { product: Product | null; colors: Color[] };
                 </button>
               </div>
 
+              <button type="button" (click)="assistant.show()"
+                      class="mt-4 self-start inline-flex items-center gap-2 min-h-[44px] text-[15px] text-lv-cream/70 hover:text-lv-foil transition-colors">
+                <svg class="w-5 h-5 text-lv-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/>
+                </svg>
+                ¿Dudas sobre esta pieza? Pregunta aquí
+              </button>
+
             </div>
           </div>
-
-          <app-product-faq [product]="data.product" />
         </div>
       </div>
     } @else {
@@ -304,6 +310,7 @@ export class ProductDetailComponent {
   private cartService    = inject(CartService);
   private destroyRef     = inject(DestroyRef);
   private seo            = inject(SeoService);
+  protected readonly assistant = inject(AssistantService);
   protected readonly cloudinary = inject(CloudinaryService);
 
   readonly currentImageIndex  = signal(0);
