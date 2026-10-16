@@ -1,6 +1,12 @@
 /
 /catalog
-/seguimiento
+/product/leader-vault
+/product/deckbox-ventana
+/product/caja-minisnap
+/product/deckbox-toploader
+/product/organizador-fundas
+/product/aplastador
+/product/caja-bulk
 /legal
 /privacidad
 /404

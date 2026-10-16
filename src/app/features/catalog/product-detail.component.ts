@@ -11,6 +11,7 @@ import { CloudinaryService } from '../../core/services/cloudinary.service';
 import { LeaderPickerComponent } from '../../shared/components/leader-picker.component';
 import { CustomLeaderRequestComponent } from '../../shared/components/custom-leader-request.component';
 import { FoilHoverDirective } from '../../shared/directives/foil-hover.directive';
+import { SeoService } from '../../core/services/seo.service';
 
 type DetailData = { product: Product | null; colors: Color[] };
 
@@ -299,6 +300,7 @@ export class ProductDetailComponent {
   private catalogService = inject(CatalogService);
   private cartService    = inject(CartService);
   private destroyRef     = inject(DestroyRef);
+  private seo            = inject(SeoService);
   protected readonly cloudinary = inject(CloudinaryService);
 
   readonly currentImageIndex  = signal(0);
@@ -337,7 +339,8 @@ export class ProductDetailComponent {
       map(params => ({
         product: this.catalogService.getProductById(params['id']) ?? null,
         colors:  this.catalogService.colors as Color[],
-      }))
+      })),
+      tap(data => this.seo.setProduct(data.product, `/product/${this.route.snapshot.params['id']}`))
     )
   );
 
@@ -385,6 +388,7 @@ export class ProductDetailComponent {
 
   private preloadThumbs(images: string[]): void {
     this.abortThumbProbes();
+    if (typeof Image === 'undefined') return; // prerender: no hay navegador
     this.thumbProbes = images.map(id => {
       const probe = new Image();
       probe.onload = () => this.readyThumbs.update(arr => [...arr, id]);
@@ -399,6 +403,7 @@ export class ProductDetailComponent {
   }
 
   private preloadColorImages(key: string, colors: Color[]): void {
+    if (typeof Image === 'undefined') return;
     this.colorProbes.forEach(p => { p.src = ''; });
     this.colorProbes = colors.map(color => {
       const img = new Image();

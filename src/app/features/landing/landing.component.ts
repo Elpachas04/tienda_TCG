@@ -15,12 +15,8 @@ import { LvFooterComponent } from './lv-footer.component';
     <!-- Hero: pinta inmediatamente (LCP) -->
     <app-lv-hero />
 
-    <!-- Productos destacados: on viewport para no bloquear el hero -->
-    @defer (on viewport) {
-      <app-landing-products />
-    } @placeholder {
-      <div class="min-h-[400px]"></div>
-    }
+    <!-- Productos destacados: sin @defer para que salgan en el HTML prerenderizado (enlaces a las fichas) -->
+    <app-landing-products />
 
     <!-- Sección de colores: on idle para que el layout esté estable antes de cualquier anchor scroll -->
     @defer (on idle) {

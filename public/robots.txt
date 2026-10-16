@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /checkout
 
 Sitemap: https://layervault.es/sitemap.xml

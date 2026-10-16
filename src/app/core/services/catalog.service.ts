@@ -1,9 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Product, ProductCatalog, CategoryItem, Color, ShopSettings, ProductAddon } from '../models/product.model';
 import seedData from '../../../assets/data/products.json';
 
 @Injectable({ providedIn: 'root' })
 export class CatalogService {
+  private readonly platformId = inject(PLATFORM_ID);
   // Seed local — se sustituye por el catálogo del blob al llamar a load()
   private catalog: ProductCatalog = seedData as unknown as ProductCatalog;
 
@@ -15,6 +17,8 @@ export class CatalogService {
 
   /** Se llama desde el APP_INITIALIZER — si falla, se mantiene el seed local */
   async load(): Promise<void> {
+    // Al prerenderizar no hay servidor de API: se usa el catálogo del build (ver scripts/prebuild.mjs)
+    if (!isPlatformBrowser(this.platformId)) return;
     try {
       // no-cache: revalida siempre, para que un cambio hecho en el admin se vea al recargar
       const res = await fetch('/api/products', { cache: 'no-cache' });

@@ -10,7 +10,6 @@ import { BASE_PILL } from '../../shared/constants';
 type CategoryFilter = CategoryItem['id'];
 type CategoryPill = CategoryItem & { count: number };
 
-const SKELETONS = [1,2,3,4,5,6,7,8];
 
 @Component({
   selector: 'app-catalog',
@@ -41,14 +40,9 @@ const SKELETONS = [1,2,3,4,5,6,7,8];
           </div>
         </header>
 
-        <!--
-          Grid diferido hasta que el browser esté idle.
-          El usuario puede navegar, hacer clic en pills y leer el header
-          mientras el grid de tarjetas se construye en segundo plano.
-        -->
         <h2 class="sr-only">Productos</h2>
-        @defer (on idle) {
-          @if (filteredProducts().length === 0) {
+        <!-- Sin @defer: la rejilla sale en el HTML prerenderizado con enlaces a cada ficha -->
+        @if (filteredProducts().length === 0) {
             <p class="font-body text-[13px] text-lv-cream/60 text-center py-28">
               Sin productos en esta categoría
             </p>
@@ -63,20 +57,6 @@ const SKELETONS = [1,2,3,4,5,6,7,8];
               }
             </div>
           }
-        } @placeholder {
-          <!-- Skeleton mostrado mientras el browser no está idle aún -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12 lg:gap-x-8">
-            @for (i of skeletons; track i) {
-              <div class="animate-pulse">
-                <div class="aspect-square rounded-card bg-white/[0.035]"></div>
-                <div class="pt-4 space-y-3">
-                  <div class="h-5 bg-white/[0.06] rounded-full w-3/5"></div>
-                  <div class="h-3 bg-white/[0.04] rounded-full w-4/5"></div>
-                </div>
-              </div>
-            }
-          </div>
-        }
 
       </div>
     </div>
@@ -86,7 +66,6 @@ export class CatalogComponent {
   protected readonly catalogService = inject(CatalogService);
   private   readonly cartService    = inject(CartService);
 
-  protected readonly skeletons = SKELETONS;
 
   get colorsArr() { return this.catalogService.colors as Color[]; }
 

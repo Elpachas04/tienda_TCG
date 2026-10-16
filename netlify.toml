@@ -1,5 +1,5 @@
 [build]
-  command = "npm install && ng build --configuration production"
+  command = "npm install && node scripts/prebuild.mjs --live && ng build --configuration production"
   publish = "dist/tcg3d-shop/browser"
 
 [build.environment]
@@ -103,8 +103,41 @@
   to   = "/.netlify/functions/admin-order-status"
   status = 200
 
-# ── Angular SPA fallback ────────────────────────────────────────────────────
+# ── Rutas de la app sin HTML prerenderizado: las sirve index.html y las pinta Angular ──
+# (las que sí tienen HTML — inicio, catálogo, fichas, legal — se sirven tal cual: estas reglas
+#  no se aplican cuando existe el archivo)
 [[redirects]]
-  from   = "/*"
+  from   = "/product/*"
   to     = "/index.html"
   status = 200
+
+[[redirects]]
+  from   = "/checkout"
+  to     = "/index.html"
+  status = 200
+
+[[redirects]]
+  from   = "/seguimiento"
+  to     = "/index.html"
+  status = 200
+
+[[redirects]]
+  from   = "/gum-gum-berry"
+  to     = "/index.html"
+  status = 200
+
+[[redirects]]
+  from   = "/admin"
+  to     = "/index.html"
+  status = 200
+
+[[redirects]]
+  from   = "/admin/*"
+  to     = "/index.html"
+  status = 200
+
+# ── Cualquier otra URL: página 404 con estado 404 de verdad (no un 200 que Google tome por página válida) ──
+[[redirects]]
+  from   = "/*"
+  to     = "/404/index.html"
+  status = 404

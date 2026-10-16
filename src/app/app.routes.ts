@@ -13,17 +13,20 @@ export const routes: Routes = [
   {
     path: '',
     title: 'LayerVault — Accesorios TCG impresos en 3D | Barcelona',
+    data: { description: 'Deckboxes, expositores y organizadores para TCG impresos en 3D en Barcelona. Fabricados uno a uno, en el color que elijas. Envío a Península.' },
     loadComponent: () =>
       import('./features/landing/landing.component').then(m => m.LandingComponent),
   },
   {
     path: 'catalog',
     title: 'Catálogo — Deckboxes, Almacenaje y Accesorios | LayerVault',
+    data: { description: 'Todo el catálogo de LayerVault: deckboxes, cajas de almacenaje, organizadores y herramientas para TCG impresos en 3D en Barcelona.' },
     loadComponent: () =>
       import('./features/catalog/catalog.component').then(m => m.CatalogComponent),
   },
   {
     path: 'product/:id',
+    data: { custom: true },
     loadComponent: () =>
       import('./features/catalog/product-detail.component').then(m => m.ProductDetailComponent),
   },
@@ -31,41 +34,48 @@ export const routes: Routes = [
     path: 'checkout',
     title: 'Confirmar pedido | LayerVault',
     canActivate: [cartNotEmpty],
+    data: { noindex: true },
     loadComponent: () =>
       import('./features/checkout/checkout.component').then(m => m.CheckoutComponent),
   },
   {
     path: 'seguimiento',
     title: 'Seguimiento de pedido | LayerVault',
+    data: { noindex: true },
     loadComponent: () =>
       import('./features/tracking/tracking.component').then(m => m.TrackingComponent),
   },
   {
     path: 'legal',
     title: 'Aviso legal | LayerVault',
+    data: { description: 'Aviso legal de LayerVault, tienda de accesorios TCG impresos en 3D en Barcelona.' },
     loadComponent: () =>
       import('./features/legal/legal.component').then(m => m.LegalComponent),
   },
   {
     path: 'privacidad',
     title: 'Política de privacidad | LayerVault',
+    data: { description: 'Política de privacidad de LayerVault: qué datos guardamos de tus pedidos y para qué.' },
     loadComponent: () =>
       import('./features/legal/legal.component').then(m => m.LegalComponent),
   },
   {
     path: '404',
     title: 'Página no encontrada | LayerVault',
+    data: { noindex: true },
     loadComponent: () =>
       import('./features/not-found/not-found.component').then(m => m.NotFoundComponent),
   },
   {
     path: 'gum-gum-berry',
+    data: { noindex: true },
     loadComponent: () =>
       import('./features/berry/gum-gum-berry.component').then(m => m.GumGumBerryComponent),
   },
   {
     path: 'admin/login',
     title: 'Admin — LayerVault',
+    data: { noindex: true },
     loadComponent: () =>
       import('./features/admin/admin-login.component').then(m => m.AdminLoginComponent),
   },
@@ -73,6 +83,7 @@ export const routes: Routes = [
     path: 'admin',
     title: 'Admin — LayerVault',
     canActivate: [adminGuard],
+    data: { noindex: true },
     loadComponent: () =>
       import('./features/admin/admin-layout.component').then(m => m.AdminLayoutComponent),
     children: [

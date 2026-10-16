@@ -119,6 +119,18 @@ un failsafe CSS a los 2,5 s. Todo respeta `prefers-reduced-motion`.
 
 ---
 
+## SEO y prerender
+
+- Build: `node scripts/prebuild.mjs --live && ng build` (lo hace Netlify). El script descarga el catálogo real
+  de `/api/products`, lo deja en `src/assets/data/products.json` y genera `prerender-routes.txt` y `public/sitemap.xml`
+- Se prerenderizan inicio, catálogo, cada ficha visible, legal, privacidad y /404 (`angular.json` → `prerender.routesFile`).
+  Nada de `@defer` en contenido que deba verse en el HTML (rejilla del catálogo, destacados del inicio)
+- En código que corre al prerenderizar no hay `window`, `Image`, `fetch` relativo… usar `afterNextRender` o comprobar la plataforma
+- `SeoService` pone título, descripción, canonical, Open Graph y robots por ruta (`data: { description, noindex }`);
+  la ficha llama a `setProduct()` y añade JSON-LD de Product con precio y disponibilidad
+- `netlify.toml`: rutas de la app sin HTML propio → `index.html` (200); cualquier otra URL → `/404/index.html` con estado 404.
+  Si añades una ruta nueva que no se prerenderiza, añádela ahí
+
 ## Datos
 
 Catálogo en `src/assets/data/products.json`.
