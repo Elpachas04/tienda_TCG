@@ -75,7 +75,7 @@ import { CONTACT_EMAIL } from '../../shared/constants';
                 Los envíos se realizan únicamente a Península mediante Correos, con entrega en oficina Correos. También es posible la recogida en mano sin coste. El plazo de fabricación es de 3 a 7 días laborables desde la confirmación del pago.
               </p>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
-                Dado que los productos se fabrican por encargo y de forma personalizada, no se admiten devoluciones ni desistimientos salvo en caso de defecto de fabricación acreditado. En ese supuesto, contacta en los 7 días siguientes a la recepción escribiendo a <a [href]="'mailto:' + email" class="text-lv-gold hover:underline">{{ email }}</a>: no se reembolsa el importe, sino que se entrega un vale por el mismo valor para otro producto de la tienda.
+                Dado que los productos se fabrican por encargo y de forma personalizada, no se admiten devoluciones ni desistimientos salvo en caso de defecto de fabricación acreditado. En ese supuesto, contacta en los 7 días siguientes a la recepción escribiendo a <a [href]="'mailto:' + email" class="text-lv-gold hover:underline">{{ email }}</a>. Revisaremos cada caso y, si procede, el comprador devolverá la pieza y se le enviará una nueva; si lo prefiere, se le entregará un vale por el mismo importe para otro producto de la tienda. No se reembolsa el importe.
               </p>
             </section>
 
