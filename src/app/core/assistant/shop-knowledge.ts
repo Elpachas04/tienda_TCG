@@ -18,7 +18,7 @@ export interface Knowledge {
 
 export type Topic =
   | 'price' | 'colors' | 'size' | 'capacity' | 'time' | 'shipping' | 'payment' | 'leader'
-  | 'cards' | 'stock' | 'tracking' | 'custom' | 'addons' | 'sleeves' | 'what' | 'contact';
+  | 'cards' | 'stock' | 'tracking' | 'custom' | 'addons' | 'sleeves' | 'what' | 'contact' | 'returns';
 
 // Palabras (ya normalizadas: minúsculas y sin tildes) que delatan cada tema
 const TOPIC_WORDS: Record<Topic, string[]> = {
@@ -37,6 +37,7 @@ const TOPIC_WORDS: Record<Topic, string[]> = {
   addons:   ['separador', 'separadores', 'extra', 'extras', 'anadir'],
   sleeves:  ['funda', 'fundas', 'doble funda', 'enfundado', 'toploader', 'mini snap', 'penny'],
   what:     ['que es', 'para que sirve', 'que lleva', 'como es', 'caracteristicas', 'que incluye'],
+  returns:  ['devolucion', 'devoluciones', 'devolver', 'devuelvo', 'reembolso', 'garantia', 'cambiar', 'cambio', 'defecto', 'defectuoso', 'roto', 'rota', 'llega mal', 'llego mal', 'dinero'],
   contact:  ['contacto', 'whatsapp', 'email', 'correo electronico', 'hablar', 'telefono'],
 };
 
@@ -159,6 +160,11 @@ export function answerTopic(topic: Topic, k: Knowledge, product: Product | null,
     case 'what':
       if (product) return { text: `${product.name}: ${product.description}`, link: { label: 'Ver la ficha', url: `/product/${product.id}` } };
       return { text: 'Hacemos accesorios para TCG impresos en 3D: deckboxes, cajas de almacenaje, organizadores y herramientas, uno a uno y en tu color.', link: { label: 'Ver catálogo', url: '/catalog' } };
+    case 'returns':
+      return {
+        text: 'Cada pieza se fabrica por encargo, así que no se aceptan devoluciones por cambio de opinión. Si llega con un defecto de fabricación, escríbenos en los 7 días siguientes a recibirla: no devolvemos el dinero, te damos un vale por el importe para otro producto.',
+        link: whatsapp(question || 'Hola, mi pedido ha llegado con un problema: '),
+      };
     case 'contact':
       return { text: 'Por WhatsApp respondemos en menos de 1 hora (lunes a sábado). También en hola@layervault.es.', link: whatsapp() };
   }
@@ -194,5 +200,6 @@ export function productFaq(product: Product, k: Knowledge): { q: string; a: Answ
   faq.push({ q: '¿Cuánto tarda?', a: answerTopic('time', k, product) });
   faq.push({ q: '¿Cómo es el envío?', a: answerTopic('shipping', k, product) });
   faq.push({ q: '¿Cómo se paga?', a: answerTopic('payment', k, product) });
+  faq.push({ q: '¿Se puede devolver?', a: answerTopic('returns', k, product) });
   return faq;
 }
