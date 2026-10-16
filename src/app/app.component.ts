@@ -22,9 +22,12 @@ import { SmoothScrollService } from './core/motion/smooth-scroll.service';
       <router-outlet />
     </main>
 
-    <!-- Asistente de preguntas: se carga cuando el navegador está libre, no retrasa la página -->
-    @defer (on idle) {
-      <app-shop-assistant />
+    <!-- Asistente de preguntas: se carga cuando el navegador está libre, no retrasa la página.
+         Solo donde ayuda a comprar; en valorar, admin y textos legales estorba -->
+    @if (showAssistant()) {
+      @defer (on idle) {
+        <app-shop-assistant />
+      }
     }
     @if (!isCheckout() && !isAdmin()) {
       <app-cart-drawer />
@@ -80,6 +83,7 @@ export class AppComponent {
   });
   readonly isCheckout = computed(() => this.currentUrl().startsWith('/checkout'));
   readonly isAdmin    = computed(() => this.currentUrl().startsWith('/admin'));
+  readonly showAssistant = computed(() => !/^\/(admin|valorar|legal|privacidad|gum-gum-berry)(\/|\?|#|$)/.test(this.currentUrl()));
 
   readonly showBerryModal = signal(false);
   readonly bannerItems = Array(14).fill(0);
