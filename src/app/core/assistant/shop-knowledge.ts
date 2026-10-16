@@ -25,7 +25,7 @@ const TOPIC_WORDS: Record<Topic, string[]> = {
   price:    ['precio', 'precios', 'cuesta', 'cuanto vale', 'euros', 'caro', 'barato', 'coste'],
   colors:   ['color', 'colores', 'negro', 'blanco', 'rojo', 'verde', 'azul', 'morado', 'amarillo'],
   size:     ['medida', 'medidas', 'tamano', 'dimension', 'alto', 'ancho', 'largo', 'cm', 'grande', 'pequena', 'mediana'],
-  capacity: ['caben', 'cabe', 'capacidad', 'cuantas cartas', 'cartas caben', 'cuantas'],
+  capacity: ['caben', 'cabe', 'capacidad', 'cuantas cartas', 'cartas caben', 'cuantas', 'cuantos', 'que cabe', 'cual necesito', 'para un mazo'],
   time:     ['tarda', 'tardas', 'plazo', 'cuando llega', 'dias', 'cuanto tiempo', 'fabricacion', 'fabricar', 'rapido'],
   shipping: ['envio', 'enviar', 'envias', 'correos', 'recoger', 'recogida', 'en mano', 'gastos', 'peninsula', 'baleares', 'canarias', 'domicilio'],
   payment:  ['pago', 'pagar', 'bizum', 'tarjeta', 'paypal', 'transferencia'],
@@ -35,8 +35,8 @@ const TOPIC_WORDS: Record<Topic, string[]> = {
   tracking: ['seguimiento', 'mi pedido', 'donde esta', 'estado del pedido', 'numero de pedido'],
   custom:   ['personalizado', 'a medida', 'encargo', 'especial', 'diseno propio', 'grabado', 'logo'],
   addons:   ['separador', 'separadores', 'extra', 'extras', 'anadir'],
-  sleeves:  ['funda', 'fundas', 'doble funda', 'enfundado', 'toploader', 'mini snap', 'penny'],
-  what:     ['que es', 'para que sirve', 'que lleva', 'como es', 'caracteristicas', 'que incluye'],
+  sleeves:  ['funda', 'fundas', 'doble funda', 'enfundado', 'enfundadas', 'toploader', 'toploaders', 'mini snap', 'mini snaps', 'penny', 'perfect fit', 'dragon shield', 'sin funda', 'con funda'],
+  what:     ['que es', 'para que sirve', 'que lleva', 'como es', 'caracteristicas', 'que incluye', 'como se usa', 'como funciona'],
   returns:  ['devolucion', 'devoluciones', 'devolver', 'devuelvo', 'reembolso', 'garantia', 'cambiar', 'cambio', 'defecto', 'defectuoso', 'roto', 'rota', 'llega mal', 'llego mal', 'dinero'],
   contact:  ['contacto', 'whatsapp', 'email', 'correo electronico', 'hablar', 'telefono'],
 };
@@ -54,6 +54,37 @@ const whatsapp = (question?: string): Answer['link'] => ({
   external: true,
 });
 
+/**
+ * Qué cabe en cada pieza y con qué fundas. Reglas del vendedor:
+ * - Almacenaje (cajas bulk): capacidad contada con cartas SIN funda.
+ * - Deckboxes: cartas con doble funda (interior tipo Perfect Fit + exterior tipo Dragon Shield).
+ */
+export function fitInfo(product: Product): string | null {
+  switch (product.id) {
+    case 'leader-vault':
+      return 'Mazo con doble funda (interior tipo Perfect Fit y encima una Dragon Shield) en un compartimento, y las 10 DON!! en el otro.';
+    case 'deckbox-ventana':
+      return 'Mazo con doble funda: interior tipo Perfect Fit y encima una Dragon Shield. El Líder va a la vista en la ventana frontal.';
+    case 'caja-minisnap':
+      return 'Cartas dentro de Mini Snaps (one-touch magnéticos), en fila y sin holgura.';
+    case 'deckbox-toploader':
+      return 'Cartas dentro de toploaders estándar (3" × 4", tamaño de carta TCG).';
+    case 'organizador-fundas':
+      return 'Fundas vacías: 30 toploaders en vertical, 45 fundas semirrígidas y un compartimento para penny sleeves.';
+    case 'aplastador':
+      return 'Mazos enfundados, también con doble funda. Para un mazo de One Piece (50 cartas + Líder) basta la de 60; la de 100 si quieres meter también las DON!! o cartas extra.';
+  }
+  if (product.category === 'storage') {
+    const caps = (product.variants ?? []).filter(v => v.specs?.capacity).map(v => `${v.label.toLowerCase()} ${v.specs!.capacity}`);
+    return `La capacidad se cuenta con cartas sin funda${caps.length ? ` (${list(caps)})` : ''}. Con funda caben bastantes menos.`;
+  }
+  if (product.category === 'deckbox') return 'Mazo con doble funda: interior tipo Perfect Fit y encima una Dragon Shield.';
+  return null;
+}
+
+// Palabras de nombres de producto que también se usan al preguntar por cualquier pieza ("¿con qué fundas…?")
+const GENERIC_WORDS = new Set(['fundas', 'funda', 'vault', 'leader', 'caja', 'cajas', 'cartas', 'box']);
+
 /** Producto que se menciona en la pregunta (por nombre o por palabras sueltas del nombre) */
 export function findProduct(question: string, products: readonly Product[]): Product | null {
   const q = ` ${normalize(question)} `;
@@ -61,7 +92,7 @@ export function findProduct(question: string, products: readonly Product[]): Pro
   for (const p of products) {
     const name = normalize(p.name);
     let score = q.includes(` ${name} `) ? 10 : 0;
-    for (const word of name.split(' ')) if (word.length > 3 && q.includes(` ${word}`)) score += 2;
+    for (const word of name.split(' ')) if (word.length > 3 && !GENERIC_WORDS.has(word) && q.includes(` ${word}`)) score += 2;
     if (q.includes(normalize(p.id).replace(/-/g, ' '))) score += 5;
     if (score > (best?.score ?? 0)) best = { p, score };
   }
@@ -102,16 +133,23 @@ export function answerTopic(topic: Topic, k: Knowledge, product: Product | null,
     case 'size':
     case 'capacity': {
       if (!product) return { text: 'Las medidas y la capacidad están en cada ficha. ¿De qué pieza quieres saberlo?', link: { label: 'Ver catálogo', url: '/catalog' } };
+      const fit = fitInfo(product);
+      const sinFunda = product.category === 'storage' ? ' sin funda' : '';
       const withSpecs = pickVariants(product, question).filter(v => v.specs);
       if (withSpecs.length) {
         return { text: withSpecs.map(v => {
           const s = v.specs!;
-          const cap = s.capacity ? `${s.capacity} cartas, ` : '';
-          return `${v.label}: ${cap}${num(s.height_cm)} × ${num(s.length_cm)} × ${num(s.width_cm)} cm`;
-        }).join(' · ') + ' (alto × largo × ancho).' };
+          const cap = s.capacity ? `${s.capacity} cartas${sinFunda}` : '';
+          return `${v.label}: ${[cap, `${num(s.length_cm)} × ${num(s.width_cm)} × ${num(s.height_cm)} cm`].filter(Boolean).join(', ')}`;
+        }).join(' · ') + ' (largo × ancho × alto).' };
       }
-      const hint = product.features.filter(f => /\d/.test(f));
-      if (hint.length) return { text: `${product.name}: ${list(hint.map(h => h.toLowerCase()))}.` };
+      if (fit) {
+        if (topic === 'capacity') return { text: `${product.name}: ${fit}` };
+        return {
+          text: `${product.name}: ${fit} Las medidas exactas en cm te las pasamos por WhatsApp.`,
+          link: whatsapp(question || `Hola, ¿qué medidas tiene el ${product.name}?`),
+        };
+      }
       return { text: `No tengo las medidas exactas de ${product.name} en la web. Te las pasamos por WhatsApp.`, link: whatsapp(question || `Hola, ¿qué medidas tiene el ${product.name}?`) };
     }
     case 'time':
@@ -121,6 +159,10 @@ export function answerTopic(topic: Topic, k: Knowledge, product: Product | null,
     case 'payment':
       return { text: 'Solo Bizum. Al confirmar el pedido te llega un email con el número y el concepto (tu número de pedido). Te confirmamos el pago en menos de 1 hora, de lunes a sábado.' };
     case 'leader': {
+      if (product && !product.leaderPickerEnabled) {
+        const about = [product.description, ...product.features].find(t => /l[ií]der/i.test(t));
+        if (about) return { text: `${product.name}: ${about.split(/(?<=\.)\s+/).find(x => /l[ií]der/i.test(x)) ?? about}` };
+      }
       const p = product?.leaderPickerEnabled ? product : k.products.find(x => x.leaderPickerEnabled) ?? null;
       if (!p?.leaders?.length) return { text: 'Ninguna pieza del catálogo lleva ahora mismo selector de líder.', link: whatsapp(question) };
       const avail = p.leaders.filter(l => l.available).map(l => l.name);
@@ -144,18 +186,11 @@ export function answerTopic(topic: Topic, k: Knowledge, product: Product | null,
     }
     case 'sleeves': {
       if (product) {
-        // Frases sueltas de la descripción y características que hablan de fundas, sin repetir
-        const sentences = [...product.description.split(/(?<=\.)\s+/), ...product.features.map(f => f.endsWith('.') ? f : `${f}.`)];
-        const hits: string[] = [];
-        for (const t of sentences) {
-          if (!/fund|toploader|snap|penny/i.test(t)) continue;
-          if (hits.some(h => normalize(h).includes(normalize(t).replace(/\.$/, '')) || normalize(t).includes(normalize(h).replace(/\.$/, '')))) continue;
-          hits.push(t);
-        }
-        if (hits.length) return { text: `${product.name}: ${hits.slice(0, 2).join(' ')}` };
+        const fit = fitInfo(product);
+        if (fit) return { text: `${product.name}: ${fit}` };
         return { text: `No tengo el dato de fundas de ${product.name} en la web. Pregúntanos y te lo confirmamos.`, link: whatsapp(question || `Hola, ¿con qué fundas es compatible el ${product.name}?`) };
       }
-      return { text: '¿De qué pieza? Cada ficha dice con qué fundas encaja (doble funda, toploaders, Mini Snaps…).', link: { label: 'Ver catálogo', url: '/catalog' } };
+      return { text: 'Depende de la pieza: las deckboxes van con doble funda (Perfect Fit + Dragon Shield) y las cajas de almacenaje se cuentan con cartas sin funda. ¿De cuál quieres saberlo?', link: { label: 'Ver catálogo', url: '/catalog' } };
     }
     case 'what':
       if (product) return { text: `${product.name}: ${product.description}`, link: { label: 'Ver la ficha', url: `/product/${product.id}` } };
@@ -170,6 +205,18 @@ export function answerTopic(topic: Topic, k: Knowledge, product: Product | null,
   }
 }
 
+/** Frases de la ficha que contienen alguna palabra significativa de la pregunta ("fichas", "WANTED"…) */
+function featureMatch(question: string, product: Product): string | null {
+  const stop = new Set(['tiene', 'lleva', 'puedo', 'sirve', 'cuanto', 'cuantos', 'cuantas', 'donde', 'como', 'esta', 'este', 'esto', 'para', 'sobre', 'cual', 'cuales']);
+  const words = normalize(question).split(' ').filter(w => w.length > 3 && !stop.has(w));
+  if (!words.length) return null;
+  const match = (t: string) => words.some(w => normalize(t).includes(w));
+  // Primero las características (cortas); si ninguna encaja, las frases de la descripción
+  const features = product.features.filter(match).map(f => f.endsWith('.') ? f : `${f}.`);
+  const hits = features.length ? features : product.description.split(/(?<=\.)\s+/).filter(match);
+  return hits.length ? hits.slice(0, 2).join(' ') : null;
+}
+
 /** Respuesta a una pregunta libre */
 export function answer(question: string, k: Knowledge, pageProduct: Product | null): Answer {
   const q = normalize(question);
@@ -181,7 +228,13 @@ export function answer(question: string, k: Knowledge, pageProduct: Product | nu
   }
   const product = findProduct(question, k.products) ?? pageProduct;
   const topics = detectTopics(question);
+  // "¿Caben con doble funda?" va de fundas aunque diga "caben"
+  if (topics.includes('sleeves') && product) return answerTopic('sleeves', k, product, question);
   if (topics.length) return answerTopic(topics[0], k, product, question);
+  if (product) {
+    const hit = featureMatch(question, product);
+    if (hit) return { text: `${product.name}: ${hit}` };
+  }
   if (product && findProduct(question, k.products)) return answerTopic('what', k, product, question);
   return {
     text: 'No tengo la respuesta a eso en la web. Escríbenos y te contestamos en menos de 1 hora (lunes a sábado).',
@@ -195,7 +248,8 @@ export interface FaqItem { q: string; topic: Topic; a: Answer }
 export function productFaq(product: Product, k: Knowledge): FaqItem[] {
   const items: [string, Topic][] = [];
   if (product.variants?.some(v => v.specs)) items.push(['¿Qué medidas tiene y cuántas cartas caben?', 'size']);
-  if ([product.description, ...product.features].some(t => /fund|toploader|snap|penny/i.test(t))) items.push(['¿Con qué fundas encaja?', 'sleeves']);
+  else if (fitInfo(product)) items.push(['¿Qué cabe dentro?', 'capacity']);
+  if (product.category === 'deckbox') items.push(['¿Caben con doble funda?', 'sleeves']);
   if (product.colorPickerEnabled) items.push(['¿En qué colores se puede hacer?', 'colors']);
   if (product.leaderPickerEnabled && product.leaders?.length) items.push(['¿Qué líderes hay?', 'leader']);
   items.push(
