@@ -1,7 +1,7 @@
 // Emails automáticos al cambiar el estado de un pedido desde el admin.
 // Maquetación común en _email-kit.ts (la misma que el de "Pedido recibido", send-confirmation.ts).
 
-import { esc, layout, panel, bigValue, button, link, paragraph, progress, strong, trackingUrl } from "./_email-kit";
+import { esc, layout, bigValue, button, progress, trackingUrl } from "./_email-kit";
 
 const BREVO_API  = "https://api.brevo.com/v3/smtp/email";
 const FROM_EMAIL = "hola@layervault.es";
@@ -20,8 +20,9 @@ export const EMAIL_STATUSES = ["Pago recibido", "Enviado"] as const;
 
 interface EmailContent { subject: string; html: string }
 
+// Los emails de estado son cortos a propósito: qué ha cambiado, en qué paso está y un botón.
 function content(status: string, d: OrderEmailData): EmailContent | null {
-  const name = esc(d.customerName.trim().split(/\s+/)[0] || d.customerName);
+  const greeting = `Hola, ${esc(d.customerName.trim().split(/\s+/)[0] || d.customerName)}`;
   const statusButton = button(trackingUrl(d.orderId), "Ver el estado del pedido");
 
   if (status === "Pago recibido") {
@@ -29,37 +30,28 @@ function content(status: string, d: OrderEmailData): EmailContent | null {
       subject: `Pago recibido · ${d.orderId}`,
       html: layout({
         preheader: "Tu pedido entra en fabricación: estará listo en 3–7 días laborables.",
-        orderId: d.orderId,
+        orderId: d.orderId, greeting,
         title: "Pago recibido",
-        lede: `Hola ${name}, ya tenemos tu Bizum. Tu pedido entra en fabricaci&oacute;n.`,
-        blocks: [
-          progress(2, d.pickup),
-          paragraph(`Lo tendremos listo en ${strong("3&ndash;7 d&iacute;as laborables")}. ${d.pickup
-            ? "Cuando est&eacute; terminado te escribimos por WhatsApp para quedar."
-            : "Cuando salga hacia tu oficina de Correos te mandamos otro email con el n&uacute;mero de seguimiento."}`),
-          statusButton,
-        ],
+        lede: "Tu pedido entra en fabricaci&oacute;n. Estar&aacute; listo en 3&ndash;7 d&iacute;as laborables.",
+        blocks: [progress(2, d.pickup), statusButton],
+      }),
+    };
+  }
+
+  if (status === "Enviado" && d.pickup) {
+    return {
+      subject: `Tu pedido está listo · ${d.orderId}`,
+      html: layout({
+        preheader: "Tu pedido está terminado. Te escribimos por WhatsApp para quedar.",
+        orderId: d.orderId, greeting,
+        title: "Listo para recoger",
+        lede: "Tu pedido ya est&aacute; terminado. Te escribimos por WhatsApp para quedar.",
+        blocks: [progress(3, true), statusButton],
       }),
     };
   }
 
   if (status === "Enviado") {
-    if (d.pickup) {
-      return {
-        subject: `Tu pedido está listo · ${d.orderId}`,
-        html: layout({
-          preheader: "Tu pedido está terminado. Te escribimos por WhatsApp para quedar.",
-          orderId: d.orderId,
-          title: "Listo para recoger",
-          lede: `Hola ${name}, tu pedido ya est&aacute; terminado.`,
-          blocks: [
-            progress(3, true),
-            paragraph("Te escribimos por WhatsApp para acordar d&oacute;nde y cu&aacute;ndo te lo damos."),
-            statusButton,
-          ],
-        }),
-      };
-    }
     const correosUrl = d.trackingNumber
       ? `https://www.correos.es/es/es/herramientas/localizador/envios/detalle?tracking-number=${encodeURIComponent(d.trackingNumber)}`
       : "";
@@ -67,17 +59,16 @@ function content(status: string, d: OrderEmailData): EmailContent | null {
       subject: `Tu pedido va de camino · ${d.orderId}`,
       html: layout({
         preheader: d.trackingNumber ? `Seguimiento de Correos: ${d.trackingNumber}` : "Tu pedido ya está en Correos.",
-        orderId: d.orderId,
+        orderId: d.orderId, greeting,
         title: "Tu pedido va de camino",
-        lede: `Hola ${name}, tu pedido ya est&aacute; en Correos, camino de la oficina que elegiste. Correos te avisar&aacute; cuando llegue.`,
-        blocks: [
-          progress(3, false),
-          d.trackingNumber ? panel("Seguimiento", `
-            ${bigValue("N&uacute;mero de Correos", esc(d.trackingNumber), { gold: true })}
-            ${paragraph(link(correosUrl, "Seguir el env&iacute;o en Correos"), { size: 15 })}
-          `, { accent: true }) : "",
-          statusButton,
-        ],
+        lede: "Ya est&aacute; en Correos, rumbo a la oficina que elegiste. Correos te avisar&aacute; cuando llegue.",
+        blocks: d.trackingNumber
+          ? [
+              progress(3, false),
+              bigValue("N&uacute;mero de seguimiento", esc(d.trackingNumber), { gold: true, last: true }),
+              button(correosUrl, "Seguir el env&iacute;o en Correos"),
+            ]
+          : [progress(3, false), statusButton],
       }),
     };
   }

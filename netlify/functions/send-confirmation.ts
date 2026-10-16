@@ -1,7 +1,7 @@
 import type { Handler, HandlerEvent } from "@netlify/functions";
 import { originOk, MAX_BODY } from "./_guard";
 import {
-  BIZUM, CONTACT_EMAIL, bigValue, gap, button, esc, eur, layout, panel, paragraph, progress, row, steps, strong, trackingUrl,
+  BIZUM, CONTACT_EMAIL, bigValue, button, esc, eur, layout, panel, paragraph, row, strong, trackingUrl,
 } from "./_email-kit";
 
 const BREVO_API  = "https://api.brevo.com/v3/smtp/email";
@@ -70,19 +70,16 @@ const handler: Handler = async (event: HandlerEvent) => {
 
   const html = layout({
     preheader: orderId
-      ? `Haz el Bizum al ${BIZUM} con el concepto ${esc(orderId)} y lo ponemos en marcha.`
+      ? `Haz el Bizum al ${BIZUM} con el concepto ${esc(orderId)} y nos ponemos con tu pedido.`
       : "Hemos recibido tu pedido.",
     orderId,
+    greeting: `Hola, ${firstName}`,
     title: "Pedido recibido",
-    lede: `Hola ${firstName}, gracias por tu pedido. Para ponerlo en marcha solo falta el Bizum: en cuanto llegue te lo confirmamos, en menos de 1 hora de lunes a s&aacute;bado.`,
+    lede: "Solo falta el Bizum. En cuanto llegue te lo confirmamos, en menos de 1&nbsp;hora de lunes a s&aacute;bado.",
     blocks: [
-      orderId ? progress(1, pickup) : "",
-
       orderId ? panel("Paga con Bizum", `
         ${bigValue("Bizum al", BIZUM)}
-        ${bigValue("Concepto (tu n&uacute;mero de pedido)", esc(orderId), { gold: true, last: true })}
-        ${gap(16)}
-        ${paragraph(`Pon el concepto tal cual: as&iacute; sabemos de qu&eacute; pedido es el pago.`, { size: 14 })}
+        ${bigValue("Concepto: ponlo tal cual", esc(orderId), { gold: true, last: true })}
       `, { accent: true }) : "",
 
       panel("Tu pedido", `
@@ -91,14 +88,9 @@ const handler: Handler = async (event: HandlerEvent) => {
         ${row("Total", eur(total as number), { top: true, total: true })}
       `),
 
-      panel("Qu&eacute; pasa ahora", steps([
-        `Haces el Bizum con tu n&uacute;mero de pedido como concepto.`,
-        `Te confirmamos el pago en menos de 1 hora, de lunes a s&aacute;bado.`,
-        `Fabricamos tu pedido en ${strong("3&ndash;7 d&iacute;as laborables")}.`,
-        pickup
-          ? `Te escribimos por WhatsApp para quedar y entregarlo en mano.`
-          : `Lo enviamos por Correos a la oficina que elegiste y te mandamos el n&uacute;mero de seguimiento.`,
-      ])),
+      paragraph(pickup
+        ? `Despu&eacute;s lo fabricamos en ${strong("3&ndash;7 d&iacute;as laborables")} y te escribimos por WhatsApp para d&aacute;rtelo en mano.`
+        : `Despu&eacute;s lo fabricamos en ${strong("3&ndash;7 d&iacute;as laborables")} y lo enviamos a tu oficina de Correos. Te mandaremos el n&uacute;mero de seguimiento.`),
 
       orderId ? button(trackingUrl(orderId), "Ver el estado del pedido") : "",
     ],

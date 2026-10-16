@@ -41,8 +41,8 @@ export function gap(px: number): string {
   return `<tr><td height="${px}" style="height:${px}px;line-height:${px}px;font-size:0;">&nbsp;</td></tr>`;
 }
 
-export function paragraph(html: string, opts: { size?: number; color?: string } = {}): string {
-  return `<tr><td style="font-family:${FONT_BODY};font-size:${opts.size ?? 16}px;line-height:1.6;color:${opts.color ?? C.text};">${html}</td></tr>`;
+export function paragraph(html: string, opts: { size?: number; color?: string; lineHeight?: number } = {}): string {
+  return `<tr><td style="font-family:${FONT_BODY};font-size:${opts.size ?? 16}px;line-height:${opts.lineHeight ?? 1.6};color:${opts.color ?? C.text};">${html}</td></tr>`;
 }
 
 export function strong(html: string): string {
@@ -51,6 +51,11 @@ export function strong(html: string): string {
 
 export function link(href: string, label: string): string {
   return `<a href="${href}" style="color:${C.gold};text-decoration:underline;text-underline-offset:2px;">${label}</a>`;
+}
+
+/** Enlace secundario suelto, debajo del botón */
+export function textLink(href: string, label: string): string {
+  return paragraph(link(href, label), { size: 14 });
 }
 
 /** Botón principal: crema, como en la web */
@@ -137,8 +142,9 @@ export function progress(done: number, pickup: boolean): string {
 export interface LayoutOptions {
   preheader: string;   // texto que se ve en la bandeja de entrada junto al asunto
   orderId?:  string;
+  greeting:  string;   // "Hola, Marta" — va solo, encima del titular
   title:     string;
-  lede:      string;
+  lede:      string;   // una o dos frases, no más
   blocks:    string[]; // filas <tr> (paragraph, panel, button…); entre bloques se pone aire
 }
 
@@ -181,28 +187,32 @@ export function layout(o: LayoutOptions): string {
           </tr></table>
         </td></tr>
 
-        <!-- Titular -->
-        <tr><td class="lv-pad" style="padding:36px 40px 0;">
+        <!-- Titular: saludo, titular y una entradilla corta con aire entre cada cosa -->
+        <tr><td class="lv-pad" style="padding:44px 40px 0;">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-            <tr><td class="lv-title" style="font-family:${FONT_DISPLAY};font-size:34px;font-weight:700;line-height:1.12;letter-spacing:-0.8px;color:${C.cream};">${o.title}</td></tr>
-            ${gap(14)}
-            ${paragraph(o.lede, { size: 17 })}
+            ${paragraph(o.greeting, { size: 16, color: C.muted })}
+            ${gap(10)}
+            <tr><td class="lv-title" style="font-family:${FONT_DISPLAY};font-size:36px;font-weight:700;line-height:1.1;letter-spacing:-0.9px;color:${C.cream};">${o.title}</td></tr>
+            ${gap(18)}
+            <tr><td>
+              <table role="presentation" width="460" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:460px;">
+                ${paragraph(o.lede, { size: 17, lineHeight: 1.7 })}
+              </table>
+            </td></tr>
           </table>
         </td></tr>
 
         <!-- Contenido -->
-        <tr><td class="lv-pad" style="padding:32px 40px 40px;">
+        <tr><td class="lv-pad" style="padding:36px 40px 44px;">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
             ${body}
           </table>
         </td></tr>
 
         <!-- Pie -->
-        <tr><td class="lv-pad" style="padding:24px 40px 30px;border-top:1px solid ${C.line};">
+        <tr><td class="lv-pad" style="padding:22px 40px 28px;border-top:1px solid ${C.line};">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-            ${paragraph(`&iquest;Alguna duda? Escr&iacute;benos por ${link(`https://wa.me/${WHATSAPP}`, `WhatsApp (${WHATSAPP_TXT})`)} o responde a este email.`, { size: 14 })}
-            ${gap(10)}
-            ${paragraph(`LayerVault &middot; Accesorios para TCG impresos en 3D &middot; Barcelona`, { size: 12, color: C.muted })}
+            ${paragraph(`&iquest;Dudas? ${link(`https://wa.me/${WHATSAPP}`, `WhatsApp ${WHATSAPP_TXT}`)} o responde a este email.`, { size: 14, color: C.muted })}
           </table>
         </td></tr>
 
