@@ -54,11 +54,12 @@ interface OrderListItem {
           </div>
           <div class="flex items-center gap-3 flex-shrink-0">
             @if (savedId() === order.orderId) {
-              <span class="font-body text-sm text-emerald-300" role="status">Guardado</span>
+              <span class="font-body text-sm text-emerald-300" role="status">{{ savedMessage() }}</span>
             }
             <select class="bg-white/[0.03] border border-lv-border rounded-lg px-3 py-2.5 font-body text-sm text-lv-cream"
               [attr.aria-label]="'Estado del pedido ' + order.orderId"
-              [ngModel]="order.status" (ngModelChange)="updateStatus(order, $event)">
+              [ngModel]="order.status" (ngModelChange)="updateStatus(order, $event)"
+              [title]="order.deliveryMethod === 'En mano' ? 'Pago recibido y Enviado (= listo para recoger) avisan al cliente por email' : 'Pago recibido y Enviado avisan al cliente por email'">
               @for (status of statuses; track status) { <option [value]="status">{{ status }}</option> }
             </select>
           </div>
@@ -75,6 +76,7 @@ export class AdminOrdersComponent implements OnInit {
 
   orders  = signal<OrderListItem[]>([]);
   savedId = signal<string | null>(null);
+  savedMessage = signal('Guardado');
   private savedTimer: ReturnType<typeof setTimeout> | null = null;
   loading = signal(false);
   error   = signal('');
@@ -85,7 +87,7 @@ export class AdminOrdersComponent implements OnInit {
   }
 
   deliveryLabel(method: string): string {
-    return method === 'shipping' ? 'Envío' : method === 'pickup' ? 'En mano' : method;
+    return method === 'shipping' ? 'Envío' : method === 'pickup' ? 'En mano' : method; // Notion ya guarda "Envío"/"En mano"
   }
 
   formatDate(iso: string): string {
@@ -111,16 +113,28 @@ export class AdminOrdersComponent implements OnInit {
 
   async updateStatus(order: OrderListItem, status: string): Promise<void> {
     const previous = order.status;
+    // Al marcar como enviado por Correos, el número de seguimiento va en el email al cliente (opcional)
+    let trackingNumber: string | undefined;
+    if (status === 'Enviado' && order.deliveryMethod !== 'En mano' && previous !== 'Enviado') {
+      const answer = prompt('Número de seguimiento de Correos (opcional). Se lo enviamos al cliente por email.');
+      if (answer === null) {
+        this.orders.update(list => list.map(o => ({ ...o }))); // cancelado: el desplegable vuelve al estado anterior
+        return;
+      }
+      trackingNumber = answer.trim() || undefined;
+    }
     this.orders.update(list => list.map(o => o.orderId === order.orderId ? { ...o, status } : o));
 
     try {
       const res = await fetch('/api/admin/orders/status', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId: order.orderId, status }),
+        body: JSON.stringify({ orderId: order.orderId, status, trackingNumber }),
       });
       if (!res.ok) throw new Error('update_failed');
+      const result = await res.json().catch(() => ({})) as { emailSent?: boolean };
       this.error.set('');
+      this.savedMessage.set(result.emailSent ? 'Guardado · email enviado al cliente' : 'Guardado');
       this.savedId.set(order.orderId);
       if (this.savedTimer) clearTimeout(this.savedTimer);
       this.savedTimer = setTimeout(() => this.savedId.set(null), 2500);

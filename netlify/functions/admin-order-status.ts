@@ -2,6 +2,7 @@ import type { Handler } from "@netlify/functions";
 import { originOk, MAX_BODY } from "./_guard";
 import { verifyAdminSession } from "./_admin-auth";
 import { ORDER_STATUSES } from "../../src/app/shared/constants/order-status";
+import { EMAIL_STATUSES, sendStatusEmail } from "./_order-emails";
 
 // LV-YYMMDD-XXXX
 const ORDER_ID_RE = /^LV-\d{6}-[A-Z2-9]{4}$/;
@@ -14,6 +15,11 @@ const STATUS_DATE_PROPERTY: Record<string, string> = {
   "Enviado":          "Fecha enviado",
   "Entregado":        "Fecha entregado",
 };
+
+function richText(prop: unknown): string {
+  const p = prop as { rich_text?: Array<{ plain_text?: string }> } | undefined;
+  return (p?.rich_text ?? []).map(t => t.plain_text ?? "").join("");
+}
 
 const handler: Handler = async (event) => {
   const headers = { "Content-Type": "application/json" };
@@ -33,12 +39,15 @@ const handler: Handler = async (event) => {
 
   let orderId: string;
   let status: string;
+  let trackingNumber: string | undefined;
   try {
-    const raw = JSON.parse(event.body ?? "{}") as { orderId?: unknown; status?: unknown };
+    const raw = JSON.parse(event.body ?? "{}") as { orderId?: unknown; status?: unknown; trackingNumber?: unknown };
     if (typeof raw.orderId !== "string" || !ORDER_ID_RE.test(raw.orderId)) throw new Error("invalid");
     if (typeof raw.status !== "string" || !(ORDER_STATUSES as readonly string[]).includes(raw.status)) throw new Error("invalid");
+    if (raw.trackingNumber !== undefined && (typeof raw.trackingNumber !== "string" || !/^[A-Za-z0-9 -]{0,40}$/.test(raw.trackingNumber))) throw new Error("invalid");
     orderId = raw.orderId;
     status  = raw.status;
+    trackingNumber = (raw.trackingNumber as string | undefined)?.trim() || undefined;
   } catch {
     return { statusCode: 400, headers, body: JSON.stringify({ error: "bad_request" }) };
   }
@@ -65,13 +74,16 @@ const handler: Handler = async (event) => {
       return { statusCode: 500, headers, body: JSON.stringify({ error: "notion_error" }) };
     }
 
-    const data = await queryRes.json() as { results: Array<{ id: string }> };
+    const data = await queryRes.json() as { results: Array<{ id: string; properties: Record<string, unknown> }> };
     if (data.results.length === 0) {
       return { statusCode: 404, headers, body: JSON.stringify({ error: "not_found" }) };
     }
 
     const pageId = data.results[0].id;
+    const props  = data.results[0].properties ?? {};
+    const previousStatus = (props["Estado"] as { select?: { name?: string } } | undefined)?.select?.name ?? "";
     const properties: Record<string, unknown> = { "Estado": { select: { name: status } } };
+    if (trackingNumber) properties["Tracking"] = { rich_text: [{ text: { content: trackingNumber } }] };
     const dateProperty = STATUS_DATE_PROPERTY[status];
     if (dateProperty) {
       properties[dateProperty] = { date: { start: new Date().toISOString() } };
@@ -92,7 +104,21 @@ const handler: Handler = async (event) => {
       return { statusCode: 500, headers, body: JSON.stringify({ error: "notion_error" }) };
     }
 
-    return { statusCode: 200, headers, body: JSON.stringify({ success: true }) };
+    // Solo se avisa al cliente cuando el estado cambia de verdad a uno que lo merece (sin duplicados)
+    let emailSent = false;
+    if (status !== previousStatus && (EMAIL_STATUSES as readonly string[]).includes(status)) {
+      const contacto = richText(props["Contacto"]);
+      const customerEmail = contacto.split("/")[0]?.trim() ?? "";
+      emailSent = await sendStatusEmail(status, {
+        orderId,
+        customerName:  richText(props["Cliente"]),
+        customerEmail: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail) ? customerEmail : "",
+        pickup:        (props["Entrega"] as { select?: { name?: string } } | undefined)?.select?.name === "En mano",
+        trackingNumber,
+      });
+    }
+
+    return { statusCode: 200, headers, body: JSON.stringify({ success: true, emailSent }) };
   } catch (err) {
     console.error("Error updating Notion:", err);
     return { statusCode: 500, headers, body: JSON.stringify({ error: "server_error" }) };
