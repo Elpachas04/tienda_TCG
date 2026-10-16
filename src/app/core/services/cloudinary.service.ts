@@ -25,6 +25,19 @@ export class CloudinaryService {
     return this.build(publicId, 'f_auto,q_auto:low,c_pad,b_rgb:111111,w_120,h_120');
   }
 
+  /** Sobre el fondo de foco (.lv-stage): sin relleno, la foto se ajusta dentro del cuadrado */
+  stageCard(publicId: string): string {
+    return this.build(publicId, 'f_auto,q_auto:good,c_fit,w_360,h_360');
+  }
+
+  stageDetail(publicId: string): string {
+    return this.build(publicId, 'f_auto,q_auto:good,c_fit,w_700,h_700');
+  }
+
+  stageThumb(publicId: string): string {
+    return this.build(publicId, 'f_auto,q_auto:low,c_fit,w_120,h_120');
+  }
+
   /** Imagen de producto en color específico: {key}_{colorId} */
   colorImage(key: string, colorId: string): string {
     return this.build(`${key}_${colorId}`, 'f_auto,q_auto:good,w_700');

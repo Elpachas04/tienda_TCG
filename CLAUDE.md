@@ -45,6 +45,9 @@ Rediseño "Foil" (rama redesign):
 - El dorado se reserva para el brillo foil (`.foil-frame` + directiva `lvFoil`) y detalles; el botón principal es crema
 - Titulares con `data-split` entran línea a línea (GSAP SplitText); Lenis da scroll suave solo con ratón
 - `withViewTransitions`: la foto de la tarjeta viaja a la ficha (`view-transition-name: product-<id>`)
+Fotos de producto sobre fondo de foco (`.lv-stage` en styles.css: luz en el centro y sombra al suelo) para que las piezas
+negras no se fundan con el fondo; se piden con `cloudinary.stageCard/stageDetail/stageThumb` (c_fit, sin relleno negro).
+En la ficha va en una capa aparte porque `.foil-frame` ya usa ::before/::after.
 En las tarjetas, `overflow-hidden` va en el div interior de la foto, NO en el enlace `.foil-frame`, para que el brillo del marco y el color-picker no queden recortados.
 
 ---

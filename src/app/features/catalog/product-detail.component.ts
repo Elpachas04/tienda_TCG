@@ -46,20 +46,22 @@ type DetailData = { product: Product | null; colors: Color[] };
 
             <!-- Media: vídeo + imágenes -->
             <div class="space-y-3">
-              <div lvFoil class="foil-frame rounded-card overflow-hidden aspect-square relative bg-[#111]"
+              <div lvFoil class="foil-frame rounded-card overflow-hidden aspect-square relative bg-[#151412]"
                    [style.view-transition-name]="'product-' + data.product.id">
+                <!-- El fondo de foco va en su propia capa: .foil-frame ya usa ::before y ::after -->
+                <div class="lv-stage absolute inset-0" aria-hidden="true"></div>
                 @if (!showVideo() && !mainImageLoaded()) {
                   <div class="absolute inset-0 animate-pulse bg-white/[0.04]"></div>
                 }
                 @if (data.product.video && showVideo()) {
-                  <video class="w-full h-full object-cover"
+                  <video class="relative w-full h-full object-cover"
                          autoplay muted loop playsinline preload="metadata"
                          disablepictureinpicture disableremoteplayback>
                     <source [src]="cloudinary.video(data.product.video!)">
                   </video>
                 } @else {
                   <img [src]="currentImage(data.product)" [alt]="data.product.name"
-                       class="w-full h-full object-contain"
+                       class="relative w-full h-full object-contain p-[5%]"
                        loading="eager" fetchpriority="high" decoding="async"
                        draggable="false"
                        (load)="mainImageLoaded.set(true)"
@@ -83,10 +85,10 @@ type DetailData = { product: Product | null; colors: Color[] };
                   @for (img of readyThumbs(); track img; let t = $index) {
                     <button type="button" [attr.aria-label]="'Ver foto ' + (t + 1)"
                       [attr.aria-pressed]="!showVideo() && currentImageIndex() === thumbIndex(img, data.product)"
-                      class="w-14 h-14 sm:w-20 sm:h-20 rounded-xl overflow-hidden border-2 transition-colors duration-200 flex-shrink-0"
+                      class="lv-stage relative w-14 h-14 sm:w-20 sm:h-20 rounded-xl overflow-hidden border-2 transition-colors duration-200 flex-shrink-0"
                       [class]="!showVideo() && currentImageIndex() === thumbIndex(img, data.product) ? 'border-lv-gold' : 'border-white/10 hover:border-lv-gold/40'"
                       (click)="showVideo.set(false); showColorImage.set(false); currentImageIndex.set(thumbIndex(img, data.product)); mainImageLoaded.set(false)">
-                      <img [src]="cloudinary.thumb(img)" [alt]="data.product.name" class="w-full h-full object-cover"
+                      <img [src]="cloudinary.stageThumb(img)" [alt]="data.product.name" class="w-full h-full object-contain p-1"
                            loading="lazy" decoding="async"
                            draggable="false"
                            (contextmenu)="$event.preventDefault()"/>
@@ -405,7 +407,7 @@ export class ProductDetailComponent {
     this.thumbProbes = images.map(id => {
       const probe = new Image();
       probe.onload = () => this.readyThumbs.update(arr => [...arr, id]);
-      probe.src = this.cloudinary.thumb(id);
+      probe.src = this.cloudinary.stageThumb(id);
       return probe;
     });
   }
@@ -448,7 +450,7 @@ export class ProductDetailComponent {
     }
     const valid = this.validImages(product);
     const id = valid[this.currentImageIndex()];
-    return id ? this.cloudinary.detail(id) : PLACEHOLDER;
+    return id ? this.cloudinary.stageDetail(id) : PLACEHOLDER;
   }
 
   selectColor(color: Color): void {
