@@ -149,7 +149,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
 
               <div>
                 <label for="co-name" class="block font-body text-sm text-lv-cream/75 mb-2">Nombre *</label>
-                <input id="co-name" type="text"
+                <input id="co-name" aria-required="true" type="text"
                   [class]="inputClass(touched.name && !form.customerName.trim())"
                   [attr.aria-invalid]="touched.name && !form.customerName.trim()"
                   placeholder="Tu nombre completo"
@@ -164,7 +164,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
 
               <div>
                 <label for="co-email" class="block font-body text-sm text-lv-cream/75 mb-2">Email *</label>
-                <input id="co-email" type="email"
+                <input id="co-email" aria-required="true" type="email"
                   [class]="inputClass(touched.email && !isEmailValid())"
                   [attr.aria-invalid]="touched.email && !isEmailValid()"
                   placeholder="tu@email.com"
@@ -184,7 +184,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                 <label for="co-phone" class="block font-body text-sm text-lv-cream/75 mb-2">
                   Teléfono *
                 </label>
-                <input id="co-phone" type="tel"
+                <input id="co-phone" aria-required="true" type="tel"
                   [class]="inputClass(touched.phone && !isPhoneValid())"
                   [attr.aria-invalid]="touched.phone && !isPhoneValid()"
                   placeholder="612 345 678"
@@ -232,7 +232,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                 </div>
                 <div>
                   <label for="co-cp" class="block font-body text-sm text-lv-cream/75 mb-2">Código postal *</label>
-                  <input id="co-cp" type="text" inputmode="numeric"
+                  <input id="co-cp" aria-required="true" type="text" inputmode="numeric"
                     [class]="inputClass(touched.cp && form.postalCode.length > 0 && !isPostalCodeValid())"
                     [attr.aria-invalid]="touched.cp && !isPostalCodeValid()"
                     placeholder="28001"
