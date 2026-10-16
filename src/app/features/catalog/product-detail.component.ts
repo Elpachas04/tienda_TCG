@@ -14,6 +14,7 @@ import { FoilHoverDirective } from '../../shared/directives/foil-hover.directive
 import { SeoService } from '../../core/services/seo.service';
 import { AssistantService } from '../../core/assistant/assistant.service';
 import { ReviewsSectionComponent } from '../../shared/components/reviews-section.component';
+import { RestockFormComponent } from '../../shared/components/restock-form.component';
 
 type DetailData = { product: Product | null; colors: Color[] };
 
@@ -21,7 +22,7 @@ type DetailData = { product: Product | null; colors: Color[] };
   selector: 'app-product-detail',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, LeaderPickerComponent, CustomLeaderRequestComponent, FoilHoverDirective, EurPipe, ReviewsSectionComponent],
+  imports: [RouterLink, LeaderPickerComponent, CustomLeaderRequestComponent, FoilHoverDirective, EurPipe, ReviewsSectionComponent, RestockFormComponent],
   host: { class: 'block' },
   template: `
     @let data = productData();
@@ -283,6 +284,10 @@ type DetailData = { product: Product | null; colors: Color[] };
                   @else { Añadir a la cesta }
                 </button>
               </div>
+
+              @if (!data.product.available) {
+                <app-restock-form [productId]="data.product.id" [productName]="data.product.name" />
+              }
 
               <button type="button" (click)="assistant.show()"
                       class="mt-4 self-start inline-flex items-center gap-2 min-h-[44px] text-[15px] text-lv-cream/70 hover:text-lv-foil transition-colors">

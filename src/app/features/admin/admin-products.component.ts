@@ -27,6 +27,9 @@ import { AdminProductFormComponent, CATEGORY_LABELS } from './admin-product-form
     @if (saveError()) {
       <p class="rounded-xl border border-red-400/30 bg-red-400/5 text-red-300 font-body text-sm px-4 py-3 mb-6">{{ saveError() }}</p>
     }
+    @if (notice()) {
+      <p class="rounded-xl border border-emerald-400/30 bg-emerald-400/5 text-emerald-200 font-body text-sm px-4 py-3 mb-6" role="status">{{ notice() }}</p>
+    }
 
     @if (catalogService.loading()) {
       <p class="font-body text-sm text-lv-muted">Cargando productos…</p>
@@ -48,6 +51,11 @@ import { AdminProductFormComponent, CATEGORY_LABELS } from './admin-product-form
                 </span>
               }
               <span class="absolute top-2 left-2 rounded-full bg-black/70 text-lv-cream font-body text-xs px-2 py-0.5">{{ i + 1 }}</span>
+              @if (!product.available && waiting()[product.id]) {
+                <span class="absolute bottom-2 right-2 rounded-full bg-lv-gold/90 text-lv-black font-body text-xs font-semibold px-2.5 py-1">
+                  {{ waiting()[product.id] }} {{ waiting()[product.id] === 1 ? 'espera' : 'esperan' }} el aviso
+                </span>
+              }
               @if (product.hidden) {
                 <span class="absolute bottom-2 left-2 rounded-full bg-black/80 text-lv-cream font-body text-xs font-semibold px-2.5 py-1">Oculto en la tienda</span>
               }
@@ -124,6 +132,16 @@ export class AdminProductsComponent implements OnInit {
   saveError = signal('');
   busy      = signal(false);
   brokenCovers = signal<ReadonlySet<string>>(new Set());
+  /** Personas que pidieron "Avísame cuando vuelva", por producto */
+  waiting   = signal<Record<string, number>>({});
+  notice    = signal('');
+
+  private async loadWaiting(): Promise<void> {
+    try {
+      const res = await fetch('/api/admin/restock');
+      if (res.ok) this.waiting.set(((await res.json()) as { counts: Record<string, number> }).counts);
+    } catch { /* sin datos de avisos: no pasa nada */ }
+  }
 
   markBrokenCover(id: string): void {
     this.brokenCovers.update(set => new Set(set).add(id));
@@ -132,6 +150,7 @@ export class AdminProductsComponent implements OnInit {
   products = () => this.catalogService.catalog()?.products ?? [];
 
   async ngOnInit(): Promise<void> {
+    void this.loadWaiting();
     if (!this.catalogService.catalog()) {
       await this.catalogService.load().catch(() => this.saveError.set('No se pudieron cargar los productos.'));
     }
@@ -164,7 +183,13 @@ export class AdminProductsComponent implements OnInit {
 
   async toggle(product: Product, field: 'hidden' | 'available'): Promise<void> {
     const current = this.products().map(p => p.id === product.id ? { ...p, [field]: !p[field] } : p);
-    await this.persist(current, 'No se pudo cambiar el estado.');
+    const waitingBefore = this.waiting()[product.id] ?? 0;
+    const ok = await this.persist(current, 'No se pudo cambiar el estado.');
+    if (ok && field === 'available' && !product.available && waitingBefore) {
+      // Al volver a "Se puede comprar", el servidor avisa por email a quien lo esperaba
+      this.notice.set(`${product.name} vuelve a estar disponible: hemos avisado por email a ${waitingBefore} ${waitingBefore === 1 ? 'persona' : 'personas'}.`);
+      void this.loadWaiting();
+    }
   }
 
   async remove(product: Product): Promise<boolean> {
@@ -188,6 +213,7 @@ export class AdminProductsComponent implements OnInit {
   private async persist(products: Product[], errorMessage: string): Promise<boolean> {
     this.busy.set(true);
     this.saveError.set('');
+    this.notice.set('');
     try {
       const ok = await this.catalogService.saveProducts(products);
       if (!ok) this.saveError.set(errorMessage);

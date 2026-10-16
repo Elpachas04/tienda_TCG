@@ -117,6 +117,9 @@ import { CONTACT_EMAIL } from '../../shared/constants';
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
                 Si valoras tu pedido, guardamos la puntuación, el comentario, las fotos que subas y el nombre del pedido. Solo se publican si las aprobamos, y el nombre aparece tapado salvo las primeras y últimas letras (por ejemplo, «Mar******ez»). Puedes pedirnos que las borremos cuando quieras.
               </p>
+              <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
+                Si pides que te avisemos cuando vuelva un producto agotado, guardamos tu email solo para eso: te escribimos una vez y lo borramos.
+              </p>
             </section>
 
             <section class="space-y-3">

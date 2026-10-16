@@ -70,7 +70,7 @@ interface Message { from: 'user' | 'bot'; text: string; link?: Answer['link'] }
                 @for (item of faq(); track item.q) {
                   <li>
                     <button type="button" (click)="askFaq(item)"
-                            class="w-full text-left px-3.5 py-2.5 rounded-xl border border-lv-cream/12 text-[15px] text-lv-cream/90
+                            class="w-full text-left px-3.5 py-2.5 rounded-xl border border-lv-cream/10 text-[15px] text-lv-cream/90
                                    hover:border-lv-gold/70 hover:text-lv-foil transition-colors">
                       {{ item.q }}
                     </button>
