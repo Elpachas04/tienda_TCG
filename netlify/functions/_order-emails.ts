@@ -1,11 +1,12 @@
 // Emails automáticos al cambiar el estado de un pedido desde el admin.
-// Misma estética que el de "Pedido recibido" (send-confirmation.ts), en versión corta.
+// Maquetación común en _email-kit.ts (la misma que el de "Pedido recibido", send-confirmation.ts).
+
+import { reviewUrl } from "./_reviews";
+import { esc, layout, bigValue, button, link, mapsUrl, paragraph, progress, strong, trackingUrl } from "./_email-kit";
 
 const BREVO_API  = "https://api.brevo.com/v3/smtp/email";
 const FROM_EMAIL = "hola@layervault.es";
 const FROM_NAME  = "LayerVault";
-const SITE_URL   = "https://layervault.es";
-const WHATSAPP   = "34644794412";
 
 export interface OrderEmailData {
   orderId:        string;
@@ -13,69 +14,96 @@ export interface OrderEmailData {
   customerEmail:  string;
   pickup:         boolean;
   trackingNumber?: string;
+  oficina?:       string;   // "Nombre · Dirección, CP Localidad" (columna "Oficina" de Notion)
 }
 
 /** Estados que avisan al cliente. El resto solo se guardan en Notion. */
-export const EMAIL_STATUSES = ["Pago recibido", "Enviado"] as const;
+export const EMAIL_STATUSES = ["Pago recibido", "Enviado", "Entregado"] as const;
 
-function esc(s: string): string {
-  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+interface EmailContent { subject: string; html: string }
+
+/** Oficina de destino, con la dirección como enlace a Maps */
+function officeBlock(oficina?: string): string {
+  if (!oficina) return "";
+  const [nombre, direccion] = oficina.split(" · ");
+  return `<tr><td>
+    <div style="font-family:'Hanken Grotesk',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.4;color:#8F8A80;">Tu oficina</div>
+    <div style="font-family:'Hanken Grotesk',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.5;color:#F5F0E8;padding-top:2px;">${esc(nombre)}</div>
+    ${direccion ? `<div style="font-family:'Hanken Grotesk',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.5;">${link(mapsUrl(oficina.replace(" · ", ", ")), esc(direccion))}</div>` : ""}
+  </td></tr>`;
 }
 
-function content(status: string, d: OrderEmailData): { subject: string; title: string; body: string } | null {
-  const name = esc(d.customerName.split(" ")[0] || d.customerName);
+// Los emails de estado son cortos a propósito: qué ha cambiado, en qué paso está y un botón.
+function content(status: string, d: OrderEmailData): EmailContent | null {
+  const greeting = `Hola, ${esc(d.customerName.trim().split(/\s+/)[0] || d.customerName)}`;
+  const statusButton = button(trackingUrl(d.orderId), "Ver el estado del pedido");
+
   if (status === "Pago recibido") {
     return {
       subject: `Pago recibido · ${d.orderId}`,
-      title: "Pago recibido",
-      body: `Hola ${name}, ya tenemos tu Bizum. Tu pedido entra en fabricaci&oacute;n y estar&aacute; listo en 3&ndash;7 d&iacute;as laborables.
-             ${d.pickup ? "Cuando est&eacute; listo te escribimos por WhatsApp para quedar." : "Cuando salga hacia tu oficina de Correos te mandamos otro email con el seguimiento."}`,
+      html: layout({
+        preheader: "Tu pedido entra en fabricación: estará listo en 3–7 días laborables.",
+        orderId: d.orderId, greeting,
+        title: "Pago recibido",
+        lede: d.pickup
+          ? "Tu pedido entra en fabricaci&oacute;n. En 3&ndash;7 d&iacute;as laborables estar&aacute; listo y te escribimos por WhatsApp para quedar."
+          : "Tu pedido entra en fabricaci&oacute;n. En 3&ndash;7 d&iacute;as laborables sale hacia tu oficina de Correos y te mandamos el seguimiento.",
+        blocks: [progress(2, d.pickup), statusButton],
+      }),
     };
   }
-  if (status === "Enviado") {
-    if (d.pickup) {
-      return {
-        subject: `Tu pedido está listo · ${d.orderId}`,
+
+  if (status === "Enviado" && d.pickup) {
+    return {
+      subject: `Tu pedido está listo · ${d.orderId}`,
+      html: layout({
+        preheader: "Tu pedido está terminado. Te escribimos por WhatsApp para quedar.",
+        orderId: d.orderId, greeting,
         title: "Listo para recoger",
-        body: `Hola ${name}, tu pedido ya est&aacute; terminado. Te escribimos por WhatsApp para acordar d&oacute;nde y cu&aacute;ndo lo recoges.`,
-      };
-    }
-    const tracking = d.trackingNumber
-      ? `<p style="margin:20px 0 0;font-size:12px;color:#888;">N&uacute;mero de seguimiento de Correos</p>
-         <p style="margin:4px 0 0;font-size:18px;letter-spacing:1px;color:#F5F0E8;">${esc(d.trackingNumber)}</p>
-         <p style="margin:12px 0 0;"><a href="https://www.correos.es/es/es/herramientas/localizador/envios/detalle?tracking-number=${encodeURIComponent(d.trackingNumber)}" style="color:#C9A84C;">Seguir el env&iacute;o en Correos</a></p>`
+        lede: "Tu pedido ya est&aacute; terminado. Te escribimos por WhatsApp para quedar.",
+        blocks: [progress(3, true), statusButton],
+      }),
+    };
+  }
+
+  if (status === "Enviado") {
+    const correosUrl = d.trackingNumber
+      ? `https://www.correos.es/es/es/herramientas/localizador/envios/detalle?tracking-number=${encodeURIComponent(d.trackingNumber)}`
       : "";
     return {
       subject: `Tu pedido va de camino · ${d.orderId}`,
-      title: "Pedido enviado",
-      body: `Hola ${name}, tu pedido ya est&aacute; en Correos camino de la oficina que elegiste. Te avisar&aacute;n cuando llegue.${tracking}`,
+      html: layout({
+        preheader: d.trackingNumber ? `Seguimiento de Correos: ${d.trackingNumber}` : "Tu pedido ya está en Correos.",
+        orderId: d.orderId, greeting,
+        title: "Tu pedido va de camino",
+        lede: "Ya est&aacute; en Correos, rumbo a la oficina que elegiste. Cuando llegue, Correos te avisar&aacute; para que pases a recogerlo.",
+        blocks: [
+          progress(3, false),
+          d.trackingNumber ? bigValue("N&uacute;mero de seguimiento", esc(d.trackingNumber), { gold: true, last: true }) : "",
+          officeBlock(d.oficina),
+          d.trackingNumber ? button(correosUrl, "Seguir el env&iacute;o en Correos") : statusButton,
+        ],
+      }),
     };
   }
-  return null;
-}
+  if (status === "Entregado") {
+    return {
+      subject: `¿Ha llegado todo bien? · ${d.orderId}`,
+      html: layout({
+        preheader: "¿Qué te ha parecido? Valora tu pedido en un minuto.",
+        orderId: d.orderId, greeting,
+        title: "Ya lo tienes",
+        lede: "Esperamos que te guste. &iquest;Nos cuentas qu&eacute; te parece? Es un minuto y nos ayuda much&iacute;simo.",
+        blocks: [
+          progress(4, d.pickup),
+          button(reviewUrl(d.orderId), "Valorar mi pedido"),
+          paragraph(`Si hay alg&uacute;n problema, escr&iacute;benos en los ${strong("7 d&iacute;as")} siguientes. Si tiene un defecto, nos la devuelves y te enviamos una nueva; si te has arrepentido, nos la devuelves y te damos un vale por el importe.`, { size: 14 }),
+        ],
+      }),
+    };
+  }
 
-function layout(title: string, body: string, orderId: string): string {
-  const trackingUrl = `${SITE_URL}/seguimiento?id=${encodeURIComponent(orderId)}`;
-  return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#111111;font-family:Arial,Helvetica,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#111111;padding:40px 20px;"><tr><td align="center">
-    <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#1a1a1a;border-radius:16px;border:1px solid #2a2a2a;">
-      <tr><td style="background:#0B0B0F;padding:28px 40px;border-bottom:1px solid #332b15;border-radius:16px 16px 0 0;">
-        <p style="margin:0;font-size:22px;font-weight:bold;color:#F5F0E8;">LayerVault</p>
-      </td></tr>
-      <tr><td style="padding:36px 40px;">
-        <h1 style="margin:0 0 16px;font-size:28px;color:#F5F0E8;">${title}</h1>
-        <div style="font-size:15px;line-height:1.6;color:#bbbbbb;">${body}</div>
-        <p style="margin:28px 0 0;font-size:12px;color:#888;">Pedido</p>
-        <p style="margin:4px 0 0;font-size:16px;color:#C9A84C;">${esc(orderId)}</p>
-        <p style="margin:24px 0 0;"><a href="${trackingUrl}" style="display:inline-block;background:#F5F0E8;color:#121212;text-decoration:none;font-weight:bold;font-size:14px;padding:12px 22px;border-radius:999px;">Ver estado del pedido</a></p>
-      </td></tr>
-      <tr><td style="padding:20px 40px 30px;border-top:1px solid #2a2a2a;">
-        <p style="margin:0;font-size:12px;color:#888;line-height:1.7;">&iquest;Dudas? Escr&iacute;benos por <a href="https://wa.me/${WHATSAPP}" style="color:#C9A84C;">WhatsApp</a> o a <a href="mailto:${FROM_EMAIL}" style="color:#C9A84C;">${FROM_EMAIL}</a>.</p>
-      </td></tr>
-    </table>
-  </td></tr></table>
-</body></html>`;
+  return null;
 }
 
 /** Devuelve true si se ha enviado. Nunca lanza: un fallo del email no debe deshacer el cambio de estado. */
@@ -91,7 +119,7 @@ export async function sendStatusEmail(status: string, d: OrderEmailData): Promis
         sender: { name: FROM_NAME, email: FROM_EMAIL },
         to: [{ email: d.customerEmail, name: d.customerName }],
         subject: c.subject,
-        htmlContent: layout(c.title, c.body, d.orderId),
+        htmlContent: c.html,
       }),
     });
     if (!res.ok) console.error("Brevo error:", res.status, await res.text());

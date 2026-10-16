@@ -59,7 +59,7 @@ interface OrderListItem {
             <select class="bg-white/[0.03] border border-lv-border rounded-lg px-3 py-2.5 font-body text-sm text-lv-cream"
               [attr.aria-label]="'Estado del pedido ' + order.orderId"
               [ngModel]="order.status" (ngModelChange)="updateStatus(order, $event)"
-              [title]="order.deliveryMethod === 'En mano' ? 'Pago recibido y Enviado (= listo para recoger) avisan al cliente por email' : 'Pago recibido y Enviado avisan al cliente por email'">
+              [title]="order.deliveryMethod === 'En mano' ? 'Pago recibido, Enviado (= listo para recoger) y Entregado avisan al cliente por email' : 'Pago recibido, Enviado y Entregado avisan al cliente por email'">
               @for (status of statuses; track status) { <option [value]="status">{{ status }}</option> }
             </select>
           </div>

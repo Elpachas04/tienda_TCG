@@ -131,6 +131,20 @@ un failsafe CSS a los 2,5 s. Todo respeta `prefers-reduced-motion`.
 - `netlify.toml`: rutas de la app sin HTML propio → `index.html` (200); cualquier otra URL → `/404/index.html` con estado 404.
   Si añades una ruta nueva que no se prerenderiza, añádela ahí
 
+## Emails y valoraciones
+
+- Emails al cliente (Brevo) con maquetación común en `netlify/functions/_email-kit.ts`: "Pedido recibido"
+  (`send-confirmation.ts`, el único con detalle) y los de estado en `_order-emails.ts` (Pago recibido, Enviado /
+  Listo para recoger, Entregado), cortos a propósito. La oficina de Correos se guarda en la columna "Oficina" de Notion
+- Valoraciones en Netlify Blobs (store `reviews`, clave = nº de pedido, una por pedido, `_reviews.ts`). Cada llamada
+  (leer, enviar, subir foto) comprueba en Notion que el pedido existe y está "Entregado" (`checkOrder`); si Notion no
+  responde, se rechaza. El enlace del email de "Entregado"
+  lleva una firma HMAC (`REVIEW_SECRET` o, si no existe, `ADMIN_SECRET`). Entran como pendientes y se publican en
+  Admin → Valoraciones; la web solo las enseña si `settings.reviewsVisible` está activado (interruptor en esa pantalla)
+- Fotos de valoraciones: el formulario las reduce a 1600 px y `review-photo.ts` las sube a Cloudinary en
+  `layervault/valoraciones/<nº de pedido>/` con la etiqueta del pedido (`_cloudinary.ts`). Borrar la valoración en el
+  admin borra esa carpeta. El nombre es el del pedido en Notion (no editable) y en la web sale tapado: "Marta Gómez" → "Mar******ez" (`maskName`, en `_reviews.ts` y `shared/utils/mask-name.ts`)
+
 ## Datos
 
 Catálogo en `src/assets/data/products.json`.

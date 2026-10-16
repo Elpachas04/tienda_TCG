@@ -13,6 +13,7 @@ import { CustomLeaderRequestComponent } from '../../shared/components/custom-lea
 import { FoilHoverDirective } from '../../shared/directives/foil-hover.directive';
 import { SeoService } from '../../core/services/seo.service';
 import { AssistantService } from '../../core/assistant/assistant.service';
+import { ReviewsSectionComponent } from '../../shared/components/reviews-section.component';
 
 type DetailData = { product: Product | null; colors: Color[] };
 
@@ -20,7 +21,7 @@ type DetailData = { product: Product | null; colors: Color[] };
   selector: 'app-product-detail',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, LeaderPickerComponent, CustomLeaderRequestComponent, FoilHoverDirective, EurPipe],
+  imports: [RouterLink, LeaderPickerComponent, CustomLeaderRequestComponent, FoilHoverDirective, EurPipe, ReviewsSectionComponent],
   host: { class: 'block' },
   template: `
     @let data = productData();
@@ -291,6 +292,8 @@ type DetailData = { product: Product | null; colors: Color[] };
 
             </div>
           </div>
+
+          <app-reviews-section [productId]="data.product.id" />
         </div>
       </div>
     } @else {

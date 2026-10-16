@@ -4,12 +4,13 @@ import { LandingProductsComponent } from './landing-products.component';
 import { ColorsProcessComponent } from './colors-process.component';
 import { CtaComponent } from './cta.component';
 import { LvFooterComponent } from './lv-footer.component';
+import { ReviewsSectionComponent } from '../../shared/components/reviews-section.component';
 
 @Component({
   selector: 'app-landing',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [HeroComponent, LandingProductsComponent, ColorsProcessComponent, CtaComponent, LvFooterComponent],
+  imports: [HeroComponent, LandingProductsComponent, ColorsProcessComponent, CtaComponent, LvFooterComponent, ReviewsSectionComponent],
   host: { class: 'block bg-lv-black text-lv-cream min-h-screen' },
   template: `
     <!-- Hero: pinta inmediatamente (LCP) -->
@@ -24,6 +25,9 @@ import { LvFooterComponent } from './lv-footer.component';
     } @placeholder {
       <div id="colores" class="min-h-[500px]"></div>
     }
+
+    <!-- Valoraciones: solo aparecen si están activadas en el admin y hay alguna publicada -->
+    <app-reviews-section />
 
     <!-- CTA/contacto: on idle por el mismo motivo -->
     @defer (on idle) {

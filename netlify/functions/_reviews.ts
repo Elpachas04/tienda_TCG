@@ -1,0 +1,130 @@
+// Valoraciones de clientes, guardadas en Netlify Blobs (store "reviews", una entrada por pedido).
+// Solo puede valorar quien tiene el enlace del email de "Entregado": lleva una firma HMAC del nº de pedido.
+// Nada se publica solo: entran como "pendiente" y se aprueban desde el admin.
+import { createHmac, timingSafeEqual } from "node:crypto";
+import { connectLambda, getStore } from "@netlify/blobs";
+
+export const REVIEWS_STORE = "reviews";
+export const SITE_URL = "https://layervault.es";
+
+export type ReviewStatus = "pendiente" | "publicada" | "oculta";
+
+export interface Review {
+  orderId:    string;
+  name:       string;      // nombre y apellidos del pedido en Notion; en la web sale tapado (maskName)
+  rating:     number;      // 1–5
+  text:       string;
+  productIds: string[];    // productos del pedido, para mostrarla en sus fichas
+  photos:     string[];    // public_id de Cloudinary, en layervault/valoraciones/<orderId>/
+  products:   string[];    // nombres, para el admin
+  status:     ReviewStatus;
+  createdAt:  string;
+  updatedAt:  string;
+}
+
+/** Lo que se publica en la web: sin nº de pedido y con el nombre tapado (Mar******ez) */
+export interface PublicReview {
+  name: string; rating: number; text: string; productIds: string[]; photos: string[]; createdAt: string;
+}
+
+export const MAX_PHOTOS = 3;
+
+/** Carpeta de Cloudinary de las fotos de una valoración: el nº de pedido une foto y comentario */
+export function photoFolder(orderId: string): string {
+  return `layervault/valoraciones/${orderId}/`;
+}
+
+/**
+ * Nombre y apellidos tapados para la web: tres primeras letras, asteriscos y dos últimas.
+ * "Marta Gómez" → "Mar******ez". Los espacios también se tapan, para no revelar cuántas palabras tiene.
+ */
+export function maskName(fullName: string): string {
+  const c = Array.from(fullName.trim().replace(/\s+/g, " "));
+  if (!c.length) return "***";
+  if (c.length <= 5) return c[0] + "*".repeat(Math.max(3, c.length - 1));
+  return c.slice(0, 3).join("") + "*".repeat(c.length - 5) + c.slice(-2).join("");
+}
+
+function secret(): string {
+  const s = process.env["REVIEW_SECRET"] || process.env["ADMIN_SECRET"];
+  if (!s) throw new Error("REVIEW_SECRET/ADMIN_SECRET no configurado");
+  return s;
+}
+
+export function reviewToken(orderId: string): string {
+  return createHmac("sha256", secret()).update(`review:${orderId}`).digest("hex").slice(0, 32);
+}
+
+export function verifyReviewToken(orderId: string, token: string): boolean {
+  if (!/^LV-[A-Za-z0-9-]{3,40}$/.test(orderId) || !/^[0-9a-f]{32}$/.test(token)) return false;
+  const a = Buffer.from(reviewToken(orderId), "hex");
+  const b = Buffer.from(token, "hex");
+  return a.length === b.length && timingSafeEqual(a, b);
+}
+
+export function reviewUrl(orderId: string): string {
+  return `${SITE_URL}/valorar?id=${encodeURIComponent(orderId)}&t=${reviewToken(orderId)}`;
+}
+
+export function reviewsStore(event: unknown) {
+  // Funciones en formato Lambda: Blobs necesita el contexto que viene en el evento
+  connectLambda(event as Parameters<typeof connectLambda>[0]);
+  return getStore(REVIEWS_STORE);
+}
+
+export async function listReviews(store: ReturnType<typeof getStore>): Promise<Review[]> {
+  const { blobs } = await store.list();
+  const all = await Promise.all(blobs.map(b => store.get(b.key, { type: "json" }) as Promise<Review | null>));
+  return all.filter((r): r is Review => !!r).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+export function toPublic(r: Review): PublicReview {
+  return { name: maskName(r.name), rating: r.rating, text: r.text, productIds: r.productIds, photos: r.photos ?? [], createdAt: r.createdAt };
+}
+
+export interface OrderInfo { status: string; fullName: string; firstName: string; productIds: string[]; products: string[] }
+
+/**
+ * Pedido en Notion (la base de datos de pedidos). null = no existe.
+ * Lanza si Notion no responde: en ese caso no se acepta la valoración (mejor "prueba luego" que una sin pedido).
+ */
+export async function orderInfo(orderId: string): Promise<OrderInfo | null> {
+  const token = process.env["NOTION_TOKEN"];
+  const db    = process.env["NOTION_DATABASE_ID"];
+  if (!token || !db) throw new Error("NOTION_TOKEN / NOTION_DATABASE_ID no configurados");
+  const res = await fetch(`https://api.notion.com/v1/databases/${db}/query`, {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json", "Notion-Version": "2022-06-28" },
+    body: JSON.stringify({ filter: { property: "ID Pedido", title: { equals: orderId } } }),
+  });
+  if (!res.ok) throw new Error(`Notion ${res.status}: ${await res.text()}`);
+  const data = await res.json() as { results: Array<{ properties: Record<string, unknown> }> };
+  const props = data.results[0]?.properties;
+  if (!props) return null;
+  const text = (p: unknown) => ((p as { rich_text?: Array<{ plain_text?: string }> } | undefined)?.rich_text ?? []).map(t => t.plain_text ?? "").join("");
+  let items: Array<{ productId?: string; productName?: string }> = [];
+  try { items = JSON.parse(text(props["Items JSON"]) || "[]"); } catch { /* pedido antiguo sin Items JSON */ }
+  return {
+    status:     (props["Estado"] as { select?: { name?: string } } | undefined)?.select?.name ?? "",
+    fullName:   text(props["Cliente"]).replace(/\s+/g, " ").trim(),
+    firstName:  text(props["Cliente"]).trim().split(/\s+/)[0] ?? "",
+    productIds: [...new Set(items.map(i => i.productId).filter((x): x is string => !!x))],
+    products:   [...new Set(items.map(i => i.productName).filter((x): x is string => !!x))],
+  };
+}
+
+export type OrderCheck = { ok: true; info: OrderInfo } | { ok: false; statusCode: number; error: "order_not_found" | "not_delivered" | "unavailable" };
+
+/** Solo se puede valorar un pedido que existe en Notion y está marcado como Entregado */
+export async function checkOrder(orderId: string): Promise<OrderCheck> {
+  let info: OrderInfo | null;
+  try {
+    info = await orderInfo(orderId);
+  } catch (err) {
+    console.error("checkOrder:", err);
+    return { ok: false, statusCode: 503, error: "unavailable" };
+  }
+  if (!info) return { ok: false, statusCode: 404, error: "order_not_found" };
+  if (info.status !== "Entregado") return { ok: false, statusCode: 409, error: "not_delivered" };
+  return { ok: true, info };
+}

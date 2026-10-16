@@ -39,6 +39,13 @@ export const routes: Routes = [
       import('./features/checkout/checkout.component').then(m => m.CheckoutComponent),
   },
   {
+    path: 'valorar',
+    title: 'Valora tu pedido | LayerVault',
+    data: { noindex: true },
+    loadComponent: () =>
+      import('./features/reviews/review-form.component').then(m => m.ReviewFormComponent),
+  },
+  {
     path: 'seguimiento',
     title: 'Seguimiento de pedido | LayerVault',
     data: { noindex: true },
@@ -96,6 +103,11 @@ export const routes: Routes = [
         path: 'pedidos',
         loadComponent: () =>
           import('./features/admin/admin-orders.component').then(m => m.AdminOrdersComponent),
+      },
+      {
+        path: 'valoraciones',
+        loadComponent: () =>
+          import('./features/admin/admin-reviews.component').then(m => m.AdminReviewsComponent),
       },
       { path: '', redirectTo: 'productos', pathMatch: 'full' },
     ],

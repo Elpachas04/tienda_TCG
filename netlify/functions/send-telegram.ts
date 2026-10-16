@@ -266,28 +266,40 @@ async function writeOrderToNotion(order: ValidatedOrder, token: string, dbId: st
     }))
   ).slice(0, 1900);
 
-  const res = await fetch("https://api.notion.com/v1/pages", {
+  const properties: Record<string, unknown> = {
+    "ID Pedido": { title: [{ text: { content: order.orderId } }] },
+    "Estado":    { select: { name: "Pendiente de pago" } },
+    "Cliente":   { rich_text: [{ text: { content: order.customerName } }] },
+    "Contacto":  { rich_text: [{ text: { content: `${order.customerEmail} / ${order.customerPhone}` } }] },
+    "Total":     { number: order.totalAmount },
+    "Entrega":   { select: { name: order.deliveryMethod === "pickup" ? "En mano" : "Envío" } },
+    "Productos": { rich_text: [{ text: { content: productosSummary } }] },
+    "Items JSON":{ rich_text: [{ text: { content: itemsJson } }] },
+    "Fecha":     { date: { start: new Date().toISOString() } },
+  };
+  // "Nombre · Dirección, CP Localidad": lo lee admin-order-status.ts para el email de "Enviado"
+  if (order.deliveryMethod !== "pickup" && order.oficina) {
+    const o = order.oficina;
+    properties["Oficina"] = { rich_text: [{ text: { content: `${o.nombre} · ${o.direccion}, ${o.codigoPostal} ${o.localidad}`.slice(0, 1900) } }] };
+  }
+
+  const create = (props: Record<string, unknown>) => fetch("https://api.notion.com/v1/pages", {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${token}`,
       "Content-Type": "application/json",
       "Notion-Version": "2022-06-28",
     },
-    body: JSON.stringify({
-      parent: { database_id: dbId },
-      properties: {
-        "ID Pedido": { title: [{ text: { content: order.orderId } }] },
-        "Estado":    { select: { name: "Pendiente de pago" } },
-        "Cliente":   { rich_text: [{ text: { content: order.customerName } }] },
-        "Contacto":  { rich_text: [{ text: { content: `${order.customerEmail} / ${order.customerPhone}` } }] },
-        "Total":     { number: order.totalAmount },
-        "Entrega":   { select: { name: order.deliveryMethod === "pickup" ? "En mano" : "Envío" } },
-        "Productos": { rich_text: [{ text: { content: productosSummary } }] },
-        "Items JSON":{ rich_text: [{ text: { content: itemsJson } }] },
-        "Fecha":     { date: { start: new Date().toISOString() } },
-      },
-    }),
+    body: JSON.stringify({ parent: { database_id: dbId }, properties: props }),
   });
+
+  let res = await create(properties);
+  if (res.status === 400 && properties["Oficina"]) {
+    // Si en Notion no existe la columna "Oficina", se guarda el pedido igualmente sin ella
+    console.error("Notion create 400, reintentando sin Oficina:", await res.text());
+    delete properties["Oficina"];
+    res = await create(properties);
+  }
 
   if (!res.ok) {
     const body = await res.text();
