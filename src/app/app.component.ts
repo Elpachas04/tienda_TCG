@@ -4,6 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs';
 import { LvNavbarComponent } from './features/landing/lv-navbar.component';
 import { CartDrawerComponent } from './shared/components/cart-drawer.component';
+import { ShopAssistantComponent } from './shared/components/shop-assistant.component';
 import { SeoService } from './core/services/seo.service';
 import { SmoothScrollService } from './core/motion/smooth-scroll.service';
 
@@ -11,7 +12,7 @@ import { SmoothScrollService } from './core/motion/smooth-scroll.service';
   selector: 'app-root',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet, LvNavbarComponent, CartDrawerComponent],
+  imports: [RouterOutlet, LvNavbarComponent, CartDrawerComponent, ShopAssistantComponent],
   template: `
     <!-- El panel admin lleva su propio menú (con enlace a la tienda) -->
     @if (!isAdmin()) {
@@ -20,6 +21,11 @@ import { SmoothScrollService } from './core/motion/smooth-scroll.service';
     <main [class.min-h-screen]="!isLanding()" [class.pt-20]="!isLanding() && !isAdmin()">
       <router-outlet />
     </main>
+
+    <!-- Asistente de preguntas: se carga cuando el navegador está libre, no retrasa la página -->
+    @defer (on idle) {
+      <app-shop-assistant />
+    }
     @if (!isCheckout() && !isAdmin()) {
       <app-cart-drawer />
     }
