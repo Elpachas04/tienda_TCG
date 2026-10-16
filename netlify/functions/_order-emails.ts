@@ -1,7 +1,7 @@
 // Emails automáticos al cambiar el estado de un pedido desde el admin.
 // Maquetación común en _email-kit.ts (la misma que el de "Pedido recibido", send-confirmation.ts).
 
-import { esc, layout, bigValue, button, link, mapsUrl, progress, trackingUrl } from "./_email-kit";
+import { WHATSAPP, esc, layout, bigValue, button, link, mapsUrl, paragraph, progress, strong, trackingUrl } from "./_email-kit";
 
 const BREVO_API  = "https://api.brevo.com/v3/smtp/email";
 const FROM_EMAIL = "hola@layervault.es";
@@ -17,7 +17,7 @@ export interface OrderEmailData {
 }
 
 /** Estados que avisan al cliente. El resto solo se guardan en Notion. */
-export const EMAIL_STATUSES = ["Pago recibido", "Enviado"] as const;
+export const EMAIL_STATUSES = ["Pago recibido", "Enviado", "Entregado"] as const;
 
 interface EmailContent { subject: string; html: string }
 
@@ -85,6 +85,23 @@ function content(status: string, d: OrderEmailData): EmailContent | null {
       }),
     };
   }
+  if (status === "Entregado") {
+    return {
+      subject: `¿Ha llegado todo bien? · ${d.orderId}`,
+      html: layout({
+        preheader: "Si hay cualquier problema con la pieza, tienes 7 días para decírnoslo.",
+        orderId: d.orderId, greeting,
+        title: "Ya lo tienes",
+        lede: "Esperamos que te guste. Si te apetece, m&aacute;ndanos una foto de la pieza en uso: nos encanta verlas.",
+        blocks: [
+          progress(4, d.pickup),
+          button(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola, os mando una foto de mi pedido ${d.orderId}`)}`, "Mandar una foto por WhatsApp"),
+          paragraph(`Si hay alg&uacute;n problema, escr&iacute;benos en los ${strong("7 d&iacute;as")} siguientes. Si tiene un defecto, nos la devuelves y te enviamos una nueva; si te has arrepentido, nos la devuelves y te damos un vale por el importe.`, { size: 14 }),
+        ],
+      }),
+    };
+  }
+
   return null;
 }
 
