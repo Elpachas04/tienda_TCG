@@ -1,8 +1,6 @@
 import type { Handler, HandlerEvent } from "@netlify/functions";
 import { requestOk } from "./_guard";
-
-// Solo enviamos a Península — sin islas, Ceuta ni Melilla
-const NO_SHIP = new Set(["07", "35", "38", "51", "52"]);
+import { SHIPPING, shipsTo } from "../../src/app/shared/constants/shop-policy";
 
 const JSON_HEADERS: Record<string, string> = { "Content-Type": "application/json" };
 const CACHED_HEADERS: Record<string, string> = {
@@ -24,14 +22,14 @@ const handler: Handler = async (event: HandlerEvent) => {
     return { statusCode: 400, headers: JSON_HEADERS, body: JSON.stringify({ error: "CP inválido" }) };
   }
 
-  if (NO_SHIP.has(cp.slice(0, 2))) {
+  if (!shipsTo(cp)) {
     return { statusCode: 422, headers: JSON_HEADERS, body: JSON.stringify({ error: "Zona no disponible" }) };
   }
 
   return {
     statusCode: 200,
     headers: CACHED_HEADERS,
-    body: JSON.stringify({ zone: "Península", price: 5.92 }),
+    body: JSON.stringify({ zone: SHIPPING.zone, price: SHIPPING.price }),
   };
 };
 

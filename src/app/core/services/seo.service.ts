@@ -5,6 +5,8 @@ import { ActivatedRouteSnapshot, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Product } from '../models/product.model';
 import { CloudinaryService } from './cloudinary.service';
+import { buildProductSchema, RatingSummary } from '../seo/product-schema';
+import reviewSummary from '../../../assets/data/review-summary.json';
 
 const BASE_URL = 'https://layervault.es';
 const SITE = 'LayerVault';
@@ -57,11 +59,8 @@ export class SeoService {
     const url = `${BASE_URL}/product/${product.id}`;
     const image = product.images[0] ? this.cloudinary.detail(product.images[0]) : DEFAULT_IMAGE;
     const description = trimTo(product.tagline ? `${product.tagline} ${product.description ?? ''}` : (product.description ?? DEFAULT_DESCRIPTION), 158);
-    const prices = product.variants?.length ? product.variants.map(v => v.price) : [product.price];
-    const availability = product.available ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock';
-    const offers = prices.length > 1
-      ? { '@type': 'AggregateOffer', priceCurrency: 'EUR', lowPrice: Math.min(...prices), highPrice: Math.max(...prices), offerCount: prices.length, availability, url }
-      : { '@type': 'Offer', priceCurrency: 'EUR', price: prices[0], availability, url };
+    const images = product.images.slice(0, 5).map(id => this.cloudinary.detail(id));
+    const rating = (reviewSummary as Record<string, RatingSummary>)[product.id] ?? null;
 
     this.apply({
       path: `/product/${product.id}`,
@@ -69,16 +68,7 @@ export class SeoService {
       description,
       image,
       noindex: !!product.hidden,
-      jsonLd: product.hidden ? null : {
-        '@context': 'https://schema.org',
-        '@type': 'Product',
-        name: product.name,
-        description,
-        image: product.images.slice(0, 5).map(id => this.cloudinary.detail(id)),
-        sku: product.sku,
-        brand: { '@type': 'Brand', name: SITE },
-        offers,
-      },
+      jsonLd: product.hidden ? null : buildProductSchema({ product, url, description, images, brand: SITE, rating }),
     });
   }
 

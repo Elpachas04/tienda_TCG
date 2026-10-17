@@ -7,6 +7,7 @@ import { CartService } from '../../core/services/cart.service';
 import { OficinaService } from '../../core/services/oficina.service';
 import { OficinaCorreos } from '../../core/models/oficina.model';
 import { NOTES_MAX, CONTACT_EMAIL } from '../../shared/constants';
+import { SHIPPING, shipsTo } from '../../shared/constants/shop-policy';
 
 const NAME_MAX  = 100;
 const EMAIL_MAX = 254;
@@ -20,12 +21,8 @@ function isValidEmail(v: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
 }
 
-// Solo Península — no enviamos a islas, Ceuta ni Melilla
-const NO_SHIP_PREFIXES = new Set(['07', '35', '38', '51', '52']);
-
 function shippingZoneFor(cp: string): { zone: string; price: number } | null {
-  if (NO_SHIP_PREFIXES.has(cp.slice(0, 2))) return null;
-  return { zone: 'Península', price: 5.92 };
+  return shipsTo(cp) ? { zone: SHIPPING.zone, price: SHIPPING.price } : null;
 }
 
 @Component({
