@@ -164,6 +164,14 @@ Lo que se ve al cargar (hero del inicio, cabecera del catálogo) NO se anima ni 
   "Se puede comprar" en el admin, `admin-products-save.ts` manda un email a cada uno y vacía la lista. El admin
   enseña cuántos esperan (`/api/admin/restock`)
 
+- Recordatorio de checkout abandonado (solo con la casilla del checkout marcada, desmarcada por defecto):
+  `CheckoutDraftService` manda la cesta a `/api/checkout-draft` (`checkout-draft.ts`), que la guarda en Netlify Blobs
+  (store `checkout-drafts`, clave = SHA-256 del email, `_checkout-drafts.ts`) validando los productos contra el catálogo.
+  `checkout-reminders.ts` (programada cada hora) escribe una vez a las 24 h; tiempos en `REMINDER_POLICY`. El email
+  lleva enlaces firmados (`CHECKOUT_SECRET` o `ADMIN_SECRET`) para recuperar la cesta (`/checkout?recuperar=`) y darse
+  de baja (página con confirmación: los antivirus abren los enlaces solos). Se borra al pedir (`send-telegram.ts`).
+  Test de integración: `scripts/tests/checkout-drafts.test.mjs`
+
 ## Datos
 
 Catálogo en `src/assets/data/products.json`.

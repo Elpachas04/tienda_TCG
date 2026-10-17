@@ -122,12 +122,15 @@ import { EurPipe } from '../../shared/pipes/eur.pipe';
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
                 Si pides que te avisemos cuando vuelva un producto agotado, guardamos tu email solo para eso: te escribimos una vez y lo borramos.
               </p>
+              <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
+                Si en el checkout marcas «recordádmelo por email», guardamos tu nombre, tu email y el contenido de tu cesta para escribirte una sola vez si no terminas el pedido. Se borran al hacer el pedido, al desmarcar la casilla, desde el enlace del propio email o, como tarde, a los 7 días. Para no repetir el recordatorio guardamos además, durante 30 días, una huella cifrada de tu email que no permite recuperarlo.
+              </p>
             </section>
 
             <section class="space-y-3">
               <h2 class="lv-h3 text-lv-cream">Finalidad y base legitimadora</h2>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
-                Tus datos se usan exclusivamente para gestionar, fabricar y entregar tu pedido, y para enviarte la confirmación por email. La base legal es la ejecución del contrato de compraventa (art. 6.1.b RGPD).
+                Tus datos se usan exclusivamente para gestionar, fabricar y entregar tu pedido, y para enviarte la confirmación por email. La base legal es la ejecución del contrato de compraventa (art. 6.1.b RGPD). El recordatorio de cesta y el aviso de reposición se basan en tu consentimiento (art. 6.1.a RGPD), que puedes retirar en cualquier momento.
               </p>
             </section>
 

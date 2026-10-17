@@ -104,6 +104,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/checkout-draft"
+  to   = "/.netlify/functions/checkout-draft"
+  status = 200
+
+[[redirects]]
   from = "/api/restock"
   to   = "/.netlify/functions/restock-subscribe"
   status = 200

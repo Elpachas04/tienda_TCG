@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject, signal, computed, OnInit, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, signal, computed, OnInit, PLATFORM_ID, untracked } from '@angular/core';
 import { EurPipe } from '../../shared/pipes/eur.pipe';
 import { isPlatformBrowser } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../../core/services/cart.service';
 import { OficinaService } from '../../core/services/oficina.service';
+import { CheckoutDraftService } from '../../core/services/checkout-draft.service';
 import { OficinaCorreos } from '../../core/models/oficina.model';
 import { NOTES_MAX, CONTACT_EMAIL } from '../../shared/constants';
 import { SHIPPING, orderTotals, shipsTo } from '../../shared/constants/shop-policy';
@@ -153,6 +154,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                   [attr.maxlength]="NAME_MAX"
                   autocomplete="name"
                   [(ngModel)]="form.customerName"
+                  (ngModelChange)="syncDraft()"
                   (blur)="touched.name = true" />
                 @if (touched.name && !form.customerName.trim()) {
                   <p class="text-red-400 font-body text-xs mt-1.5">Obligatorio</p>
@@ -175,6 +177,14 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                     {{ form.customerEmail.trim() ? 'Email no válido' : 'Obligatorio' }}
                   </p>
                 }
+                <label class="mt-3 flex items-start gap-2.5 cursor-pointer select-none">
+                  <input type="checkbox" class="mt-0.5 w-4 h-4 flex-shrink-0 accent-lv-gold cursor-pointer"
+                    [checked]="remindMe()"
+                    (change)="remindMe.set($any($event.target).checked); syncDraft()" />
+                  <span class="font-body text-[13px] leading-snug text-lv-cream/70">
+                    Si no termino el pedido, recordádmelo por email. Solo una vez; guardáis mis datos y mi cesta como máximo 7 días.
+                  </span>
+                </label>
               </div>
 
               <div>
@@ -392,6 +402,8 @@ export class CheckoutComponent implements OnInit {
   private router = inject(Router);
   private oficinaService = inject(OficinaService);
   private platformId = inject(PLATFORM_ID);
+  private route = inject(ActivatedRoute);
+  private draft = inject(CheckoutDraftService);
 
   form = {
     customerName:  '',
@@ -412,6 +424,7 @@ export class CheckoutComponent implements OnInit {
   summaryOpen      = signal(false);
   berryActive      = signal(false);
   deliveryMethod   = signal<'pickup' | 'shipping'>('pickup');
+  remindMe         = signal(false);
   readonly freeShippingFrom = SHIPPING.freeFrom;
 
   shippingInfo     = signal<{ zone: string; price: number } | null>(null);
@@ -435,13 +448,42 @@ export class CheckoutComponent implements OnInit {
     { n: '4', text: 'Te lo enviamos por Correos o lo recoges en mano, como hayas elegido' },
   ];
 
-  ngOnInit() {
-    if (this.cartService.cartItems().length === 0) {
-      this.router.navigate(['/catalog']);
-    }
+  constructor() {
+    // Si cambia la cesta con la casilla marcada, se actualiza la copia guardada
+    effect(() => {
+      this.cartService.cartItems();
+      untracked(() => this.syncDraft());
+    });
+  }
+
+  async ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
       this.berryActive.set(sessionStorage.getItem('berry_active') === 'true');
     }
+    const ref = this.route.snapshot.queryParamMap.get('recuperar');
+    if (ref) await this.restoreDraft(ref);
+    if (this.cartService.cartItems().length === 0) {
+      this.router.navigate(['/catalog']);
+    }
+  }
+
+  /** Enlace "Terminar el pedido" del recordatorio: rellena la cesta (si está vacía) y los datos */
+  private async restoreDraft(ref: string): Promise<void> {
+    const saved = await this.draft.restore(ref);
+    this.router.navigate([], { queryParams: { recuperar: null }, queryParamsHandling: 'merge', replaceUrl: true });
+    if (!saved) return;
+    if (this.cartService.cartItems().length === 0) saved.items.forEach(i => this.cartService.addItem(i));
+    if (!this.form.customerEmail) this.form.customerEmail = saved.email;
+    if (!this.form.customerName && saved.name) this.form.customerName = saved.name;
+  }
+
+  syncDraft(): void {
+    this.draft.sync({
+      consent: this.remindMe(),
+      email: this.form.customerEmail,
+      name: this.form.customerName,
+      items: this.cartService.cartItems(),
+    }, this.isEmailValid());
   }
 
   inputClass(hasError: boolean): string {
@@ -459,6 +501,7 @@ export class CheckoutComponent implements OnInit {
     const filtered = el.value.replace(/[^a-zA-Z0-9.@\-_+]/g, '').slice(0, EMAIL_MAX);
     this.form.customerEmail = filtered;
     el.value = filtered;
+    this.syncDraft();
   }
 
   onPhoneInput(event: Event): void {
@@ -673,6 +716,7 @@ export class CheckoutComponent implements OnInit {
       const orderId = data.orderId ?? '';
       this.orderId.set(orderId);
       this.orderConfirmed.set(true);
+      this.draft.reset();
       this.cartService.clearCart();
       if (this.berryActive() && isPlatformBrowser(this.platformId)) {
         sessionStorage.removeItem('berry_active');
