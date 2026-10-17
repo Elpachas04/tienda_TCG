@@ -13,6 +13,7 @@ import { CustomLeaderRequestComponent } from '../../shared/components/custom-lea
 import { FoilHoverDirective } from '../../shared/directives/foil-hover.directive';
 import { SeoService } from '../../core/services/seo.service';
 import { AssistantService } from '../../core/assistant/assistant.service';
+import { VARIANT_PARAM, variantSlug } from '../../shared/utils/variant-slug';
 import { ReviewsSectionComponent } from '../../shared/components/reviews-section.component';
 import { RestockFormComponent } from '../../shared/components/restock-form.component';
 
@@ -378,7 +379,11 @@ export class ProductDetailComponent {
         if (data?.product) {
           const variants = data.product.variants;
           if (variants?.length) {
-            this.selectedVariant.set(variants.find(v => v.default) ?? variants[0]);
+            // ?variante=… (enlaces del feed de Google Merchant) abre la ficha con esa variante y su precio
+            const wanted = this.route.snapshot.queryParamMap.get(VARIANT_PARAM);
+            this.selectedVariant.set(
+              (wanted && variants.find(v => variantSlug(v.label) === wanted)) || variants.find(v => v.default) || variants[0]
+            );
           }
           if (data.product.colorImageKey) {
             this.preloadColorImages(data.product.colorImageKey, data.colors);

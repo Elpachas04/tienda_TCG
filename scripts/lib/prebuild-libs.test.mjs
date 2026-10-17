@@ -28,6 +28,7 @@ test('buildMerchantFeed: una entrada por variante, agrupadas y con el texto esca
   assert.match(xml, /<g:id>APL-100-cartas<\/g:id>/);
   assert.match(xml, /<g:price>25\.00 EUR<\/g:price>/);
   assert.match(xml, /<g:item_group_id>APL<\/g:item_group_id>/);
-  assert.match(xml, /A &amp; B — 60 cartas/);
+  assert.match(xml, /<g:title>A &amp; B 60 cartas · Accesorio para cartas TCG<\/g:title>/);
+  assert.match(xml, /<g:link>https:\/\/example\.com\/product\/apl\?variante=100-cartas<\/g:link>/);
   assert.doesNotMatch(xml, /sin-foto/);
 });
