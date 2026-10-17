@@ -1,6 +1,8 @@
 import type { Handler, HandlerEvent } from "@netlify/functions";
 import { originOk } from "./_guard";
 import { orderTotals } from "../../src/app/shared/constants/shop-policy";
+import { connectLambda } from "@netlify/blobs";
+import { draftKey, draftsStore, emailHash } from "./_checkout-drafts";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -381,6 +383,14 @@ const handler: Handler = async (event: HandlerEvent) => {
     } catch (err) {
       console.error("Error writing to Notion (non-critical):", err);
     }
+  }
+
+  // Pedido hecho: la cesta guardada para el recordatorio ya no hace falta. Tampoco es crítico
+  try {
+    connectLambda(event as unknown as Parameters<typeof connectLambda>[0]);
+    await draftsStore().delete(draftKey(emailHash(order.customerEmail)));
+  } catch (err) {
+    console.error("Error borrando la cesta guardada (non-critical):", err);
   }
 
   return { statusCode: 200, body: JSON.stringify({ success: true, orderId }) };
