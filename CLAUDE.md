@@ -69,7 +69,7 @@ src/app/
 │   └── legal/        legal.component.ts
 └── shared/
     ├── components/   cart-drawer.component.ts · color-picker.component.ts · telegram-fab.component.ts
-    ├── directives/   foil-hover.directive.ts · split-heading.directive.ts
+    ├── directives/   foil-hover.directive.ts · split-heading.directive.ts · lazy-video.directive.ts
     └── constants/    index.ts
 ```
 
@@ -83,7 +83,7 @@ src/app/
 - `toObservable(itemCount).pipe(takeUntilDestroyed())`
 
 ### LvProductCardComponent (landing)
-- Tarjeta de producto en landing page con `CardGlowDirective` y `RevealDirective`
+- Tarjeta de producto en landing page con `FoilHoverDirective` (`lvFoil`) y `LazyVideoDirective`
 - `justAdded` signal: botón muestra `✓` durante 1,5 s tras añadir
 
 ### ColorPickerComponent
@@ -97,7 +97,7 @@ src/app/
 - Permite editar cantidad y añadir notas por ítem
 
 ### CheckoutComponent
-- Email obligatorio + teléfono opcional (campos separados)
+- Email y teléfono obligatorios (teléfono español validado)
 - Selección de oficina de Correos por código postal (via `OficinaService`)
 - Envío del pedido: Telegram + Brevo (email confirmación)
 
