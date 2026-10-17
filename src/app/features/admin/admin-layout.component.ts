@@ -32,6 +32,11 @@ import { AdminAuthService } from '../../core/services/admin-auth.service';
              [class]="reviewsLink.isActive ? '' : 'text-lv-muted hover:text-lv-cream hover:bg-white/[0.03]'">
             Valoraciones
           </a>
+          <a routerLink="/admin/invitaciones" routerLinkActive="bg-lv-gold/10 text-lv-gold" #referralsLink="routerLinkActive"
+             class="block font-body text-[13px] rounded-xl px-3 py-2.5 transition-colors"
+             [class]="referralsLink.isActive ? '' : 'text-lv-muted hover:text-lv-cream hover:bg-white/[0.03]'">
+            Invitaciones
+          </a>
         </div>
         <div class="md:px-3 md:py-4 md:border-t border-lv-border md:space-y-1">
           <a routerLink="/" class="hidden md:block font-body text-[13px] rounded-xl px-3 py-2.5 text-lv-muted hover:text-lv-cream hover:bg-white/[0.03] transition-colors">

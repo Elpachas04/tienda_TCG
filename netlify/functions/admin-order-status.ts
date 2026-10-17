@@ -3,6 +3,8 @@ import { originOk, MAX_BODY } from "./_guard";
 import { verifyAdminSession } from "./_admin-auth";
 import { ORDER_STATUSES } from "../../src/app/shared/constants/order-status";
 import { EMAIL_STATUSES, sendStatusEmail } from "./_order-emails";
+import { connectLambda } from "@netlify/blobs";
+import { inviteCodeFor, referralsEnabled, rewardReferrer } from "./_referrals";
 
 // LV-YYMMDD-XXXX
 const ORDER_ID_RE = /^LV-\d{6}-[A-Z2-9]{4}$/;
@@ -115,14 +117,18 @@ const handler: Handler = async (event) => {
     let emailSent = false;
     if (status !== previousStatus && (EMAIL_STATUSES as readonly string[]).includes(status)) {
       const contacto = richText(props["Contacto"]);
-      const customerEmail = contacto.split("/")[0]?.trim() ?? "";
+      const rawEmail = contacto.split("/")[0]?.trim() ?? "";
+      const customerEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawEmail) ? rawEmail : "";
+      const customerName = richText(props["Cliente"]);
+      const inviteCode = status === "Entregado" && customerEmail ? await deliveredReferrals(event, orderId, customerEmail, customerName) : undefined;
       emailSent = await sendStatusEmail(status, {
         orderId,
-        customerName:  richText(props["Cliente"]),
-        customerEmail: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail) ? customerEmail : "",
+        customerName,
+        customerEmail,
         pickup:        (props["Entrega"] as { select?: { name?: string } } | undefined)?.select?.name === "En mano",
         trackingNumber,
         oficina:       richText(props["Oficina"]) || undefined,
+        inviteCode,
       });
     }
 
@@ -132,5 +138,21 @@ const handler: Handler = async (event) => {
     return { statusCode: 500, headers, body: JSON.stringify({ error: "server_error" }) };
   }
 };
+
+/**
+ * Pedido entregado: si se hizo con una invitación, se manda el vale a quien invitó (aunque las invitaciones se hayan
+ * apagado después: lo prometido se cumple) y, si están activas, se devuelve el código del cliente para su email.
+ * Nunca lanza: el cambio de estado no depende de esto.
+ */
+async function deliveredReferrals(event: unknown, orderId: string, email: string, name: string): Promise<string | undefined> {
+  try {
+    connectLambda(event as Parameters<typeof connectLambda>[0]);
+    await rewardReferrer(orderId);
+    return (await referralsEnabled()) ? await inviteCodeFor(email.toLowerCase(), name || undefined) : undefined;
+  } catch (err) {
+    console.error("deliveredReferrals:", err);
+    return undefined;
+  }
+}
 
 export { handler };

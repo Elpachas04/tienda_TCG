@@ -2,6 +2,7 @@
 // Maquetación común en _email-kit.ts (la misma que el de "Pedido recibido", send-confirmation.ts).
 
 import { reviewUrl } from "./_reviews";
+import { inviteBlock } from "./_referrals";
 import { esc, layout, bigValue, button, link, mapsUrl, paragraph, progress, strong, trackingUrl } from "./_email-kit";
 
 const BREVO_API  = "https://api.brevo.com/v3/smtp/email";
@@ -15,6 +16,7 @@ export interface OrderEmailData {
   pickup:         boolean;
   trackingNumber?: string;
   oficina?:       string;   // "Nombre · Dirección, CP Localidad" (columna "Oficina" de Notion)
+  inviteCode?:    string;   // código para invitar (solo con las invitaciones activadas, email de "Entregado")
 }
 
 /** Estados que avisan al cliente. El resto solo se guardan en Notion. */
@@ -97,6 +99,7 @@ function content(status: string, d: OrderEmailData): EmailContent | null {
         blocks: [
           progress(4, d.pickup),
           button(reviewUrl(d.orderId), "Valorar mi pedido"),
+          d.inviteCode ? inviteBlock(d.inviteCode) : "",
           paragraph(`Si hay alg&uacute;n problema, escr&iacute;benos en los ${strong("7 d&iacute;as")} siguientes. Si tiene un defecto, nos la devuelves y te enviamos una nueva; si te has arrepentido, nos la devuelves y te damos un vale por el importe.`, { size: 14 }),
         ],
       }),

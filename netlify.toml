@@ -109,6 +109,16 @@
   status = 200
 
 [[redirects]]
+  from = "/api/coupon"
+  to   = "/.netlify/functions/coupon-check"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/referrals"
+  to   = "/.netlify/functions/admin-referrals"
+  status = 200
+
+[[redirects]]
   from = "/api/restock"
   to   = "/.netlify/functions/restock-subscribe"
   status = 200

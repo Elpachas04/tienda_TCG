@@ -6,9 +6,10 @@ import { FormsModule } from '@angular/forms';
 import { CartService } from '../../core/services/cart.service';
 import { OficinaService } from '../../core/services/oficina.service';
 import { CheckoutDraftService } from '../../core/services/checkout-draft.service';
+import { CatalogService } from '../../core/services/catalog.service';
 import { OficinaCorreos } from '../../core/models/oficina.model';
 import { NOTES_MAX, CONTACT_EMAIL } from '../../shared/constants';
-import { SHIPPING, orderTotals, shipsTo } from '../../shared/constants/shop-policy';
+import { REFERRAL, SHIPPING, orderTotals, shipsTo } from '../../shared/constants/shop-policy';
 
 const NAME_MAX  = 100;
 const EMAIL_MAX = 254;
@@ -133,6 +134,12 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                       Descuento ₿erry
                     </span>
                     <span class="font-display text-base text-lv-gold">−{{ berryDiscount() | eur }}</span>
+                  </div>
+                }
+                @if (couponDiscount() > 0) {
+                  <div class="flex justify-between items-center pt-2 border-t border-white/[0.06]">
+                    <span class="font-body text-xs text-lv-gold">Código {{ coupon()!.code }}</span>
+                    <span class="font-display text-base text-lv-gold">−{{ couponDiscount() | eur }}</span>
                   </div>
                 }
 
@@ -317,6 +324,44 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                 </textarea>
                 <p class="text-right font-body text-xs text-lv-cream/60 mt-1">{{ form.notes.length }}/{{ NOTES_MAX }}</p>
               </div>
+
+              @if (referralsEnabled) {
+                <div>
+                  <label for="co-coupon" class="block font-body text-sm text-lv-cream/75 mb-2">
+                    Código de descuento <span class="opacity-60">(opcional)</span>
+                  </label>
+                  @if (coupon(); as c) {
+                    <div class="flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-lv-gold/30 bg-lv-gold/[0.07]">
+                      <div>
+                        <p class="font-body text-sm text-lv-cream">{{ c.code }} · {{ c.amount | eur }} de descuento</p>
+                        @if (couponDiscount() === 0) {
+                          <p class="font-body text-xs text-lv-cream/60 mt-0.5">
+                            @if (cartService.total() < couponMin) { Se aplica en pedidos desde {{ couponMin | eur }}. }
+                            @else { Ya tienes un descuento mayor con ₿erry. }
+                          </p>
+                        }
+                      </div>
+                      <button type="button" class="font-body text-xs text-lv-cream/60 hover:text-lv-cream underline" (click)="removeCoupon()">Quitar</button>
+                    </div>
+                  } @else {
+                    <div class="flex gap-2">
+                      <input id="co-coupon" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false"
+                        [class]="inputClass(!!couponMsg()) + ' uppercase'"
+                        placeholder="NAKAMA-XXXXX" maxlength="20"
+                        [value]="couponInput()"
+                        (input)="couponInput.set($any($event.target).value); couponMsg.set('')"
+                        (keydown.enter)="applyCoupon()" />
+                      <button type="button" class="lv-btn lv-btn-ghost flex-shrink-0"
+                        [disabled]="couponBusy() || !couponInput().trim()" (click)="applyCoupon()">
+                        {{ couponBusy() ? 'Comprobando…' : 'Aplicar' }}
+                      </button>
+                    </div>
+                    @if (couponMsg()) {
+                      <p class="text-red-400 font-body text-xs mt-1.5" role="alert">{{ couponMsg() }}</p>
+                    }
+                  }
+                </div>
+              }
             </div>
 
             <!-- Honeypot: trap para bots — invisible para humanos -->
@@ -404,6 +449,7 @@ export class CheckoutComponent implements OnInit {
   private platformId = inject(PLATFORM_ID);
   private route = inject(ActivatedRoute);
   private draft = inject(CheckoutDraftService);
+  private catalog = inject(CatalogService);
 
   form = {
     customerName:  '',
@@ -425,6 +471,13 @@ export class CheckoutComponent implements OnInit {
   berryActive      = signal(false);
   deliveryMethod   = signal<'pickup' | 'shipping'>('pickup');
   remindMe         = signal(false);
+
+  readonly referralsEnabled = !!this.catalog.settings?.referralsEnabled;
+  readonly couponMin        = REFERRAL.minSubtotal;
+  couponInput      = signal('');
+  couponMsg        = signal('');
+  couponBusy       = signal(false);
+  coupon           = signal<{ code: string; amount: number; kind: string } | null>(null);
   readonly freeShippingFrom = SHIPPING.freeFrom;
 
   shippingInfo     = signal<{ zone: string; price: number } | null>(null);
@@ -435,9 +488,10 @@ export class CheckoutComponent implements OnInit {
 
   readonly totals = computed(() =>
     // El envío solo cuenta cuando ya hay un CP válido con precio, igual que en el resumen
-    orderTotals(this.cartService.total(), this.deliveryMethod() === 'shipping' && this.shippingInfo() ? 'shipping' : 'pickup', this.berryActive())
+    orderTotals(this.cartService.total(), this.deliveryMethod() === 'shipping' && this.shippingInfo() ? 'shipping' : 'pickup', { berryActive: this.berryActive(), couponAmount: this.coupon()?.amount })
   );
-  readonly berryDiscount = computed(() => this.totals().discount);
+  readonly berryDiscount  = computed(() => this.totals().discountSource === 'berry' ? this.totals().discount : 0);
+  readonly couponDiscount = computed(() => this.totals().discountSource === 'coupon' ? this.totals().discount : 0);
   readonly shippingCost  = computed(() => this.totals().shipping);
   readonly grandTotal    = computed(() => this.totals().total);
 
@@ -477,6 +531,41 @@ export class CheckoutComponent implements OnInit {
     if (!this.form.customerName && saved.name) this.form.customerName = saved.name;
   }
 
+  async applyCoupon(): Promise<void> {
+    const code = this.couponInput().trim();
+    if (!code || this.couponBusy()) return;
+    if (!this.isEmailValid()) {
+      this.touched.email = true;
+      this.couponMsg.set('Escribe primero tu email: el código va ligado a él.');
+      return;
+    }
+    this.couponBusy.set(true);
+    this.couponMsg.set('');
+    try {
+      const res = await fetch('/api/coupon', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, email: this.form.customerEmail.trim() }),
+      });
+      const data = await res.json() as { ok?: boolean; code?: string; amount?: number; kind?: string; message?: string };
+      if (data.ok && data.code && data.amount) {
+        this.coupon.set({ code: data.code, amount: data.amount, kind: data.kind ?? '' });
+        this.couponInput.set('');
+      } else {
+        this.couponMsg.set(data.message ?? 'Este código no es válido.');
+      }
+    } catch {
+      this.couponMsg.set('No hemos podido comprobar el código. Prueba otra vez.');
+    } finally {
+      this.couponBusy.set(false);
+    }
+  }
+
+  removeCoupon(): void {
+    this.coupon.set(null);
+    this.couponMsg.set('');
+  }
+
   syncDraft(): void {
     this.draft.sync({
       consent: this.remindMe(),
@@ -499,6 +588,7 @@ export class CheckoutComponent implements OnInit {
     const el = event.target as HTMLInputElement;
     // RFC 5321: alfanumérico + caracteres especiales válidos en email
     const filtered = el.value.replace(/[^a-zA-Z0-9.@\-_+]/g, '').slice(0, EMAIL_MAX);
+    if (filtered !== this.form.customerEmail && this.coupon()) this.removeCoupon(); // el cupón va ligado al email
     this.form.customerEmail = filtered;
     el.value = filtered;
     this.syncDraft();
@@ -676,7 +766,8 @@ export class CheckoutComponent implements OnInit {
       postalCode:      this.deliveryMethod() === 'shipping' ? this.form.postalCode : undefined,
       shippingZone:    this.shippingInfo()?.zone,
       shippingCost:    this.deliveryMethod() === 'shipping' ? totals.shipping : undefined,
-      berryDiscount:   this.berryDiscount() || undefined,
+      berryDiscount:   totals.discountSource === 'berry' ? totals.discount : undefined,
+      couponCode:      totals.discountSource === 'coupon' ? this.coupon()?.code : undefined,
       oficina:         oficina ? {
         nombre:       oficina.nombre,
         direccion:    oficina.direccion,
@@ -709,6 +800,12 @@ export class CheckoutComponent implements OnInit {
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({})) as { error?: string };
+        // Un 400 es un dato que el cliente puede corregir (p. ej. un código que ya no vale): se le dice cuál
+        if (res.status === 400 && data.error) {
+          this.errorMsg.set(data.error);
+          if (isPlatformBrowser(this.platformId)) window.scrollTo({ top: 0, behavior: 'smooth' });
+          return;
+        }
         throw new Error(data.error ?? `Error ${res.status}`);
       }
 
@@ -718,7 +815,8 @@ export class CheckoutComponent implements OnInit {
       this.orderConfirmed.set(true);
       this.draft.reset();
       this.cartService.clearCart();
-      if (this.berryActive() && isPlatformBrowser(this.platformId)) {
+      // ₿erry solo se gasta si ha sido el descuento aplicado (con un cupón mayor se conserva)
+      if (totals.discountSource === 'berry' && isPlatformBrowser(this.platformId)) {
         sessionStorage.removeItem('berry_active');
         sessionStorage.removeItem('berry_shown');
         localStorage.setItem('berry_spent', 'true');
