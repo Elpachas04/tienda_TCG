@@ -49,3 +49,6 @@ Thumbs.db
 
 # Local Netlify folder
 .netlify
+
+# Generado en cada build por scripts/prebuild.mjs
+/public/feeds/

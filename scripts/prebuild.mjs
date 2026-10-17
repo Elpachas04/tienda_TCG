@@ -2,7 +2,9 @@
 // la lista de páginas a prerenderizar y el sitemap. Así las fichas salen en el HTML con sus datos.
 //   node scripts/prebuild.mjs          → usa el catálogo del repo (src/assets/data/products.json)
 //   node scripts/prebuild.mjs --live   → antes lo descarga de producción (lo hace Netlify en cada deploy)
-import { readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { buildMerchantFeed } from './lib/merchant-feed.mjs';
+import { fetchReviewSummary } from './lib/review-summary.mjs';
 
 const SITE = 'https://layervault.es';
 const SEED = 'src/assets/data/products.json';
@@ -39,6 +41,22 @@ await writeFile('public/sitemap.xml',
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`);
 
 console.log(`prebuild: ${pages.length} páginas en el sitemap y en el prerender`);
+
+await mkdir('public/feeds', { recursive: true });
+await writeFile('public/feeds/google-merchant.xml',
+  buildMerchantFeed({ site: SITE, brand: catalog.settings?.shopName ?? 'LayerVault', products, categories: catalog.categories }));
+console.log('prebuild: feed de Google Merchant en /feeds/google-merchant.xml');
+
+// Sin --live se deja el resumen que haya (vacío en el repo), para que el build local no dependa de producción
+if (live) {
+  try {
+    const summary = await fetchReviewSummary({ site: SITE, enabled: !!catalog.settings?.reviewsVisible });
+    await writeFile('src/assets/data/review-summary.json', JSON.stringify(summary, null, 2) + '\n');
+    console.log(`prebuild: valoraciones de ${Object.keys(summary).length} productos en los datos estructurados`);
+  } catch (err) {
+    console.warn(`prebuild: no se pudieron leer las valoraciones (${err.message}); la ficha sale sin nota media`);
+  }
+}
 
 // Cloudinary crea cada tamaño de foto la primera vez que alguien lo pide, y eso tarda segundos.
 // En cada deploy pedimos por adelantado los que usa la web (mismas transformaciones que cloudinary.service.ts),
