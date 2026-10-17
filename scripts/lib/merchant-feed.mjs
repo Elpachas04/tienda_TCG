@@ -3,6 +3,16 @@
 // Envío y devoluciones NO van aquí: se configuran en la cuenta de Merchant Center, que permite excluir
 // los códigos postales sin envío (ver SHIPPING.excludedPostalPrefixes en shop-policy.ts).
 import { SHIPPING, SHOP_CURRENCY } from '../../src/app/shared/constants/shop-policy.ts';
+import { VARIANT_PARAM, variantSlug } from '../../src/app/shared/utils/variant-slug.ts';
+
+// Qué es cada producto, para el título en Google (en la web el nombre no cambia). Una categoría nueva sin entrada
+// aquí sale solo con su nombre.
+const TITLE_SUFFIX = {
+  deckbox: 'Deckbox para cartas TCG',
+  storage: 'Caja organizadora para cartas TCG',
+  tools: 'Accesorio para cartas TCG',
+  accessories: 'Accesorio TCG',
+};
 
 const IMAGE_BASE = 'https://res.cloudinary.com/dew1whfdu/image/upload';
 const IMAGE_TRANSFORM = 'f_jpg,q_auto:good,c_limit,w_1200,h_1200';
@@ -29,14 +39,16 @@ function productItems(p, { site, brand, categoryLabel }) {
   if (images.length === 0) return [];
 
   return variants.map(v => {
-    const id = v ? `${p.sku ?? p.id}-${slug(v.label)}` : (p.sku ?? p.id);
-    const title = v ? `${p.name} — ${v.label}` : p.name;
+    const id = v ? `${p.sku ?? p.id}-${variantSlug(v.label)}` : (p.sku ?? p.id);
+    const name = v ? `${p.name} ${v.label}` : p.name;
+    const title = TITLE_SUFFIX[p.category] ? `${name} · ${TITLE_SUFFIX[p.category]}` : name;
+    const link = `${site}/product/${p.id}${v ? `?${VARIANT_PARAM}=${variantSlug(v.label)}` : ''}`;
     const description = v?.copy?.description ?? p.description ?? p.tagline;
     const fields = [
       ['g:id', id],
       ['g:title', title],
       ['g:description', description],
-      ['g:link', `${site}/product/${p.id}`],
+      ['g:link', link],
       ['g:image_link', images[0]],
       ...images.slice(1, 10).map(url => ['g:additional_image_link', url]),
       ['g:availability', p.available ? 'in_stock' : 'out_of_stock'],
@@ -51,10 +63,6 @@ function productItems(p, { site, brand, categoryLabel }) {
     ];
     return `    <item>\n${fields.map(([k, val]) => `      <${k}>${xml(val)}</${k}>`).join('\n')}\n    </item>`;
   });
-}
-
-function slug(s) {
-  return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
 function xml(s) {

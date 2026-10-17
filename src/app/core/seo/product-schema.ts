@@ -1,5 +1,6 @@
 import { Product } from '../models/product.model';
 import { RETURNS, SHIPPING, SHOP_COUNTRY, SHOP_CURRENCY } from '../../shared/constants/shop-policy';
+import { VARIANT_PARAM, variantSlug } from '../../shared/utils/variant-slug';
 
 export interface RatingSummary {
   average: number;
@@ -28,7 +29,7 @@ export function buildProductSchema({ product, url, description, images, brand, r
     priceCurrency: SHOP_CURRENCY,
     availability,
     itemCondition: 'https://schema.org/NewCondition',
-    url,
+    url: v.label ? `${url}?${VARIANT_PARAM}=${variantSlug(v.label)}` : url,
     seller: { '@type': 'Organization', name: brand },
     shippingDetails: shippingDetails(),
     hasMerchantReturnPolicy: returnPolicy(),
