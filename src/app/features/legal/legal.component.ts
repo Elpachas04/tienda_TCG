@@ -125,6 +125,9 @@ import { EurPipe } from '../../shared/pipes/eur.pipe';
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
                 Si en el checkout marcas «recordádmelo por email», guardamos tu nombre, tu email y el contenido de tu cesta para escribirte una sola vez si no terminas el pedido. Se borran al hacer el pedido, al desmarcar la casilla, desde el enlace del propio email o, como tarde, a los 7 días. Para no repetir el recordatorio guardamos además, durante 30 días, una huella cifrada de tu email que no permite recuperarlo.
               </p>
+              <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
+                Cuando las invitaciones están activas, al entregarte un pedido te damos un código personal para invitar a otras personas. Guardamos tu nombre y tu email junto a ese código para poder enviarte el vale cuando alguien lo use, y una huella cifrada del email de quien lo usa para que cada persona solo pueda usar una invitación. Puedes pedirnos que lo borremos cuando quieras.
+              </p>
             </section>
 
             <section class="space-y-3">

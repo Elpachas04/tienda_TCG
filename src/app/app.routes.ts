@@ -109,6 +109,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/admin/admin-reviews.component').then(m => m.AdminReviewsComponent),
       },
+      {
+        path: 'invitaciones',
+        loadComponent: () =>
+          import('./features/admin/admin-referrals.component').then(m => m.AdminReferralsComponent),
+      },
       { path: '', redirectTo: 'productos', pathMatch: 'full' },
     ],
   },

@@ -86,6 +86,8 @@ export interface ShopSettings {
   deliveryDays: string;
   /** Enseña las valoraciones aprobadas en la web (se activa desde Admin → Valoraciones) */
   reviewsVisible?: boolean;
+  /** Invitaciones "invita a un nakama" (se activa desde Admin → Invitaciones; reglas en shop-policy.ts → REFERRAL) */
+  referralsEnabled?: boolean;
 }
 
 export interface BulkBox {

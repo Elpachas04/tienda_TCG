@@ -101,7 +101,7 @@ src/app/
 - Email y teléfono obligatorios (teléfono español validado)
 - Selección de oficina de Correos por código postal (via `OficinaService`)
 - Envío del pedido: Telegram + Brevo (email confirmación)
-- Totales con `orderTotals()` de `shop-policy.ts` (envío gratis desde `SHIPPING.freeFrom`, descuento ₿erry);
+- Totales con `orderTotals()` de `shop-policy.ts` (envío gratis desde `SHIPPING.freeFrom`, descuento ₿erry o cupón);
   `send-telegram.ts` recalcula el total con la misma función y rechaza el pedido si no coincide
 
 ### LandingComponent
@@ -171,6 +171,14 @@ Lo que se ve al cargar (hero del inicio, cabecera del catálogo) NO se anima ni 
   lleva enlaces firmados (`CHECKOUT_SECRET` o `ADMIN_SECRET`) para recuperar la cesta (`/checkout?recuperar=`) y darse
   de baja (página con confirmación: los antivirus abren los enlaces solos). Se borra al pedir (`send-telegram.ts`).
   Test de integración: `scripts/tests/checkout-drafts.test.mjs`
+
+- Invitaciones "invita a un nakama" (apagadas por defecto; interruptor en Admin → Invitaciones, `settings.referralsEnabled`).
+  Reglas e importes en `REFERRAL` (`shop-policy.ts`); lógica en `_referrals.ts` (Netlify Blobs, store `referrals`).
+  Al pasar un pedido a "Entregado" (`admin-order-status.ts`) el cliente recibe su código `NAKAMA-XXXXX` en el email y, si
+  ese pedido se hizo con una invitación, quien invitó recibe un vale `VALE-XXXXXX` de un uso. El checkout comprueba el
+  código en `/api/coupon` (`coupon-check.ts`) y `send-telegram.ts` lo vuelve a comprobar y lo gasta. El descuento entra
+  en `orderTotals()`: mínimo de cesta, compatible con el envío gratis, no se suma a ₿erry (se aplica el mayor).
+  Test de integración: `scripts/tests/referrals.test.mjs`
 
 ## Datos
 

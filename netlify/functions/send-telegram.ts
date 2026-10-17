@@ -3,6 +3,7 @@ import { originOk } from "./_guard";
 import { orderTotals } from "../../src/app/shared/constants/shop-policy";
 import { connectLambda } from "@netlify/blobs";
 import { draftKey, draftsStore, emailHash } from "./_checkout-drafts";
+import { CouponCheck, checkCoupon, normalizeCode, redeemCoupon } from "./_referrals";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -80,6 +81,8 @@ interface ValidatedOrder {
   shippingZone?:   string;
   shippingCost?:   number;
   berryDiscount?:  number;
+  coupon?:         Extract<CouponCheck, { ok: true }>;
+  couponDiscount?: number;
   oficina?:        ValidatedOficina;
   notes?:          string;
   totalAmount:     number;
@@ -88,7 +91,7 @@ interface ValidatedOrder {
 
 // ── Validation ─────────────────────────────────────────────────────────────
 
-function validateOrder(body: unknown, orderId: string): ValidatedOrder {
+async function validateOrder(body: unknown, orderId: string): Promise<ValidatedOrder> {
   if (!body || typeof body !== "object" || Array.isArray(body)) {
     throw new ValidationError("Cuerpo de la petición inválido");
   }
@@ -151,7 +154,16 @@ function validateOrder(body: unknown, orderId: string): ValidatedOrder {
   // descuento ₿erry no se aceptan tal cual del navegador
   const itemsSubtotal = items.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
   const berryActive   = typeof raw["berryDiscount"] === "number" && raw["berryDiscount"] > 0;
-  const totals        = orderTotals(itemsSubtotal, deliveryMethod, berryActive);
+
+  // Código de descuento (invitaciones): se vuelve a comprobar aquí aunque el checkout ya lo hiciera
+  let coupon: Extract<CouponCheck, { ok: true }> | undefined;
+  if (normalizeCode(raw["couponCode"])) {
+    const check = await checkCoupon(raw["couponCode"], customerEmail);
+    if (!check.ok) throw new ValidationError("El código de descuento ya no es válido. Quítalo y vuelve a confirmar.");
+    coupon = check;
+  }
+
+  const totals        = orderTotals(itemsSubtotal, deliveryMethod, { berryActive, couponAmount: coupon?.amount });
   const claimedTotal  = raw["totalAmount"];
   if (typeof claimedTotal !== "number" || !isFinite(claimedTotal) || Math.abs(claimedTotal - totals.total) > 0.01) {
     throw new ValidationError("Total del pedido no coincide con los artículos");
@@ -185,7 +197,9 @@ function validateOrder(body: unknown, orderId: string): ValidatedOrder {
     postalCode,
     shippingZone,
     shippingCost: deliveryMethod === "shipping" ? totals.shipping : undefined,
-    berryDiscount: totals.discount || undefined,
+    berryDiscount: totals.discountSource === "berry" ? totals.discount : undefined,
+    coupon: totals.discountSource === "coupon" ? coupon : undefined,
+    couponDiscount: totals.discountSource === "coupon" ? totals.discount : undefined,
     oficina,
     notes,
     totalAmount: claimedTotal,
@@ -229,6 +243,10 @@ function buildMessage(order: ValidatedOrder): string {
   }
   if (order.berryDiscount) {
     lines.push(`🪙 <b>Descuento ₿erry:</b> −${order.berryDiscount.toFixed(2)}€`);
+  }
+  if (order.coupon && order.couponDiscount) {
+    const label = order.coupon.kind === "invitacion" ? "Invitación" : "Vale";
+    lines.push(`🎟 <b>${label} ${escapeHtml(order.coupon.code)}:</b> −${order.couponDiscount.toFixed(2)}€`);
   }
 
   if (order.oficina) {
@@ -344,11 +362,13 @@ const handler: Handler = async (event: HandlerEvent) => {
   let order: ValidatedOrder;
   try {
     const raw: unknown = JSON.parse(event.body ?? "{}");
-    order = validateOrder(raw, orderId);
+    connectLambda(event as unknown as Parameters<typeof connectLambda>[0]);
+    order = await validateOrder(raw, orderId);
   } catch (err) {
     if (err instanceof ValidationError) {
       return { statusCode: 400, body: JSON.stringify({ error: err.message }) };
     }
+    console.error("validateOrder:", err);
     return { statusCode: 400, body: JSON.stringify({ error: "Petición malformada" }) };
   }
 
@@ -385,9 +405,10 @@ const handler: Handler = async (event: HandlerEvent) => {
     }
   }
 
+  if (order.coupon) await redeemCoupon(order.coupon, order.customerEmail, orderId);
+
   // Pedido hecho: la cesta guardada para el recordatorio ya no hace falta. Tampoco es crítico
   try {
-    connectLambda(event as unknown as Parameters<typeof connectLambda>[0]);
     await draftsStore().delete(draftKey(emailHash(order.customerEmail)));
   } catch (err) {
     console.error("Error borrando la cesta guardada (non-critical):", err);
