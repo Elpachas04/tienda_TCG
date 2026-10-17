@@ -95,11 +95,14 @@ src/app/
 ### CartDrawerComponent
 - Panel lateral deslizante (reemplaza la antigua cart page)
 - Permite editar cantidad y añadir notas por ítem
+- `FreeShippingProgressComponent`: barra de lo que falta para el envío gratis (`SHIPPING.freeFrom`)
 
 ### CheckoutComponent
 - Email y teléfono obligatorios (teléfono español validado)
 - Selección de oficina de Correos por código postal (via `OficinaService`)
 - Envío del pedido: Telegram + Brevo (email confirmación)
+- Totales con `orderTotals()` de `shop-policy.ts` (envío gratis desde `SHIPPING.freeFrom`, descuento ₿erry);
+  `send-telegram.ts` recalcula el total con la misma función y rechaza el pedido si no coincide
 
 ### LandingComponent
 - Secciones con `@defer (on viewport)` para carga diferida
@@ -133,7 +136,7 @@ Lo que se ve al cargar (hero del inicio, cabecera del catálogo) NO se anima ni 
 - `SeoService` pone título, descripción, canonical, Open Graph y robots por ruta (`data: { description, noindex }`);
   la ficha llama a `setProduct()`, que añade el JSON-LD de Product (`core/seo/product-schema.ts`): una oferta por
   variante con envío y devoluciones, y `aggregateRating` si hay valoraciones publicadas
-- Condiciones de venta (precio y zona de envío, CP excluidos, días de fabricación y tránsito, devoluciones) en
+- Condiciones de venta (precio, zona y umbral gratis del envío, CP excluidos, plazos, descuento ₿erry, devoluciones) en
   `shared/constants/shop-policy.ts`: lo usan checkout, `shipping-price.ts`, el JSON-LD y el feed. Solo datos, sin
   imports, porque el prebuild lo importa directamente con Node
 - El prebuild genera además `public/feeds/google-merchant.xml` (feed de Merchant Center, `scripts/lib/merchant-feed.mjs`,

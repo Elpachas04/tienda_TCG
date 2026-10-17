@@ -1,5 +1,6 @@
 import type { Handler, HandlerEvent } from "@netlify/functions";
 import { originOk } from "./_guard";
+import { orderTotals } from "../../src/app/shared/constants/shop-policy";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -76,6 +77,7 @@ interface ValidatedOrder {
   postalCode?:     string;
   shippingZone?:   string;
   shippingCost?:   number;
+  berryDiscount?:  number;
   oficina?:        ValidatedOficina;
   notes?:          string;
   totalAmount:     number;
@@ -143,14 +145,13 @@ function validateOrder(body: unknown, orderId: string): ValidatedOrder {
     };
   });
 
-  const shippingCost = typeof raw["shippingCost"] === "number" && isFinite(raw["shippingCost"])
-    ? raw["shippingCost"]
-    : undefined;
-
+  // El total se recalcula aquí con las mismas reglas que el checkout (shop-policy.ts): el coste de envío y el
+  // descuento ₿erry no se aceptan tal cual del navegador
   const itemsSubtotal = items.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
-  const expectedTotal = itemsSubtotal + (shippingCost ?? 0);
+  const berryActive   = typeof raw["berryDiscount"] === "number" && raw["berryDiscount"] > 0;
+  const totals        = orderTotals(itemsSubtotal, deliveryMethod, berryActive);
   const claimedTotal  = raw["totalAmount"];
-  if (typeof claimedTotal !== "number" || !isFinite(claimedTotal) || Math.abs(claimedTotal - expectedTotal) > 1) {
+  if (typeof claimedTotal !== "number" || !isFinite(claimedTotal) || Math.abs(claimedTotal - totals.total) > 0.01) {
     throw new ValidationError("Total del pedido no coincide con los artículos");
   }
 
@@ -181,7 +182,8 @@ function validateOrder(body: unknown, orderId: string): ValidatedOrder {
     deliveryMethod,
     postalCode,
     shippingZone,
-    shippingCost,
+    shippingCost: deliveryMethod === "shipping" ? totals.shipping : undefined,
+    berryDiscount: totals.discount || undefined,
     oficina,
     notes,
     totalAmount: claimedTotal,
@@ -220,8 +222,11 @@ function buildMessage(order: ValidatedOrder): string {
     `🚚 <b>Entrega:</b> ${deliveryLabel}`,
   ];
 
-  if (order.shippingCost) {
-    lines.push(`📮 <b>Envío:</b> ${order.shippingCost.toFixed(2)}€`);
+  if (order.deliveryMethod === "shipping" && order.shippingCost !== undefined) {
+    lines.push(`📮 <b>Envío:</b> ${order.shippingCost > 0 ? `${order.shippingCost.toFixed(2)}€` : "Gratis"}`);
+  }
+  if (order.berryDiscount) {
+    lines.push(`🪙 <b>Descuento ₿erry:</b> −${order.berryDiscount.toFixed(2)}€`);
   }
 
   if (order.oficina) {

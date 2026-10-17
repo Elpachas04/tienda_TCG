@@ -7,7 +7,7 @@ import { CartService } from '../../core/services/cart.service';
 import { OficinaService } from '../../core/services/oficina.service';
 import { OficinaCorreos } from '../../core/models/oficina.model';
 import { NOTES_MAX, CONTACT_EMAIL } from '../../shared/constants';
-import { SHIPPING, shipsTo } from '../../shared/constants/shop-policy';
+import { SHIPPING, orderTotals, shipsTo } from '../../shared/constants/shop-policy';
 
 const NAME_MAX  = 100;
 const EMAIL_MAX = 254;
@@ -117,12 +117,12 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                   }
                 </div>
 
-                @if (form.deliveryMethod === 'shipping' && shippingInfo()) {
+                @if (deliveryMethod() === 'shipping' && shippingInfo()) {
                   <div class="flex justify-between items-center pt-3 border-t border-white/[0.06]">
                     <span class="font-body text-xs text-lv-cream/60">
                       Envío — {{ shippingInfo()!.zone }}
                     </span>
-                    <span class="font-display text-base text-lv-cream/80">{{ shippingInfo()!.price | eur }}</span>
+                    <span class="font-display text-base text-lv-cream/80">{{ shippingCost() > 0 ? (shippingCost() | eur) : 'Gratis' }}</span>
                   </div>
                 }
                 @if (berryDiscount() > 0) {
@@ -131,7 +131,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                       <img src="https://res.cloudinary.com/dew1whfdu/image/upload/v1781902915/berrycoin.png" alt="₿" width="14" height="14" class="w-3.5 h-3.5 object-contain">
                       Descuento ₿erry
                     </span>
-                    <span class="font-display text-base text-lv-gold">−5,00 €</span>
+                    <span class="font-display text-base text-lv-gold">−{{ berryDiscount() | eur }}</span>
                   </div>
                 }
 
@@ -201,8 +201,8 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                 <div class="grid grid-cols-2 gap-2 sm:gap-3" role="group" aria-labelledby="co-delivery">
                   <button type="button"
                     class="p-3 sm:p-4 rounded-[16px] border-2 transition-all duration-200 text-left"
-                    [class]="form.deliveryMethod === 'pickup' ? 'border-lv-gold bg-lv-gold/[0.08]' : 'border-white/[0.06] hover:border-lv-gold/30 bg-white/[0.02]'"
-                    [attr.aria-pressed]="form.deliveryMethod === 'pickup'"
+                    [class]="deliveryMethod() === 'pickup' ? 'border-lv-gold bg-lv-gold/[0.08]' : 'border-white/[0.06] hover:border-lv-gold/30 bg-white/[0.02]'"
+                    [attr.aria-pressed]="deliveryMethod() === 'pickup'"
                     (click)="selectPickup()">
                     <div class="mb-1.5 sm:mb-2 text-lv-gold"><svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg></div>
                     <div class="font-display text-sm sm:text-base text-lv-cream ">En mano</div>
@@ -210,9 +210,9 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                   </button>
                   <button type="button"
                     class="p-3 sm:p-4 rounded-[16px] border-2 transition-all duration-200 text-left"
-                    [class]="form.deliveryMethod === 'shipping' ? 'border-lv-gold bg-lv-gold/[0.08]' : 'border-white/[0.06] hover:border-lv-gold/30 bg-white/[0.02]'"
-                    [attr.aria-pressed]="form.deliveryMethod === 'shipping'"
-                    (click)="form.deliveryMethod = 'shipping'">
+                    [class]="deliveryMethod() === 'shipping' ? 'border-lv-gold bg-lv-gold/[0.08]' : 'border-white/[0.06] hover:border-lv-gold/30 bg-white/[0.02]'"
+                    [attr.aria-pressed]="deliveryMethod() === 'shipping'"
+                    (click)="deliveryMethod.set('shipping')">
                     <div class="mb-1.5 sm:mb-2 text-lv-gold"><svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg></div>
                     <div class="font-display text-sm sm:text-base text-lv-cream ">Envío</div>
                     <div class="font-body text-xs sm:text-xs text-lv-cream/60 mt-0.5">Correos · Península</div>
@@ -220,7 +220,7 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                 </div>
               </div>
 
-              @if (form.deliveryMethod === 'shipping') {
+              @if (deliveryMethod() === 'shipping') {
                 <div>
                   <label for="co-country" class="block font-body text-sm text-lv-cream/75 mb-2">País</label>
                   <input id="co-country" type="text" readonly
@@ -249,8 +249,8 @@ function shippingZoneFor(cp: string): { zone: string; price: number } | null {
                   } @else if (shippingInfo()) {
                     <div class="mt-3 flex items-center justify-between px-3 sm:px-4 py-3 rounded-xl border border-lv-gold/30 bg-lv-gold/[0.07]">
                       <div>
-                        <p class="font-display text-lv-gold text-xl sm:text-2xl leading-none">{{ shippingInfo()!.price | eur }}</p>
-                        <p class="font-body text-xs text-lv-cream/60 mt-0.5">Correos · {{ shippingInfo()!.zone }}</p>
+                        <p class="font-display text-lv-gold text-xl sm:text-2xl leading-none">{{ shippingCost() > 0 ? (shippingCost() | eur) : 'Envío gratis' }}</p>
+                        <p class="font-body text-xs text-lv-cream/60 mt-0.5">Correos · {{ shippingInfo()!.zone }}@if (shippingCost() === 0) { · pedido desde {{ freeShippingFrom | eur }} }</p>
                       </div>
                       <svg class="w-6 h-6 text-lv-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
@@ -397,7 +397,6 @@ export class CheckoutComponent implements OnInit {
     customerName:  '',
     customerEmail: '',
     customerPhone: '',
-    deliveryMethod: 'pickup' as 'pickup' | 'shipping',
     postalCode:    '',
     notes:         '',
     _hp:           '', // honeypot: hidden field, bots fill it
@@ -412,6 +411,8 @@ export class CheckoutComponent implements OnInit {
   fallbackUrl      = signal('');
   summaryOpen      = signal(false);
   berryActive      = signal(false);
+  deliveryMethod   = signal<'pickup' | 'shipping'>('pickup');
+  readonly freeShippingFrom = SHIPPING.freeFrom;
 
   shippingInfo     = signal<{ zone: string; price: number } | null>(null);
   shippingBlocked  = signal(false);
@@ -419,15 +420,13 @@ export class CheckoutComponent implements OnInit {
   oficinasExactas  = signal(true);
   selectedOficina  = signal<OficinaCorreos | null>(null);
 
-  readonly berryDiscount = computed(() =>
-    this.berryActive() && this.cartService.total() >= 35 ? 5 : 0
+  readonly totals = computed(() =>
+    // El envío solo cuenta cuando ya hay un CP válido con precio, igual que en el resumen
+    orderTotals(this.cartService.total(), this.deliveryMethod() === 'shipping' && this.shippingInfo() ? 'shipping' : 'pickup', this.berryActive())
   );
-
-  readonly grandTotal = computed(() => {
-    const shipping = this.shippingInfo()?.price ?? 0;
-    const method   = this.form.deliveryMethod === 'shipping' ? shipping : 0;
-    return Math.max(0, this.cartService.total() + method - this.berryDiscount());
-  });
+  readonly berryDiscount = computed(() => this.totals().discount);
+  readonly shippingCost  = computed(() => this.totals().shipping);
+  readonly grandTotal    = computed(() => this.totals().total);
 
   readonly steps = [
     { n: '1', text: 'Haz el Bizum con los datos del email, con tu número de pedido como concepto' },
@@ -473,7 +472,7 @@ export class CheckoutComponent implements OnInit {
   isPostalCodeValid(): boolean { return /^\d{5}$/.test(this.form.postalCode); }
 
   selectPickup(): void {
-    this.form.deliveryMethod = 'pickup';
+    this.deliveryMethod.set('pickup');
     this.form.postalCode = '';
     this.shippingInfo.set(null);
     this.shippingBlocked.set(false);
@@ -526,7 +525,7 @@ export class CheckoutComponent implements OnInit {
     if (!this.form.customerName.trim()) missing.push('tu nombre');
     if (!this.isEmailValid()) missing.push(this.form.customerEmail.trim() ? 'un email válido' : 'tu email');
     if (!this.isPhoneValid()) missing.push(this.form.customerPhone.trim() ? 'un teléfono válido' : 'tu teléfono');
-    if (this.form.deliveryMethod === 'shipping') {
+    if (this.deliveryMethod() === 'shipping') {
       if (!this.isPostalCodeValid()) missing.push('el código postal');
       else if (this.oficinas().length > 0 && !this.selectedOficina()) missing.push('la oficina de Correos');
     }
@@ -538,7 +537,7 @@ export class CheckoutComponent implements OnInit {
     if (!this.form.customerName.trim() || !this.isEmailValid()) return false;
     if (!this.isPhoneValid()) return false;
     if (this.cartService.cartItems().length === 0) return false;
-    if (this.form.deliveryMethod === 'shipping') {
+    if (this.deliveryMethod() === 'shipping') {
       if (!this.isPostalCodeValid() || this.shippingBlocked() || !this.shippingInfo()) return false;
       if (this.oficinas().length > 0 && !this.selectedOficina()) return false;
     }
@@ -558,16 +557,16 @@ export class CheckoutComponent implements OnInit {
 
   private sendConfirmationEmail(
     items:   ReturnType<typeof this.cartService.cartItems>,
-    info:    { zone: string; price: number } | null,
+    totals:  { shipping: number; total: number },
     oficina: OficinaCorreos | null,
     orderId: string
   ): void {
     const email = this.form.customerEmail.trim();
     if (!email) return;
 
-    const deliveryLine = this.form.deliveryMethod === 'pickup'
+    const deliveryLine = this.deliveryMethod() === 'pickup'
       ? 'En mano (sin coste)'
-      : `Correos · CP ${this.form.postalCode} — ${info?.price.toFixed(2) ?? '?'} €`;
+      : `Correos · CP ${this.form.postalCode} — ${totals.shipping.toFixed(2)} €`;
 
     fetch('/api/confirmation', {
       method:  'POST',
@@ -576,7 +575,7 @@ export class CheckoutComponent implements OnInit {
         customerName:   this.form.customerName,
         customerEmail:  email,
         deliveryLine,
-        deliveryMethod: this.form.deliveryMethod,
+        deliveryMethod: this.deliveryMethod(),
         oficina: oficina ? {
           nombre:       oficina.nombre,
           direccion:    oficina.direccion,
@@ -584,7 +583,7 @@ export class CheckoutComponent implements OnInit {
           localidad:    oficina.localidad,
         } : undefined,
         orderId,
-        total: this.grandTotal(),
+        total: totals.total,
         items: items.map(i => ({
           name:    i.productName,
           qty:     i.quantity,
@@ -600,7 +599,7 @@ export class CheckoutComponent implements OnInit {
   async submitOrder(): Promise<void> {
     this.touched = { name: true, email: true, phone: true, cp: true, oficina: true };
     if (!this.isFormValid()) {
-      if (this.form.deliveryMethod === 'shipping' && this.oficinas().length > 1 && !this.selectedOficina()) {
+      if (this.deliveryMethod() === 'shipping' && this.oficinas().length > 1 && !this.selectedOficina()) {
         if (isPlatformBrowser(this.platformId)) {
           document.getElementById('oficinas-list')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
@@ -623,17 +622,17 @@ export class CheckoutComponent implements OnInit {
     this.fallbackUrl.set('');
 
     const items   = this.cartService.cartItems();
-    const info    = this.shippingInfo();
+    const totals  = this.totals();
     const oficina = this.selectedOficina();
 
     const payload = {
       customerName:  this.form.customerName,
       customerEmail: this.form.customerEmail,
       customerPhone: this.form.customerPhone.trim(),
-      deliveryMethod: this.form.deliveryMethod,
-      postalCode:      this.form.deliveryMethod === 'shipping' ? this.form.postalCode : undefined,
-      shippingZone:    info?.zone,
-      shippingCost:    info?.price,
+      deliveryMethod: this.deliveryMethod(),
+      postalCode:      this.deliveryMethod() === 'shipping' ? this.form.postalCode : undefined,
+      shippingZone:    this.shippingInfo()?.zone,
+      shippingCost:    this.deliveryMethod() === 'shipping' ? totals.shipping : undefined,
       berryDiscount:   this.berryDiscount() || undefined,
       oficina:         oficina ? {
         nombre:       oficina.nombre,
@@ -643,7 +642,7 @@ export class CheckoutComponent implements OnInit {
         telefono:     oficina.telefono,
       } : undefined,
       notes:       this.form.notes.trim() || undefined,
-      totalAmount: this.grandTotal(),
+      totalAmount: totals.total,
       _hp:         this.form._hp,
       items: items.map(i => ({
         productId:   i.productId,
@@ -680,7 +679,7 @@ export class CheckoutComponent implements OnInit {
         sessionStorage.removeItem('berry_shown');
         localStorage.setItem('berry_spent', 'true');
       }
-      this.sendConfirmationEmail(items, info, oficina, orderId);
+      this.sendConfirmationEmail(items, totals, oficina, orderId);
     } catch {
       this.fallbackUrl.set(this.buildEmailFallbackUrl());
       this.errorMsg.set('No se pudo enviar el pedido. Inténtalo de nuevo o usa el enlace de abajo.');
@@ -707,9 +706,9 @@ export class CheckoutComponent implements OnInit {
       return line;
     }).join('\n');
 
-    const deliveryLine = this.form.deliveryMethod === 'pickup'
+    const deliveryLine = this.deliveryMethod() === 'pickup'
       ? 'En mano (sin coste)'
-      : `Envío Correos a CP ${this.form.postalCode} (${info?.zone}) — ${info?.price.toFixed(2)}€`;
+      : `Envío Correos a CP ${this.form.postalCode} (${info?.zone}) — ${this.shippingCost() > 0 ? `${this.shippingCost().toFixed(2)}€` : 'gratis'}`;
 
     const oficinaLines = oficina ? [
       `Oficina: ${oficina.nombre}`,

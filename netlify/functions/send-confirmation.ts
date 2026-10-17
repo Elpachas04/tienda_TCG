@@ -62,7 +62,7 @@ const handler: Handler = async (event: HandlerEvent) => {
   const shippingCost = Number(deliveryLine.match(/([\d.,]+)\s*€\s*$/)?.[1]?.replace(",", ".") ?? NaN);
   const deliveryRow = pickup
     ? row("Entrega en mano", "Gratis", { sub: "Quedamos por WhatsApp" })
-    : row("Env&iacute;o a oficina de Correos", Number.isFinite(shippingCost) ? eur(shippingCost) : "", {
+    : row("Env&iacute;o a oficina de Correos", !Number.isFinite(shippingCost) ? "" : shippingCost === 0 ? "Gratis" : eur(shippingCost), {
         sub: oficina
           ? `${esc(oficina.nombre)}<br>${link(
               mapsUrl(`${oficina.nombre}, ${oficina.direccion}, ${oficina.codigoPostal} ${oficina.localidad}`),
