@@ -1,12 +1,14 @@
 import { ChangeDetectionStrategy, Component, signal, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CONTACT_EMAIL } from '../../shared/constants';
+import { SHIPPING } from '../../shared/constants/shop-policy';
+import { EurPipe } from '../../shared/pipes/eur.pipe';
 
 @Component({
   selector: 'app-legal',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink],
+  imports: [RouterLink, EurPipe],
   host: { class: 'block animate-fade-up' },
   template: `
     <div class="bg-lv-black min-h-screen px-6 py-20">
@@ -72,7 +74,7 @@ import { CONTACT_EMAIL } from '../../shared/constants';
             <section class="space-y-3">
               <h2 class="lv-h3 text-lv-cream">Envíos y devoluciones</h2>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
-                Los envíos se realizan únicamente a Península mediante Correos, con entrega en oficina Correos. También es posible la recogida en mano sin coste. El plazo de fabricación es de 3 a 7 días laborables desde la confirmación del pago.
+                Los envíos se realizan únicamente a Península mediante Correos, con entrega en oficina Correos. El envío cuesta {{ shipping.price | eur }} y es gratis en pedidos desde {{ shipping.freeFrom | eur }} de artículos. También es posible la recogida en mano sin coste. El plazo de fabricación es de 3 a 7 días laborables desde la confirmación del pago.
               </p>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
                 Dado que los productos se fabrican por encargo, no se reembolsa el importe de ningún pedido. Para cualquier devolución, contacta en los 7 días siguientes a la recepción escribiendo a <a [href]="'mailto:' + email" class="text-lv-gold hover:underline">{{ email }}</a>. Si el comprador se arrepiente de la compra, devuelve la pieza y recibe un vale por el mismo importe para otro producto de la tienda. Si la pieza llega con un defecto de fabricación o un problema ajeno al comprador, se revisa el caso y, si procede, el comprador la devuelve y se le envía una nueva.
@@ -176,4 +178,5 @@ export class LegalComponent {
     inject(Router).url.includes('privacidad') ? 'privacidad' : 'aviso'
   );
   protected readonly email = CONTACT_EMAIL;
+  protected readonly shipping = SHIPPING;
 }

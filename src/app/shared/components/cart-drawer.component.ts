@@ -4,12 +4,13 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CartService, cartItemKey } from '../../core/services/cart.service';
 import { NOTES_MAX } from '../constants';
+import { FreeShippingProgressComponent } from './free-shipping-progress.component';
 
 @Component({
   selector: 'app-cart-drawer',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, EurPipe],
+  imports: [FormsModule, EurPipe, FreeShippingProgressComponent],
   template: `
     <div class="fixed inset-0 flex justify-end"
          style="z-index:70"
@@ -132,6 +133,8 @@ import { NOTES_MAX } from '../constants';
         <!-- Footer -->
         @if (cart.cartItems().length > 0) {
           <div class="flex-shrink-0 border-t border-white/[0.07] px-4 sm:px-6 py-4 sm:py-5 space-y-3 sm:space-y-4 bg-lv-void">
+            <app-free-shipping-progress [subtotal]="cart.total()" />
+
             <div class="flex justify-between items-center">
               <div>
                 <span class="font-display text-xl sm:text-2xl text-lv-cream ">Total</span>
