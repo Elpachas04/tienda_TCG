@@ -690,7 +690,7 @@ export class CheckoutComponent implements OnInit {
 
   private sendConfirmationEmail(
     items:   ReturnType<typeof this.cartService.cartItems>,
-    totals:  { shipping: number; total: number },
+    totals:  { shipping: number; total: number; discount: number; discountSource: 'berry' | 'coupon' | null },
     oficina: OficinaCorreos | null,
     orderId: string
   ): void {
@@ -717,6 +717,10 @@ export class CheckoutComponent implements OnInit {
         } : undefined,
         orderId,
         total: totals.total,
+        discount: totals.discount > 0 ? {
+          label:  totals.discountSource === 'coupon' ? `Código ${this.coupon()?.code ?? ''}`.trim() : 'Descuento ₿erry',
+          amount: totals.discount,
+        } : undefined,
         items: items.map(i => ({
           name:    i.productName,
           qty:     i.quantity,
