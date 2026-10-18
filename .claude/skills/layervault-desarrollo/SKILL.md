@@ -21,9 +21,12 @@ Lee lo que aplique de `docs/tecnico/` (arquitectura, pedidos, SEO, despliegue, t
    (`settings.*` del catálogo), como las valoraciones y las invitaciones.
 5. **Datos personales:** lo mínimo, con plazo de borrado, y si es comercial, con consentimiento expreso. Actualiza la
    política de privacidad (`legal.component.ts`) en el mismo cambio.
-6. **Prerender:** sin `window`/`localStorage`/`fetch` relativo en código que corre en el build sin comprobar plataforma;
+6. **Cookies y almacenamiento:** toda clave nueva de cookie, `localStorage` o `sessionStorage` va a `BROWSER_STORAGE`
+   (página `/cookies`). Nada de analítica, píxeles ni incrustados de terceros sin banner de consentimiento previo
+   (`docs/tecnico/cookies.md`).
+7. **Prerender:** sin `window`/`localStorage`/`fetch` relativo en código que corre en el build sin comprobar plataforma;
    sin `@defer` en contenido que deba verse en el HTML.
-7. **Standalone + signals + OnPush**, sin librerías de interfaz, comentarios solo para el porqué, sin funciones que
+8. **Standalone + signals + OnPush**, sin librerías de interfaz, comentarios solo para el porqué, sin funciones que
    nadie ha pedido.
 
 ## Flujo de trabajo

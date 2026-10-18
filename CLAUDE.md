@@ -135,7 +135,7 @@ Lo que se ve al cargar (hero del inicio, cabecera del catálogo) NO se anima ni 
 
 - Build: `node scripts/prebuild.mjs --live && ng build` (lo hace Netlify). El script descarga el catálogo real
   de `/api/products`, lo deja en `src/assets/data/products.json` y genera `prerender-routes.txt` y `public/sitemap.xml`
-- Se prerenderizan inicio, catálogo, cada ficha visible, legal, privacidad y /404 (`angular.json` → `prerender.routesFile`).
+- Se prerenderizan inicio, catálogo, cada ficha visible, legal, privacidad, cookies y /404 (`angular.json` → `prerender.routesFile`).
   Nada de `@defer` en contenido que deba verse en el HTML (rejilla del catálogo, destacados del inicio)
 - En código que corre al prerenderizar no hay `window`, `Image`, `fetch` relativo… usar `afterNextRender` o comprobar la plataforma
 - `SeoService` pone título, descripción, canonical, Open Graph y robots por ruta (`data: { description, noindex }`);
@@ -149,6 +149,9 @@ Lo que se ve al cargar (hero del inicio, cabecera del catálogo) NO se anima ni 
   `scripts/lib/review-summary.mjs`; vacío si `reviewsVisible` está apagado). Tests: `npm run test:scripts`
 - `netlify.toml`: rutas de la app sin HTML propio → `index.html` (200); cualquier otra URL → `/404/index.html` con estado 404.
   Si añades una ruta nueva que no se prerenderiza, añádela ahí
+- Cookies: solo almacenamiento estrictamente necesario (cesta, ₿erry, sesión de admin), así que no hay banner. Toda
+  clave nueva va a `BROWSER_STORAGE` (página `/cookies`); analítica o terceros exigen consentimiento previo
+  (`docs/tecnico/cookies.md`)
 
 ## Emails y valoraciones
 
