@@ -58,24 +58,19 @@ Todas las fotos y vídeos de producto se sirven desde Cloudinary (cuenta `dew1wh
 
 ## Logo y marca
 
-Ver [Identidad](identidad.md#logo). En la web y los emails la marca va en texto; el logo en imagen
-(`src/assets/logo/logo.png`) es para redes y piezas de marca.
+Ver [Logo y kit de marca](logo.md). En la web y los emails la marca va en texto; el logo en imagen es para redes,
+iconos y piezas de marca.
 
 ## Imagen para redes y móvil
 
-| Archivo | Para qué | Estado |
-|---|---|---|
-| `/assets/og-image.jpg` | Vista previa al compartir un enlace (WhatsApp, X, Telegram); imagen por defecto de `SeoService` | **Falta en el repo**: se referencia en `index.html` y `seo.service.ts` |
-| `/assets/apple-touch-icon.png` | Icono al guardar la web en la pantalla de inicio del iPhone | **Falta en el repo** |
-| `favicon.ico` | Pestaña del navegador | En `public/` |
+| Archivo | Para qué |
+|---|---|
+| `/assets/og-image.jpg` | Vista previa al compartir un enlace (WhatsApp, X, Telegram); imagen por defecto de `SeoService` |
+| `/assets/apple-touch-icon.png` | Icono al guardar la web en la pantalla de inicio del iPhone |
+| `favicon.ico` · `favicon.svg` | Pestaña del navegador |
+| `site.webmanifest` · `/assets/brand/icon-*.png` | Icono al instalar la web en Android |
 
-Las fichas de producto usan su primera foto como imagen para redes, así que el problema afecta a la home, el catálogo
-y las páginas legales.
-
-Especificación para crearlas:
-
-- **`og-image.jpg`:** 1200 × 630 px, fondo `lv-black`, logo o marca en texto, una pieza destacada sobre el fondo de
-  foco y la frase de marca. Texto importante dentro del centro (algunas apps recortan los bordes). Menos de 300 KB.
-- **`apple-touch-icon.png`:** 180 × 180 px, el monograma de la puerta (sin el texto, ilegible a ese tamaño) sobre
-  `lv-black`, sin transparencias.
-- Se guardan en `src/assets/` (se publican en `/assets/`).
+Las fichas de producto usan su primera foto como imagen para redes; la imagen por defecto se ve en la home, el
+catálogo y las páginas legales. Todas salen del generador de `brand/` (`npm run build:web`): ver
+[Logo y kit de marca](logo.md#archivos-en-la-web). Si cambias la imagen para redes, mantén 1200 × 630 px, el texto
+importante lejos de los bordes (algunas apps recortan) y menos de 300 KB.

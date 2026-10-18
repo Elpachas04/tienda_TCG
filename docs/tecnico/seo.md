@@ -56,4 +56,4 @@ Es lo que leen Google y los asistentes de compra con IA (Gemini, ChatGPT…) par
 ## Pendiente
 
 - `sameAs` del `LocalBusiness` está vacío: añadir las URLs de Instagram, TikTok, etc. cuando existan.
-- Faltan `og-image.jpg` y `apple-touch-icon.png` (ver [Imagen](../marca/imagen.md#imagen-para-redes-y-móvil)).
+- Imagen para redes por defecto (`/assets/og-image.jpg`), favicon, icono de Apple y manifest: salen de `brand/` (ver [Logo y kit de marca](../marca/logo.md#archivos-en-la-web)).
