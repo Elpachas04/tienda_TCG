@@ -62,6 +62,7 @@ Se regeneran todos con `npm run build:web` dentro de `brand/`.
 
 `npm run build` en `brand/` crea `brand/out/LayerVault-marca/` (no se versiona, son unos 190 archivos):
 
+- `lamina-de-marca.png`: todas las versiones, los iconos y la paleta en una sola imagen, para enseñar el kit.
 - `svg/`: todas las piezas en vectorial, cada una en sus 7 colores. **Es la fuente para imprenta y diseño** y sí se
   guarda en el repo en `brand/svg/`.
 - `png/`: las mismas piezas en PNG transparente a varios tamaños (de 256 a 3000 px de ancho).

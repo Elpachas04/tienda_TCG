@@ -1,6 +1,7 @@
 // Genera el kit de marca completo de LayerVault en out/LayerVault-marca/
 import { mkdir, writeFile, readFile, rm, cp } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { lockup, wordmark, mark, THEMES } from './lockups.mjs';
@@ -164,6 +165,31 @@ await htmlPng(page(1080, 1350, `<div class="stage" style="background:radial-grad
   <div class="h" style="position:absolute;left:90px;right:90px;top:760px;font-size:84px;text-align:center">Hecho en Barcelona.<br><span class="gold">Impreso para tu mazo.</span></div>
   <div class="p" style="position:absolute;left:0;right:0;bottom:110px;text-align:center;font-size:34px">layervault.es</div>`),
   join(OUT, 'redes/publicacion-1080x1350.png'), 1080, 1350);
+
+// Lámina de marca: todas las versiones en una imagen, para enseñar el kit de un vistazo
+const fit = (s, w, h) => s.replace(/width="\d+" height="\d+"/, `width="${w}" height="${h}"`);
+const svgOf = async (key) => readFile(svgFiles[key], 'utf8');
+const cell = (bg, inner, label, dark = true) => `<div style="background:${bg};border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:28px">
+  ${inner}<div class="p" style="font-size:17px;color:${dark ? 'rgba(245,240,232,.6)' : 'rgba(18,18,18,.6)'}">${label}</div></div>`;
+const horSized = async (k) => { const s = await svgOf(k); const [w, h] = sizeOf(s); return fit(s, 440, Math.round(440 * h / w)); };
+const swatches = [['lv-black', BRAND.black], ['lv-surface', '#1a1a1a'], ['lv-border', '#2a2a2a'], ['lv-brass', BRAND.brass], ['lv-gold', BRAND.gold], ['lv-foil', '#F3DC95'], ['lv-cream', BRAND.cream], ['lv-muted', '#8F8A80']];
+await htmlPng(page(1800, 1136, `<div style="position:absolute;inset:0;background:#0e0e0e"></div>
+  <div style="position:absolute;inset:60px;display:grid;align-content:start;grid-template-columns:repeat(3,1fr);grid-template-rows:auto 330px 330px 230px;gap:22px">
+    <div style="grid-column:1/-1;display:flex;align-items:baseline;justify-content:space-between;padding:0 6px 8px">
+      <div class="h" style="font-size:56px">Kit de marca</div><div class="p" style="font-size:20px">LayerVault · layervault.es</div></div>
+    ${cell(BRAND.black, await horSized('horizontal-dorado'), 'Dorado · sobre oscuro')}
+    ${cell(BRAND.cream, await horSized('horizontal-sobre-claro'), 'Sobre claro', false)}
+    ${cell('#3b3026', await horSized('horizontal-crema'), 'Crema · una tinta')}
+    ${cell(BRAND.black, await horSized('horizontal-oro'), 'Oro · una tinta')}
+    ${cell('#ffffff', await horSized('horizontal-negro'), 'Negro · una tinta', false)}
+    ${cell('linear-gradient(135deg,#5b4a3a,#20303a)', await horSized('horizontal-blanco'), 'Blanco · sobre foto')}
+    ${cell(BRAND.black, `<div style="display:flex;align-items:end;gap:26px">${fit(await svgOf('emblema-dorado'), 150, 150)}${fit(await svgOf('monograma-dorado'), 96, 96)}
+      ${[48, 32, 16].map(s => `<img src="data:image/png;base64,${readFileSync(join(OUT, `iconos/favicon-${s}.png`)).toString('base64')}" width="${s}" height="${s}">`).join('')}</div>`, 'Emblema · monograma · favicon 48/32/16')}
+    <div style="grid-column:2/-1;background:${BRAND.black};border-radius:18px;padding:28px;display:grid;grid-template-columns:repeat(8,1fr);gap:14px">
+      ${swatches.map(([n, c]) => `<div style="display:flex;flex-direction:column;gap:10px"><div style="flex:1;border-radius:12px;background:${c};border:1px solid rgba(245,240,232,.12)"></div>
+        <div class="p" style="font-size:15px;color:${BRAND.cream}">${n}</div><div class="p" style="font-size:14px;margin-top:-6px">${c.toUpperCase()}</div></div>`).join('')}
+    </div>
+  </div>`), join(OUT, 'lamina-de-marca.png'), 1800, 1136);
 
 await close();
 
