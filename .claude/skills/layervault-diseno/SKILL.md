@@ -13,6 +13,8 @@ Antes de escribir código visual, lee los documentos que apliquen de `docs/marca
 - `componentes.md`: botones, campos, selectores, tarjetas, cesta, avisos.
 - `movimiento.md`: duraciones, curvas y movimiento reducido.
 - `imagen.md`: fotos y tamaños de Cloudinary.
+- `logo.md`: piezas del logo, versiones de color, tamaños mínimos. El logo, los iconos y las imágenes para redes se
+  generan en `brand/` (`npm run build:web`); nunca se editan los PNG a mano.
 
 ## Reglas que no se rompen
 

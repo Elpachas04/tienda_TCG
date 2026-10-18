@@ -17,7 +17,8 @@ y cómo está construida. Si vas a tocar algo, empieza por aquí.
 | [Superficies y espacio](marca/superficies.md) | Fondos, capas, bordes, radios, sombras, foco de producto, rejilla y márgenes |
 | [Movimiento](marca/movimiento.md) | Animaciones, duraciones, GSAP, scroll suave y movimiento reducido |
 | [Componentes](marca/componentes.md) | Botones, enlaces, campos, tarjetas, interruptores, cesta y demás piezas |
-| [Imagen y fotografía](marca/imagen.md) | Fotos de producto, Cloudinary, vídeo, logo e imagen para redes |
+| [Logo y kit de marca](marca/logo.md) | Emblema, monograma, logotipo, versiones de color, tamaños mínimos, iconos y redes |
+| [Imagen y fotografía](marca/imagen.md) | Fotos de producto, Cloudinary, vídeo e imagen para redes |
 | [Emails](marca/emails.md) | Diseño y escritura de los emails a clientes |
 
 ## Producto

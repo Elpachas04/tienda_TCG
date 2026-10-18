@@ -25,15 +25,15 @@ No prometemos lo que no está en el código: nada de «envío en 24 h», «garan
 
 ## Logo
 
-`src/assets/logo/logo.png`: puerta de cámara acorazada dorada con una carta en el centro y el monograma **LV**,
-sobre ella el logotipo **LAYERVAULT** y debajo **TCG 3D SHOP**. Fondo transparente.
+Puerta de cámara acorazada dorada con una carta en el centro y el monograma **LV**, con el logotipo **LayerVault** y
+el lema **TCG 3D SHOP**. El original ilustrado es `src/assets/logo/logo.png`; las versiones en vectorial (emblema,
+monograma, logotipo, horizontal, vertical, en siete colores) salen del generador de `brand/`.
 
-- **Dónde se usa:** como imagen solo en piezas de marca (redes, OG). En la web y en los emails la marca se escribe en
+Piezas, colores, tamaños mínimos y reglas de uso: **[Logo y kit de marca](logo.md)**.
+
+- **Dónde se usa:** como imagen en redes, iconos y piezas de marca. En la web y en los emails la marca se escribe en
   texto («LayerVault» en `font-display`): carga al instante, se lee en cualquier tamaño y no depende de que el
   cliente de correo muestre imágenes.
-- **Fondo:** siempre sobre oscuro (`lv-black` o más profundo). Sobre fondo claro el dorado pierde contraste.
-- **No:** deformarlo, recolorearlo, ponerle sombras ni usarlo pequeño en el móvil (el detalle de la puerta se pierde
-  por debajo de unos 64 px; ahí basta el texto).
 
 ## Personalidad
 
