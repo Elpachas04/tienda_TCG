@@ -67,6 +67,13 @@ export const routes: Routes = [
       import('./features/legal/legal.component').then(m => m.LegalComponent),
   },
   {
+    path: 'cookies',
+    title: 'Política de cookies | LayerVault',
+    data: { description: 'Qué guarda LayerVault en tu navegador: solo lo necesario para la cesta. Sin analítica, publicidad ni cookies de terceros.' },
+    loadComponent: () =>
+      import('./features/legal/legal.component').then(m => m.LegalComponent),
+  },
+  {
     path: '404',
     title: 'Página no encontrada | LayerVault',
     data: { noindex: true },
