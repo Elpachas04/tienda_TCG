@@ -67,7 +67,7 @@ iconos y piezas de marca.
 |---|---|
 | `/assets/og-image.jpg` | Vista previa al compartir un enlace (WhatsApp, X, Telegram); imagen por defecto de `SeoService` |
 | `/assets/apple-touch-icon.png` | Icono al guardar la web en la pantalla de inicio del iPhone |
-| `favicon.ico` · `favicon.svg` | Pestaña del navegador |
+| `favicon.ico` | Pestaña del navegador (el original de la tienda) |
 | `site.webmanifest` · `/assets/brand/icon-*.png` | Icono al instalar la web en Android |
 
 Las fichas de producto usan su primera foto como imagen para redes; la imagen por defecto se ve en la home, el
