@@ -2,6 +2,7 @@
 // una entrada por producto). Al marcar el producto como "Se puede comprar" en el admin se avisa y se borra la lista.
 import { connectLambda, getStore } from "@netlify/blobs";
 import { SITE_URL, button, layout, paragraph } from "./_email-kit";
+import { SHIPPING } from "../../src/app/shared/constants/shop-policy";
 
 export const RESTOCK_STORE = "restock";
 export const MAX_WAITING = 500;
@@ -22,7 +23,7 @@ function backInStockHtml(name: string, productId: string): string {
     preheader: `${name} vuelve a estar disponible.`,
     greeting: "Hola",
     title: `${name} ya está disponible`,
-    lede: "Nos pediste que te avisáramos cuando volviera. Ya puedes pedirlo.",
+    lede: `Nos pediste que te avisáramos cuando volviera. Ya puedes pedirlo: lo fabricamos en ${SHIPPING.handlingDays.min}–${SHIPPING.handlingDays.max} días laborables.`,
     blocks: [
       button(`${SITE_URL}/product/${encodeURIComponent(productId)}`, "Ver el producto"),
       paragraph("Te escribimos solo esta vez: no te hemos apuntado a ninguna lista.", { size: 14 }),

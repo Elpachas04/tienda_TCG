@@ -42,11 +42,11 @@ function content(status: string, d: OrderEmailData): EmailContent | null {
 
   if (status === "Pago recibido") {
     return {
-      subject: `Pago recibido · ${d.orderId}`,
+      subject: `Pago recibido: empezamos a fabricar tu pedido · ${d.orderId}`,
       html: layout({
         preheader: "Tu pedido entra en fabricación: estará listo en 3–7 días laborables.",
         orderId: d.orderId, greeting,
-        title: "Pago recibido",
+        title: "Pago recibido, nos ponemos manos a la obra",
         lede: d.pickup
           ? "Tu pedido entra en fabricaci&oacute;n. En 3&ndash;7 d&iacute;as laborables estar&aacute; listo y te escribimos por WhatsApp para quedar."
           : "Tu pedido entra en fabricaci&oacute;n. En 3&ndash;7 d&iacute;as laborables sale hacia tu oficina de Correos y te mandamos el seguimiento.",
@@ -100,7 +100,7 @@ function content(status: string, d: OrderEmailData): EmailContent | null {
           progress(4, d.pickup),
           button(reviewUrl(d.orderId), "Valorar mi pedido"),
           d.inviteCode ? inviteBlock(d.inviteCode) : "",
-          paragraph(`Si hay alg&uacute;n problema, escr&iacute;benos en los ${strong("7 d&iacute;as")} siguientes. Si tiene un defecto, nos la devuelves y te enviamos una nueva; si te has arrepentido, nos la devuelves y te damos un vale por el importe.`, { size: 14 }),
+          paragraph(`&iquest;Algo no est&aacute; bien? Escr&iacute;benos en los ${strong("7 d&iacute;as")} siguientes. Si una pieza tiene un defecto, nos la devuelves y te enviamos otra; si has cambiado de idea, nos la devuelves y te damos un vale por el mismo importe.`, { size: 14 }),
         ],
       }),
     };

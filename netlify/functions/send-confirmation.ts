@@ -34,7 +34,7 @@ const handler: Handler = async (event: HandlerEvent) => {
     return { statusCode: 400, body: JSON.stringify({ error: "JSON invalido" }) };
   }
 
-  const { customerName, customerEmail, items, deliveryLine, deliveryMethod, oficina, total, orderId } = body as {
+  const { customerName, customerEmail, items, deliveryLine, deliveryMethod, oficina, total, orderId, discount } = body as {
     customerName:   string;
     customerEmail:  string;
     items:          { name: string; qty: number; variant?: string; color?: string; leader?: string; price: number }[];
@@ -43,6 +43,7 @@ const handler: Handler = async (event: HandlerEvent) => {
     oficina?:       { nombre: string; direccion: string; codigoPostal: string; localidad: string };
     total:          number;
     orderId:        string;
+    discount?:      { label: string; amount: number };
   };
 
   if (!customerEmail || !customerName || !items) {
@@ -71,9 +72,15 @@ const handler: Handler = async (event: HandlerEvent) => {
           : esc(deliveryLine.replace(/\s+—\s+[\d.,]+\s*€\s*$/, "")),
       });
 
+  // Solo el texto y el importe: el descuento ya lo ha validado send-telegram.ts al crear el pedido
+  const discountAmount = Number(discount?.amount);
+  const discountRow = Number.isFinite(discountAmount) && discountAmount > 0
+    ? row(esc(String(discount?.label ?? "Descuento").slice(0, 60)), `&minus;${eur(discountAmount)}`)
+    : "";
+
   const html = layout({
     preheader: orderId
-      ? `Haz el Bizum al ${BIZUM} con el concepto ${esc(orderId)} y nos ponemos con tu pedido.`
+      ? `Haz un Bizum de ${eur(total as number)} al ${BIZUM} con el concepto ${esc(orderId)} y empezamos con tu pedido.`
       : "Hemos recibido tu pedido.",
     orderId,
     greeting: `Hola, ${firstName}`,
@@ -81,6 +88,7 @@ const handler: Handler = async (event: HandlerEvent) => {
     lede: "Solo falta el Bizum. En cuanto llegue te lo confirmamos, en menos de 1&nbsp;hora de lunes a s&aacute;bado.",
     blocks: [
       orderId ? panel("Paga con Bizum", `
+        ${bigValue("Importe", eur(total as number))}
         ${bigValue("Bizum al", BIZUM)}
         ${bigValue("Concepto: ponlo tal cual", esc(orderId), { gold: true, last: true })}
       `, { accent: true }) : "",
@@ -88,6 +96,7 @@ const handler: Handler = async (event: HandlerEvent) => {
       panel("Tu pedido", `
         ${itemRows}
         ${deliveryRow}
+        ${discountRow}
         ${row("Total", eur(total as number), { top: true, total: true })}
       `),
 
@@ -111,7 +120,7 @@ const handler: Handler = async (event: HandlerEvent) => {
         sender:      { name: FROM_NAME, email: FROM_EMAIL },
         to:          [{ email: customerEmail, name: customerName }],
         bcc:         [{ email: BCC_EMAIL }],
-        subject:     orderId ? `Pedido recibido · ${orderId}` : "Pedido recibido · LayerVault",
+        subject:     orderId ? `Pedido ${orderId}: solo falta el Bizum` : "Pedido recibido · LayerVault",
         htmlContent: html,
       }),
     });

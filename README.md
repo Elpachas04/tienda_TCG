@@ -2,9 +2,13 @@
 
 Tienda web de accesorios impresos en 3D para TCG. Vendedor único. Los pedidos llegan por Telegram y email de confirmación automático.
 
+## Documentación
+
+Guía completa de marca, producto y técnica en [`docs/`](docs/README.md).
+
 ## Stack
 
-- **Angular 18** — standalone components + signals
+- **Angular 22** — standalone components + signals
 - **TailwindCSS 3** — tokens `lv-*` (lv-gold, lv-cream, lv-black…)
 - **Netlify** — hosting, Functions, SSR
 - **Brevo** — email de confirmación al cliente
