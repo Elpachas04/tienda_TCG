@@ -8,7 +8,7 @@ cd brand
 npm install
 npx playwright install chromium   # solo la primera vez, si no lo tienes ya
 npm run build        # kit completo en out/LayerVault-marca/ y vectoriales en svg/
-npm run build:web    # lo mismo y además copia favicon, iconos, manifest y og-image a la web
+npm run build:web    # lo mismo y además copia iconos de Apple y Android, manifest y og-image a la web (el favicon no: la web usa el original)
 ```
 
 Necesita ImageMagick (`convert`) para los recortes del logo original y el `favicon.ico`.

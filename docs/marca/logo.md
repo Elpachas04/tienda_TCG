@@ -50,8 +50,7 @@ que el fondo se ve a través y funcionan sobre cualquier color.
 
 | Archivo | Para qué |
 |---|---|
-| `public/favicon.ico` | Pestaña del navegador (16, 32 y 48 px dentro) |
-| `public/favicon.svg` | Pestaña en navegadores modernos: monograma sobre cuadrado redondeado `lv-black` |
+| `public/favicon.ico` | Pestaña del navegador. Es el favicon original de la tienda (carta con LV en un círculo negro): **no lo genera `brand/`** y se mantiene a propósito |
 | `src/assets/apple-touch-icon.png` | Icono al guardar la web en la pantalla de inicio del iPhone (180 px) |
 | `public/site.webmanifest` + `src/assets/brand/icon-*.png` | Icono al instalar la web en Android (192, 512 y versión *maskable*) |
 | `src/assets/og-image.jpg` | Vista previa al compartir un enlace (1200 × 630); las fichas usan la foto del producto |
@@ -68,7 +67,7 @@ Se regeneran todos con `npm run build:web` dentro de `brand/`.
 - `png/`: las mismas piezas en PNG transparente a varios tamaños (de 256 a 3000 px de ancho).
 - `original/`: el logo ilustrado original recortado, solo el emblema (256/512/1024 en PNG y WebP) y versiones de
   1800 px sobre negro y sobre crema.
-- `iconos/`: favicons (16 a 128 px, `.ico`, `.svg`), icono de Apple, iconos de Android y el manifest.
+- `iconos/`: favicons alternativos con el monograma (16 a 128 px, `.ico`, `.svg`; la web usa el original), icono de Apple, iconos de Android y el manifest.
 - `redes/`: imagen para enlaces (1200 × 630), foto de perfil (1080/640/320, pensada para recorte circular),
   cabecera de X (1500 × 500), portada de Facebook (1640 × 624), plantilla de historia (1080 × 1920) y publicación
   vertical de Instagram (1080 × 1350).

@@ -200,8 +200,6 @@ await cp(join(OUT, 'svg'), join(ROOT, 'svg'), { recursive: true });
 
 if (process.argv.includes('--web')) {
   const web = [
-    ['iconos/favicon.ico', 'public/favicon.ico'],
-    ['iconos/favicon.svg', 'public/favicon.svg'],
     ['iconos/site.webmanifest', 'public/site.webmanifest'],
     ['iconos/apple-touch-icon.png', 'src/assets/apple-touch-icon.png'],
     ['iconos/icon-192.png', 'src/assets/brand/icon-192.png'],
