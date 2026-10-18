@@ -103,10 +103,10 @@ export function row(label: string, value: string, opts: { sub?: string; top?: bo
   const pad = opts.top ? "14px 0 0" : "0 0 12px";
   return `<tr><td style="${border}padding:${pad};">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
-      <td valign="top" style="font-family:${FONT_BODY};font-size:15px;line-height:1.45;color:${opts.total ? C.cream : C.text};${opts.total ? "font-weight:700;" : ""}">
+      <td valign="${opts.total ? "bottom" : "top"}" style="font-family:${FONT_BODY};font-size:15px;line-height:1.45;color:${opts.total ? C.cream : C.text};${opts.total ? "font-weight:700;" : ""}">
         ${label}${opts.sub ? `<div style="font-size:13px;color:${C.muted};padding-top:2px;">${opts.sub}</div>` : ""}
       </td>
-      <td valign="top" align="right" style="padding-left:16px;white-space:nowrap;font-family:${opts.total ? FONT_DISPLAY : FONT_BODY};font-size:${opts.total ? 22 : 15}px;font-weight:${opts.total ? 700 : 500};line-height:1.3;color:${C.cream};">${value}</td>
+      <td valign="${opts.total ? "bottom" : "top"}" align="right" style="padding-left:16px;white-space:nowrap;font-family:${opts.total ? FONT_DISPLAY : FONT_BODY};font-size:${opts.total ? 22 : 15}px;font-weight:${opts.total ? 700 : 500};line-height:1.3;color:${C.cream};">${value}</td>
     </tr></table>
   </td></tr>`;
 }

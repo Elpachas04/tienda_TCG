@@ -1,5 +1,5 @@
 import type { Config } from "@netlify/functions";
-import { Draft, REMINDER_POLICY, draftKey, draftsStore, reminderHtml, sendBrevoEmail, sentKey, signedRef } from "./_checkout-drafts";
+import { Draft, REMINDER_POLICY, REMINDER_SUBJECT, draftKey, draftsStore, reminderHtml, sendBrevoEmail, sentKey, signedRef } from "./_checkout-drafts";
 
 const HOUR = 3_600_000;
 const DAY = 24 * HOUR;
@@ -34,7 +34,7 @@ export default async (): Promise<void> => {
         continue;
       }
 
-      const ok = await sendBrevoEmail(draft.email, "Tu cesta de LayerVault sigue guardada", reminderHtml(draft, signedRef(hash)));
+      const ok = await sendBrevoEmail(draft.email, REMINDER_SUBJECT, reminderHtml(draft, signedRef(hash)));
       if (!ok) continue; // se reintenta en la próxima pasada
       const at = new Date(now).toISOString();
       await store.setJSON(sentKey(hash), { at });

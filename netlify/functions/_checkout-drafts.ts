@@ -8,7 +8,10 @@
 import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { getStore } from "@netlify/blobs";
 import seedCatalog from "../../src/assets/data/products.json";
-import { SITE_URL, button, esc, eur, layout, link, paragraph, panel, row } from "./_email-kit";
+import { SITE_URL, button, esc, eur, layout, link, paragraph, panel, row, strong } from "./_email-kit";
+import { SHIPPING } from "../../src/app/shared/constants/shop-policy";
+
+export const REMINDER_SUBJECT = "Te has dejado tu cesta a medias";
 
 export const DRAFTS_STORE = "checkout-drafts";
 
@@ -126,6 +129,9 @@ export function reminderHtml(draft: Draft, ref: string): string {
     lede: "Empezaste un pedido y no llegaste a confirmarlo. Te lo dejamos tal cual para que lo termines con un clic.",
     blocks: [
       panel("Tu cesta", rows),
+      paragraph(total >= SHIPPING.freeFrom
+        ? `Con esta cesta ${strong("el envío a Península es gratis")}.`
+        : `Te faltan ${strong(eur(SHIPPING.freeFrom - total))} para que el envío sea gratis.`, { size: 15 }),
       button(`${SITE_URL}/checkout?recuperar=${encodeURIComponent(ref)}`, "Terminar el pedido"),
       paragraph(`Te escribimos porque marcaste la casilla del recordatorio, y solo lo hacemos esta vez. ${link(`${SITE_URL}/api/checkout-draft?baja=${encodeURIComponent(ref)}`, "Borrar mi cesta y mi email")}.`, { size: 14 }),
     ],
