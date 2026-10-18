@@ -9,7 +9,7 @@ Vendedor único. Los pedidos llegan por Telegram (notificación) y Brevo (email 
 
 | Tecnología | Uso |
 |---|---|
-| Angular 18 (standalone + signals) | Frontend SPA |
+| Angular 22 (standalone + signals) | Frontend SPA |
 | TailwindCSS 3 | Estilos (tokens custom `lv-*`) |
 | Netlify | Hosting + SSR + Functions |
 | Brevo | Email de confirmación al cliente |
@@ -19,6 +19,9 @@ Vendedor único. Los pedidos llegan por Telegram (notificación) y Brevo (email 
 
 Sin backend propio, sin NgModules, sin Angular Material.
 
+**Documentación completa en [`docs/`](docs/README.md)** (marca, producto y técnico) y skills del proyecto en
+`.claude/skills/` (`layervault-diseno`, `layervault-copy`, `layervault-desarrollo`). Este archivo es el resumen.
+
 ---
 
 ## Diseño visual
@@ -26,6 +29,8 @@ Sin backend propio, sin NgModules, sin Angular Material.
 ```
 Fondo:          #121212  → lv-black
 Fondo profundo: #0e0e0e  → lv-deep
+Fondo cesta:    #0B0B0F  → lv-void
+Elevada:        #201e1a  → lv-raised (sin uso actual)
 Superficie:     #1a1a1a  → lv-surface
 Bordes:         #2a2a2a  → lv-border
 Dorado:         #C9A84C  → lv-gold

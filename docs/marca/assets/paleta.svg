@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="976" height="530" viewBox="0 0 976 530" font-family="Hanken Grotesk, Helvetica, Arial, sans-serif">
+  <rect width="100%" height="100%" fill="#0e0e0e"/>
+  <g transform="translate(24 24)">
+    <rect width="220" height="150" rx="14" fill="#161513" stroke="#2c2925"/>
+    <rect x="10" y="10" width="200" height="76" rx="9" fill="#0B0B0F" stroke="#3a3631"/>
+    <text x="14" y="108" font-size="15" font-weight="700" fill="#F5F0E8">lv-void</text>
+    <text x="206" y="108" font-size="13" text-anchor="end" fill="#C9A84C">#0B0B0F</text>
+    <text x="14" y="132" font-size="12" fill="#8F8A80">Fondo más profundo (la cesta)</text>
+  </g>
+  <g transform="translate(260 24)">
+    <rect width="220" height="150" rx="14" fill="#161513" stroke="#2c2925"/>
+    <rect x="10" y="10" width="200" height="76" rx="9" fill="#0e0e0e" stroke="#3a3631"/>
+    <text x="14" y="108" font-size="15" font-weight="700" fill="#F5F0E8">lv-deep</text>
+    <text x="206" y="108" font-size="13" text-anchor="end" fill="#C9A84C">#0E0E0E</text>
+    <text x="14" y="132" font-size="12" fill="#8F8A80">Fondo profundo</text>
+  </g>
+  <g transform="translate(496 24)">
+    <rect width="220" height="150" rx="14" fill="#161513" stroke="#2c2925"/>
+    <rect x="10" y="10" width="200" height="76" rx="9" fill="#121212" stroke="#3a3631"/>
+    <text x="14" y="108" font-size="15" font-weight="700" fill="#F5F0E8">lv-black</text>
+    <text x="206" y="108" font-size="13" text-anchor="end" fill="#C9A84C">#121212</text>
+    <text x="14" y="132" font-size="12" fill="#8F8A80">Fondo de la web</text>
+  </g>
+  <g transform="translate(732 24)">
+    <rect width="220" height="150" rx="14" fill="#161513" stroke="#2c2925"/>
+    <rect x="10" y="10" width="200" height="76" rx="9" fill="#1a1a1a" stroke="#3a3631"/>
+    <text x="14" y="108" font-size="15" font-weight="700" fill="#F5F0E8">lv-surface</text>
+    <text x="206" y="108" font-size="13" text-anchor="end" fill="#C9A84C">#1A1A1A</text>
+    <text x="14" y="132" font-size="12" fill="#8F8A80">Superficie</text>
+  </g>
+  <g transform="translate(24 190)">
+    <rect width="220" height="150" rx="14" fill="#161513" stroke="#2c2925"/>
+    <rect x="10" y="10" width="200" height="76" rx="9" fill="#201e1a" stroke="#3a3631"/>
+    <text x="14" y="108" font-size="15" font-weight="700" fill="#F5F0E8">lv-raised</text>
+    <text x="206" y="108" font-size="13" text-anchor="end" fill="#C9A84C">#201E1A</text>
+    <text x="14" y="132" font-size="12" fill="#8F8A80">Superficie elevada</text>
+  </g>
+  <g transform="translate(260 190)">
+    <rect width="220" height="150" rx="14" fill="#161513" stroke="#2c2925"/>
+    <rect x="10" y="10" width="200" height="76" rx="9" fill="#2a2a2a" stroke="#3a3631"/>
+    <text x="14" y="108" font-size="15" font-weight="700" fill="#F5F0E8">lv-border</text>
+    <text x="206" y="108" font-size="13" text-anchor="end" fill="#C9A84C">#2A2A2A</text>
+    <text x="14" y="132" font-size="12" fill="#8F8A80">Bordes</text>
+  </g>
+  <g transform="translate(496 190)">
+    <rect width="220" height="150" rx="14" fill="#161513" stroke="#2c2925"/>
+    <rect x="10" y="10" width="200" height="76" rx="9" fill="#F5F0E8" stroke="none"/>
+    <text x="14" y="108" font-size="15" font-weight="700" fill="#F5F0E8">lv-cream</text>
+    <text x="206" y="108" font-size="13" text-anchor="end" fill="#C9A84C">#F5F0E8</text>
+    <text x="14" y="132" font-size="12" fill="#8F8A80">Texto y botón principal</text>
+  </g>
+  <g transform="translate(732 190)">
+    <rect width="220" height="150" rx="14" fill="#161513" stroke="#2c2925"/>
+    <rect x="10" y="10" width="200" height="76" rx="9" fill="#8F8A80" stroke="none"/>
+    <text x="14" y="108" font-size="15" font-weight="700" fill="#F5F0E8">lv-muted</text>
+    <text x="206" y="108" font-size="13" text-anchor="end" fill="#C9A84C">#8F8A80</text>
+    <text x="14" y="132" font-size="12" fill="#8F8A80">Texto secundario</text>
+  </g>
+  <g transform="translate(24 356)">
+    <rect width="220" height="150" rx="14" fill="#161513" stroke="#2c2925"/>
+    <rect x="10" y="10" width="200" height="76" rx="9" fill="#C9A84C" stroke="none"/>
+    <text x="14" y="108" font-size="15" font-weight="700" fill="#F5F0E8">lv-gold</text>
+    <text x="206" y="108" font-size="13" text-anchor="end" fill="#C9A84C">#C9A84C</text>
+    <text x="14" y="132" font-size="12" fill="#8F8A80">Oro: brillo foil y detalles</text>
+  </g>
+  <g transform="translate(260 356)">
+    <rect width="220" height="150" rx="14" fill="#161513" stroke="#2c2925"/>
+    <rect x="10" y="10" width="200" height="76" rx="9" fill="#F3DC95" stroke="none"/>
+    <text x="14" y="108" font-size="15" font-weight="700" fill="#F5F0E8">lv-foil</text>
+    <text x="206" y="108" font-size="13" text-anchor="end" fill="#C9A84C">#F3DC95</text>
+    <text x="14" y="132" font-size="12" fill="#8F8A80">Oro claro: hover y destellos</text>
+  </g>
+  <g transform="translate(496 356)">
+    <rect width="220" height="150" rx="14" fill="#161513" stroke="#2c2925"/>
+    <rect x="10" y="10" width="200" height="76" rx="9" fill="#6B5A26" stroke="none"/>
+    <text x="14" y="108" font-size="15" font-weight="700" fill="#F5F0E8">lv-brass</text>
+    <text x="206" y="108" font-size="13" text-anchor="end" fill="#C9A84C">#6B5A26</text>
+    <text x="14" y="132" font-size="12" fill="#8F8A80">Latón: borde de lo importante</text>
+  </g>
+</svg>
