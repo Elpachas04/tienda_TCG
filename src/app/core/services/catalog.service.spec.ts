@@ -1,48 +1,39 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { CatalogService } from './catalog.service';
-import { ProductCatalog } from '../models/product.model';
+import { Product, ProductCatalog } from '../models/product.model';
+
+const product = (overrides: Partial<Product>): Product => ({
+  id: 'p',
+  name: 'P',
+  tagline: '',
+  category: 'tools',
+  badge: null,
+  badgeStyle: null,
+  description: '',
+  features: [],
+  images: [],
+  price: 20,
+  colorPickerEnabled: false,
+  available: true,
+  ...overrides,
+});
 
 const mockCatalog: ProductCatalog = {
   products: [
-    {
-      id: 'deckbox-ventana',
-      name: 'DeckBox',
-      tagline: 'Haz que tu Líder imponga respeto.',
-      category: 'deckbox',
-      badge: 'Más vendida',
-      badgeStyle: 'gold',
-      description: 'Muestra tu carta líder.',
-      features: ['60 cartas enfundadas'],
-      images: [],
-      price: 20,
-      colorPickerEnabled: true,
-      available: true,
-    },
-    {
-      id: 'aplastador-60',
-      name: 'Aplastador 60 cartas',
-      tagline: 'Elimina el aire. Aplana deformaciones.',
-      category: 'tools',
-      badge: null,
-      badgeStyle: null,
-      description: 'Aplana tu mazo.',
-      features: ['Sin hardware'],
-      images: [],
-      price: 20,
-      colorPickerEnabled: false,
-      available: true,
-    },
+    product({ id: 'deckbox-ventana', name: 'DeckBox', category: 'deckbox', colorPickerEnabled: true }),
+    product({ id: 'aplastador-60', name: 'Aplastador 60 cartas' }),
+    product({ id: 'oculto', name: 'Oculto', hidden: true }),
   ],
   categories: [
-    { id: 'all',    label: 'Todo',       emoji: '🏴‍☠️' },
-    { id: 'deckbox', label: 'Deckboxes', emoji: '🃏' },
+    { id: 'all',     label: 'Todo',         emoji: '🏴‍☠️' },
+    { id: 'deckbox', label: 'Deckboxes',    emoji: '🃏' },
     { id: 'tools',   label: 'Herramientas', emoji: '🔨' },
   ],
   colors: [
     { id: 'negro', name: 'Negro', hex: '#1A1A1A', type: 'PLA Basic', stock: 'alto', quantity: 2, popular: true },
   ],
+  addons: [],
   settings: {
     shopName: 'LayerVault',
     city: '',
@@ -54,73 +45,75 @@ const mockCatalog: ProductCatalog = {
 
 describe('CatalogService', () => {
   let service: CatalogService;
-  let httpMock: HttpTestingController;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
-    });
-    service  = TestBed.inject(CatalogService);
-    httpMock = TestBed.inject(HttpTestingController);
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(CatalogService);
   });
 
-  afterEach(() => httpMock.verify());
+  afterEach(() => vi.unstubAllGlobals());
 
-  it('getProducts() returns the products array', () => {
-    service.getProducts().subscribe(products => {
-      expect(products.length).toBe(2);
-      expect(products[0].id).toBe('deckbox-ventana');
+  describe('apply()', () => {
+    beforeEach(() => service.apply(mockCatalog));
+
+    it('expone los productos visibles y deja fuera los ocultos', () => {
+      expect(service.products.map(p => p.id)).toEqual(['deckbox-ventana', 'aplastador-60']);
     });
-    httpMock.expectOne('assets/data/products.json').flush(mockCatalog);
+
+    it('expone categorías, colores y ajustes', () => {
+      expect(service.categories.length).toBe(3);
+      expect(service.categories[0].id).toBe('all');
+      expect(service.colors[0].name).toBe('Negro');
+      expect(service.settings.shopName).toBe('LayerVault');
+      expect(service.settings.paymentMethods).toContain('Bizum');
+    });
+
+    it('usa una lista vacía de extras si el catálogo no los trae', () => {
+      service.apply({ ...mockCatalog, addons: undefined as unknown as ProductCatalog['addons'] });
+      expect(service.addons).toEqual([]);
+    });
+
+    it('getProductById() encuentra un producto existente', () => {
+      expect(service.getProductById('aplastador-60')?.name).toBe('Aplastador 60 cartas');
+    });
+
+    it('getProductById() encuentra también un producto oculto (enlace directo)', () => {
+      expect(service.getProductById('oculto')).toBeDefined();
+    });
+
+    it('getProductById() devuelve undefined si no existe', () => {
+      expect(service.getProductById('nonexistent')).toBeUndefined();
+    });
   });
 
-  it('getCategories() returns the categories array', () => {
-    service.getCategories().subscribe(cats => {
-      expect(cats.length).toBe(3);
-      expect(cats[0].id).toBe('all');
+  describe('load()', () => {
+    it('sustituye el catálogo del seed por el de /api/products', async () => {
+      const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => mockCatalog });
+      vi.stubGlobal('fetch', fetchMock);
+
+      await service.load();
+
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(fetchMock.mock.calls[0][0]).toBe('/api/products');
+      expect(service.products.map(p => p.id)).toEqual(['deckbox-ventana', 'aplastador-60']);
     });
-    httpMock.expectOne('assets/data/products.json').flush(mockCatalog);
-  });
 
-  it('getColors() returns the colors array', () => {
-    service.getColors().subscribe(colors => {
-      expect(colors.length).toBe(1);
-      expect(colors[0].name).toBe('Negro');
+    it('mantiene el seed si la API responde con error', async () => {
+      const seed = service.products;
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, json: async () => mockCatalog }));
+
+      await service.load();
+
+      expect(service.products).toBe(seed);
     });
-    httpMock.expectOne('assets/data/products.json').flush(mockCatalog);
-  });
 
-  it('getSettings() returns settings', () => {
-    service.getSettings().subscribe(settings => {
-      expect(settings.shopName).toBe('LayerVault');
-      expect(settings.paymentMethods).toContain('Bizum');
+    it('mantiene el seed si no hay conexión', async () => {
+      const seed = service.products;
+      vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')));
+
+      await service.load();
+
+      expect(service.products).toBe(seed);
     });
-    httpMock.expectOne('assets/data/products.json').flush(mockCatalog);
-  });
-
-  it('getProductById() finds existing product', () => {
-    service.getProductById('aplastador-60').subscribe(p => {
-      expect(p).toBeDefined();
-      expect(p!.name).toBe('Aplastador 60 cartas');
-    });
-    httpMock.expectOne('assets/data/products.json').flush(mockCatalog);
-  });
-
-  it('getProductById() returns undefined for unknown id', () => {
-    service.getProductById('nonexistent').subscribe(p => {
-      expect(p).toBeUndefined();
-    });
-    httpMock.expectOne('assets/data/products.json').flush(mockCatalog);
-  });
-
-  it('makes only ONE HTTP request even when called multiple times (shareReplay)', () => {
-    service.getProducts().subscribe();
-    service.getCategories().subscribe();
-    service.getColors().subscribe();
-
-    // All three subscriptions share the single underlying HTTP request
-    const requests = httpMock.match('assets/data/products.json');
-    expect(requests.length).toBe(1);
-    requests[0].flush(mockCatalog);
   });
 });
