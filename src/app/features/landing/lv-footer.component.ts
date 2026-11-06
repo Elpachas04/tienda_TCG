@@ -24,6 +24,7 @@ import { WHATSAPP_URL, CONTACT_EMAIL } from '../../shared/constants';
         <nav aria-label="Legal" class="flex flex-col gap-2.5 text-[15px] text-lv-cream/65">
           <a routerLink="/legal" class="hover:text-lv-cream transition-colors w-fit">Aviso legal</a>
           <a routerLink="/privacidad" class="hover:text-lv-cream transition-colors w-fit">Privacidad</a>
+          <a routerLink="/cookies" class="hover:text-lv-cream transition-colors w-fit">Cookies</a>
         </nav>
       </div>
       <div class="max-w-7xl mx-auto px-4 sm:px-6 pb-8">

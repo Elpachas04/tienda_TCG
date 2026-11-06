@@ -30,7 +30,7 @@ if (live) {
 }
 
 const products = catalog.products.filter(p => !p.hidden);
-const pages = ['/', '/catalog', ...products.map(p => `/product/${p.id}`), '/legal', '/privacidad'];
+const pages = ['/', '/catalog', ...products.map(p => `/product/${p.id}`), '/legal', '/privacidad', '/cookies'];
 
 // /404 se prerenderiza para tener un HTML propio, pero no va al sitemap
 await writeFile('prerender-routes.txt', [...pages, '/404'].join('\n') + '\n');

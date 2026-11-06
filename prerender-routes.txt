@@ -9,4 +9,5 @@
 /product/caja-bulk
 /legal
 /privacidad
+/cookies
 /404

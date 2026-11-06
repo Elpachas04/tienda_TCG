@@ -48,7 +48,7 @@ const HINT = 'font-body text-xs text-lv-muted mt-1';
   imports: [FormsModule, AdminPhotoGridComponent],
   template: `
     <div class="fixed inset-0 bg-black/75 flex items-start justify-center overflow-y-auto z-[70] sm:py-8 sm:px-4"
-         (click)="$event.target === $event.currentTarget && requestClose()">
+         (click)="onBackdropClick($event)">
       <div #dialog role="dialog" aria-modal="true" aria-labelledby="pf-title" tabindex="-1"
            (keydown.tab)="trapFocus($event)" (keydown.shift.tab)="trapFocus($event)"
            class="bg-lv-deep sm:rounded-card border border-lv-border w-full max-w-3xl min-h-screen sm:min-h-0 flex flex-col">
@@ -345,6 +345,11 @@ export class AdminProductFormComponent implements OnDestroy {
     const dirty = JSON.stringify(this.form) !== this.snapshot;
     if (dirty && !confirm('Tienes cambios sin guardar. ¿Salir sin guardar?')) return;
     this.cancelled.emit();
+  }
+
+  /** Un handler de plantilla que devuelve false cancela el clic (preventDefault) y los checkbox no cambian */
+  onBackdropClick(event: Event): void {
+    if (event.target === event.currentTarget) this.requestClose();
   }
 
   trapFocus(event: Event): void {

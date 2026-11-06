@@ -4,6 +4,20 @@ import { CONTACT_EMAIL } from '../../shared/constants';
 import { SHIPPING } from '../../shared/constants/shop-policy';
 import { EurPipe } from '../../shared/pipes/eur.pipe';
 
+type LegalTab = 'aviso' | 'privacidad' | 'cookies';
+
+/**
+ * Todo lo que la web guarda en el navegador de un cliente. Si añades una clave de localStorage/sessionStorage o una
+ * cookie, añádela aquí: la ley obliga a informar de ella. Si no es estrictamente necesaria, además hay que pedir
+ * consentimiento antes de guardarla (ver docs/tecnico/cookies.md).
+ */
+const BROWSER_STORAGE = [
+  { name: 'tcg3d_cart',   purpose: 'Recordar los productos de tu cesta entre visitas.', duration: 'Hasta que haces el pedido o vacías la cesta.' },
+  { name: 'berry_active', purpose: 'Recordar que has activado el descuento ₿erry.', duration: 'Hasta que cierras la pestaña.' },
+  { name: 'berry_shown',  purpose: 'No repetirte el aviso del descuento ₿erry.', duration: 'Hasta que cierras la pestaña.' },
+  { name: 'berry_spent',  purpose: 'Recordar que ya usaste el descuento ₿erry, que es de un solo uso.', duration: 'Hasta que borras los datos del navegador.' },
+] as const;
+
 @Component({
   selector: 'app-legal',
   standalone: true,
@@ -23,20 +37,16 @@ import { EurPipe } from '../../shared/pipes/eur.pipe';
         </a>
 
         <!-- Tabs -->
-        <div class="flex gap-2 mb-12">
-          <button
-            class="font-body text-[13px] rounded-full px-5 py-2 transition-all duration-200"
-            [class]="tab() === 'aviso' ? 'bg-lv-gold text-black font-semibold' : 'liquid-glass border border-lv-gold/20 text-lv-cream/60 hover:border-lv-gold/40'"
-            (click)="tab.set('aviso')">
-            Aviso legal
-          </button>
-          <button
-            class="font-body text-[13px] rounded-full px-5 py-2 transition-all duration-200"
-            [class]="tab() === 'privacidad' ? 'bg-lv-gold text-black font-semibold' : 'liquid-glass border border-lv-gold/20 text-lv-cream/60 hover:border-lv-gold/40'"
-            (click)="tab.set('privacidad')">
-            Privacidad
-          </button>
-        </div>
+        <nav aria-label="Información legal" class="flex flex-wrap gap-2 mb-12">
+          @for (t of tabs; track t.id) {
+            <a [routerLink]="t.path" replaceUrl
+               class="font-body text-[13px] rounded-full px-5 py-2 transition-all duration-200"
+               [class]="tab() === t.id ? 'bg-lv-gold text-black font-semibold' : 'liquid-glass border border-lv-gold/20 text-lv-cream/60 hover:border-lv-gold/40'"
+               [attr.aria-current]="tab() === t.id ? 'page' : null">
+              {{ t.label }}
+            </a>
+          }
+        </nav>
 
         @if (tab() === 'aviso') {
           <div class="space-y-8">
@@ -114,7 +124,7 @@ import { EurPipe } from '../../shared/pipes/eur.pipe';
             <section class="space-y-3">
               <h2 class="lv-h3 text-lv-cream">Datos que recogemos</h2>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
-                Únicamente los datos que tú proporcionas al realizar un pedido: nombre, email y teléfono (todos obligatorios) y código postal (solo cuando eliges envío a domicilio). No se recogen datos de navegación, no se usan cookies propias ni ningún sistema de analítica.
+                Únicamente los datos que tú proporcionas al realizar un pedido: nombre, email y teléfono (todos obligatorios) y código postal (solo cuando eliges envío a domicilio). No se recogen datos de navegación ni se usa analítica ni publicidad. Lo poco que la web guarda en tu navegador, como tu cesta, se explica en <a routerLink="/cookies" class="text-lv-gold hover:underline">cookies</a>.
               </p>
               <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
                 Si valoras tu pedido, guardamos la puntuación, el comentario, las fotos que subas y el nombre del pedido. Solo se publican si las aprobamos, y el nombre aparece tapado salvo las primeras y últimas letras (por ejemplo, «Mar******ez»). Puedes pedirnos que las borremos cuando quieras.
@@ -171,8 +181,66 @@ import { EurPipe } from '../../shared/pipes/eur.pipe';
           </div>
         }
 
+        @if (tab() === 'cookies') {
+          <div class="space-y-8">
+            <div>
+              <h1 class="lv-h1 text-lv-cream">Cookies</h1>
+            </div>
+
+            <section class="space-y-3">
+              <h2 class="lv-h3 text-lv-cream">Lo esencial</h2>
+              <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
+                Esta web solo guarda en tu navegador lo necesario para que funcione lo que tú pides, como recordar tu cesta. No usamos cookies de analítica, de publicidad ni de terceros, y no seguimos lo que haces en otras webs.
+              </p>
+              <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
+                Por eso no verás un aviso pidiéndote permiso: la ley exime de consentimiento a lo que es estrictamente necesario para prestar un servicio que has solicitado (art. 22.2 de la Ley 34/2002, LSSI). Aun así, te contamos qué es cada cosa.
+              </p>
+            </section>
+
+            <section class="space-y-3">
+              <h2 class="lv-h3 text-lv-cream">Qué guardamos</h2>
+              <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
+                Son datos propios de LayerVault guardados en el almacenamiento de tu navegador. No se envían a nadie ni sirven para identificarte.
+              </p>
+              <ul class="rounded-card border border-lv-border divide-y divide-lv-border" aria-label="Datos que la web guarda en tu navegador">
+                @for (item of storage; track item.name) {
+                  <li class="px-4 py-4 space-y-1.5">
+                    <code class="font-body text-sm text-lv-cream">{{ item.name }}</code>
+                    <p class="font-body text-sm text-lv-cream/60 leading-relaxed">{{ item.purpose }}</p>
+                    <p class="font-body text-[13px] text-lv-cream/60"><span class="text-lv-cream/80">Dura:</span> {{ item.duration }}</p>
+                  </li>
+                }
+              </ul>
+              <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
+                El panel de gestión de la tienda usa además una cookie de sesión (<code class="font-body text-lv-cream">admin_session</code>, 7 días) y una marca (<code class="font-body text-lv-cream">lv_admin</code>). Solo existen si entras como vendedor; a los clientes no se les instalan.
+              </p>
+            </section>
+
+            <section class="space-y-3">
+              <h2 class="lv-h3 text-lv-cream">Servicios externos</h2>
+              <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
+                La web está alojada en Netlify y las fotos de los productos se cargan desde Cloudinary. Para enseñarte la página reciben los datos técnicos de cualquier visita (como tu dirección IP); no les pedimos que guarden nada en tu navegador ni los usamos para medir o perfilar visitas.
+              </p>
+            </section>
+
+            <section class="space-y-3">
+              <h2 class="lv-h3 text-lv-cream">Cómo borrarlas</h2>
+              <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
+                Puedes borrar estos datos cuando quieras desde los ajustes de tu navegador («Borrar datos de navegación» o «Datos de sitios web»). Si lo haces, se vaciará tu cesta.
+              </p>
+            </section>
+
+            <section class="space-y-3">
+              <h2 class="lv-h3 text-lv-cream">Cambios</h2>
+              <p class="font-body text-sm text-lv-cream/60 leading-relaxed">
+                Si algún día añadimos analítica u otras cookies que no sean necesarias, te pediremos permiso antes de usarlas y actualizaremos esta página. Para cualquier duda, escríbenos a <a [href]="'mailto:' + email" class="text-lv-gold hover:underline">{{ email }}</a>.
+              </p>
+            </section>
+          </div>
+        }
+
         <p class="font-body text-xs text-lv-cream/60 mt-16 pt-8 border-t border-lv-gold/10">
-          Última actualización: julio 2026
+          Última actualización: octubre 2026
         </p>
 
       </div>
@@ -180,9 +248,16 @@ import { EurPipe } from '../../shared/pipes/eur.pipe';
   `,
 })
 export class LegalComponent {
-  protected readonly tab   = signal<'aviso' | 'privacidad'>(
-    inject(Router).url.includes('privacidad') ? 'privacidad' : 'aviso'
+  protected readonly tabs: ReadonlyArray<{ id: LegalTab; path: string; label: string }> = [
+    { id: 'aviso',      path: '/legal',      label: 'Aviso legal' },
+    { id: 'privacidad', path: '/privacidad', label: 'Privacidad' },
+    { id: 'cookies',    path: '/cookies',    label: 'Cookies' },
+  ];
+  private readonly url = inject(Router).url;
+  protected readonly tab = signal<LegalTab>(
+    this.url.startsWith('/privacidad') ? 'privacidad' : this.url.startsWith('/cookies') ? 'cookies' : 'aviso'
   );
+  protected readonly storage = BROWSER_STORAGE;
   protected readonly email = CONTACT_EMAIL;
   protected readonly shipping = SHIPPING;
 }

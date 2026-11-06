@@ -78,6 +78,9 @@ src/app/
     └── constants/    index.ts
 ```
 
+## Flujo de trabajo
+- Todo desarrollo en `develop`; nunca commit ni push directo a `main`
+- Si un merge, push o build falla: parar, explicar y proponer; no encadenar arreglos
 ---
 
 ## Componentes clave
@@ -135,7 +138,7 @@ Lo que se ve al cargar (hero del inicio, cabecera del catálogo) NO se anima ni 
 
 - Build: `node scripts/prebuild.mjs --live && ng build` (lo hace Netlify). El script descarga el catálogo real
   de `/api/products`, lo deja en `src/assets/data/products.json` y genera `prerender-routes.txt` y `public/sitemap.xml`
-- Se prerenderizan inicio, catálogo, cada ficha visible, legal, privacidad y /404 (`angular.json` → `prerender.routesFile`).
+- Se prerenderizan inicio, catálogo, cada ficha visible, legal, privacidad, cookies y /404 (`angular.json` → `prerender.routesFile`).
   Nada de `@defer` en contenido que deba verse en el HTML (rejilla del catálogo, destacados del inicio)
 - En código que corre al prerenderizar no hay `window`, `Image`, `fetch` relativo… usar `afterNextRender` o comprobar la plataforma
 - `SeoService` pone título, descripción, canonical, Open Graph y robots por ruta (`data: { description, noindex }`);
@@ -149,6 +152,9 @@ Lo que se ve al cargar (hero del inicio, cabecera del catálogo) NO se anima ni 
   `scripts/lib/review-summary.mjs`; vacío si `reviewsVisible` está apagado). Tests: `npm run test:scripts`
 - `netlify.toml`: rutas de la app sin HTML propio → `index.html` (200); cualquier otra URL → `/404/index.html` con estado 404.
   Si añades una ruta nueva que no se prerenderiza, añádela ahí
+- Cookies: solo almacenamiento estrictamente necesario (cesta, ₿erry, sesión de admin), así que no hay banner. Toda
+  clave nueva va a `BROWSER_STORAGE` (página `/cookies`); analítica o terceros exigen consentimiento previo
+  (`docs/tecnico/cookies.md`)
 
 ## Emails y valoraciones
 
@@ -201,7 +207,7 @@ Colores definidos en el JSON con `id`, `name`, `hex`.
 4. `GET /.netlify/functions/get-order-status?id=LV-...` → estado del pedido en Notion
 
 Variables de entorno necesarias (ver `.env.example`):
-`TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `NOTION_TOKEN`, `NOTION_DATABASE_ID`, `BREVO_API_KEY`
+`TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `NOTION_TOKEN`, `NOTION_DATABASE_ID`, `BREVO_API_KEY`,`ADMIN_SECRET`, `REVIEW_SECRET`,`ADMIN_SECRET`, `CHECKOUT_SECRET`,`CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
 
 ---
 
@@ -212,3 +218,10 @@ Variables de entorno necesarias (ver `.env.example`):
 - Sin Angular Material, sin librerías de UI externas
 - Sin comentarios obvios; solo cuando el "por qué" no es evidente
 - No añadir features no pedidas
+
+--
+## Comandos
+- `npm start` / `ng serve` → desarrollo (4200)
+- `netlify dev` → con funciones
+- `node scripts/prebuild.mjs --live && ng build` → build de producción
+- `npm run test:scripts` → tests de prebuild, referrals y checkout-drafts

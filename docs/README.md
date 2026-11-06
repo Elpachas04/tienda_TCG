@@ -36,6 +36,7 @@ y cómo está construida. Si vas a tocar algo, empieza por aquí.
 | [Arquitectura](tecnico/arquitectura.md) | Stack, carpetas, convenciones de código |
 | [Flujo de pedido](tecnico/pedidos.md) | De la cesta a Telegram, Notion y los emails; cálculo del total |
 | [SEO y Google](tecnico/seo.md) | Prerender, datos estructurados, sitemap, Merchant Center, Search Console |
+| [Cookies](tecnico/cookies.md) | Qué guarda la web en el navegador, por qué no hay banner y qué hacer si se añade analítica |
 | [Despliegue y ramas](tecnico/despliegue.md) | Git, Netlify, variables de entorno |
 | [Tests](tecnico/tests.md) | Qué se prueba y cómo |
 
