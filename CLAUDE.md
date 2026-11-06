@@ -78,6 +78,9 @@ src/app/
     └── constants/    index.ts
 ```
 
+## Flujo de trabajo
+- Todo desarrollo en `develop`; nunca commit ni push directo a `main`
+- Si un merge, push o build falla: parar, explicar y proponer; no encadenar arreglos
 ---
 
 ## Componentes clave
@@ -204,7 +207,7 @@ Colores definidos en el JSON con `id`, `name`, `hex`.
 4. `GET /.netlify/functions/get-order-status?id=LV-...` → estado del pedido en Notion
 
 Variables de entorno necesarias (ver `.env.example`):
-`TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `NOTION_TOKEN`, `NOTION_DATABASE_ID`, `BREVO_API_KEY`
+`TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `NOTION_TOKEN`, `NOTION_DATABASE_ID`, `BREVO_API_KEY`,`ADMIN_SECRET`, `REVIEW_SECRET`,`ADMIN_SECRET`, `CHECKOUT_SECRET`,`CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
 
 ---
 
@@ -215,3 +218,10 @@ Variables de entorno necesarias (ver `.env.example`):
 - Sin Angular Material, sin librerías de UI externas
 - Sin comentarios obvios; solo cuando el "por qué" no es evidente
 - No añadir features no pedidas
+
+--
+## Comandos
+- `npm start` / `ng serve` → desarrollo (4200)
+- `netlify dev` → con funciones
+- `node scripts/prebuild.mjs --live && ng build` → build de producción
+- `npm run test:scripts` → tests de prebuild, referrals y checkout-drafts
